@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <nav>
+        <ul>
+            <li>
+                <a href="{% url 'software_list' %}" role="button" class="outline" hx-boost="false">
+                    &larr; Retour à la liste
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <article>
+        <header>
+            <div class="grid">
+                {% if software.logo %}
+
+                <div>
+                    <img src="{{ software.logo.url }}" alt="{{ software.name }}"
+                        style="max-width: 100px; max-height: 100px;">
+                </div>
+                {% endif %}
+                <div>
+                    <small>{{ category.name }}</small>
+                    <h1>{{ software.name }}</h1>
+                    <p>{{ software.editeur }}</p>
+                </div>
+            </div>
+        </header>
+        <p>{{ software.description }}</p>
+        <footer>
+            <div class="grid">
+                <div>
+                    <h3>Ressources liées</h3>
+                    <p>{{ software.image_principale|default:"Non spécifié" }}</p>
+                </div>
+                <div>
+                    <h3>Tags</h3>
+                    <p>{{ software.tags|default:"Non spécifié" }}</p>
+                </div>
+                <div>
+                    <h3>Site</h3>
+                    <a href="{{ software.site }}">{{ software.site|default:"Non spécifié" }}</a>
+                </div>
+                <div>
+                    <h3>Vidéo</h3>
+                    {% if software.video %}
+                        <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+                            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="https://www.youtube.com/embed/{{ software.video|slice:'32:' }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    {% else %}
+                        <p>Non spécifié</p>
+                    {% endif %}
+                </div>
+            </div>
+            </details>
+        </footer>
+    </article>
+
+    <article>
+        <header>
+            <h2>À propos de Cabinet Digital</h2>
+        </header>
+        <p>Votre ressource incontournable pour découvrir les meilleurs logiciels destinés aux experts-comptables et aux
+            professionnels de la finance. Notre plateforme regroupe une sélection soignée d'outils innovants conçus pour
+            optimiser votre productivité et simplifier vos tâches quotidiennes dans le domaine de la comptabilité et de
+            la finance.</p>
+    </article>
+
+    <article>
+        <header>
+            <h2>Logiciels similaires</h2>
+        </header>
+        <div id="similar-software-container" 
+        hx-get="{% url 'similar_software' software_id=software.id %}" 
+        hx-trigger="load">
+        </div>
+    </article>
+</div>
+{% endblock %}

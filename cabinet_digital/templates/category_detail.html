@@ -1,0 +1,91 @@
+{% extends 'base.html' %}   
+{% load custom_filters %}
+
+
+{% block content %}
+<div>
+    <h1>{{ category.name }}</h1>
+    <p>{{ category.description }}</p>
+</div>  
+<h2>Liste des logiciels de la catégorie {{ category.name }}</h2>
+    <div class="grid">
+        {% for software in softwares %}
+        <article>
+            <a href="{% url 'software_detail' software.slug %}" >
+                    <header>
+                        <fieldset role="group">
+                            {% if software.logo %}
+                                <img src="{{ software.logo.url }}" alt="{{ software.name }}" style="max-width: 100px; max-height: 100px;">
+                            {% endif %}
+                            <h3>{{ software.name }}</h3>
+                        </fieldset>
+                </header>
+                <p>
+                    {{ software.description|first_sentence }}
+                </p>
+                {% if software.category.all %}
+                    <footer>
+                        <div>
+                            {% for category in software.category.all %}
+                                <span style="display: inline-block; padding: 0.2em 0.5em; background-color: #e9ecef; color: #495057; border-radius: 0.25em; font-size: 0.875em; margin-right: 0.5em;">{{ category.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </footer>
+                {% endif %}
+                    </a>
+            </article>
+        {% endfor %}
+    </div>
+
+    <h2>Liste des articles de la catégorie {{ category.name }}</h2>
+    <div class="grid">
+        {% for article in articles %}
+        <article>
+            <a href="{% url 'article_detail' article.slug %}" >
+                    <header>
+                        <fieldset role="group">
+                            {% if article.image %}
+                                <img src="{{ article.image.url }}" alt="{{ article.title }}" style="max-width: 100px; max-height: 100px;">
+                            {% endif %}
+                            <h3>{{ article.title }}</h3>
+                        </fieldset>
+                </header>
+                <p>
+                    {{ article.content|first_sentence }}
+                </p>
+                {% if article.category.all %}
+                    <footer>
+                        <div>
+                            {% for category in article.category.all %}
+                                <span style="display: inline-block; padding: 0.2em 0.5em; background-color: #e9ecef; color: #495057; border-radius: 0.25em; font-size: 0.875em; margin-right: 0.5em;">{{ category.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </footer>
+                {% endif %}
+                    </a>
+            </article>
+        {% endfor %}
+    </div>
+
+<style>
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .software-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .software-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+{% endblock %}
+

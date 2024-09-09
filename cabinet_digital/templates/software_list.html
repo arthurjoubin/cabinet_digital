@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+
+   <h1>Liste des logiciels</h1>
+
+<select id="category-filter" hx-get="{% url 'software_list' %}" hx-trigger="change" hx-target="#software-list-content" hx-push-url="true" name="categorie">
+    <option value="">Toutes les catégories</option>
+    {% for category in categories %}
+        <option value="{{ category.slug }}" {% if category.id == selected_category %}selected{% endif %}>{{ category.name }}</option>
+    {% endfor %}
+</select>
+
+<div id="software-list-content">
+    {% include 'software_list_partial.html' %}
+</div>
+</div>
+{% endblock %}

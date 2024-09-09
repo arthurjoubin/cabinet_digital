@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+{% block content %}
+<div>
+    <h1>Catégories de logiciels</h1>
+
+    <div class="software-grid">
+        {% for category in categories%}
+        {% if category.name != "Non catégorisé" %}
+        <article>
+            <a href="{% url 'category_detail' category.slug %}">
+                <header>
+                    <fieldset role="group">
+                        <h3>{{ category.name }}</h3>
+                    </fieldset>
+                </header>
+                <p>
+                    {{ category.description|first_sentence }}
+                </p>
+            </a>
+        </article>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

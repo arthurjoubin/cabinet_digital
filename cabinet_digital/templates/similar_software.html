@@ -1,0 +1,29 @@
+{% if similar_softwares %}
+    <div class="software-grid">
+        {% for software in similar_softwares %}
+            {% include 'card.html' with software=software %}
+        {% endfor %}
+    </div>
+{% else %}
+    <p>Aucun logiciel similaire trouvé.</p>
+{% endif %}
+
+<style>
+    .software-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .software-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .software-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

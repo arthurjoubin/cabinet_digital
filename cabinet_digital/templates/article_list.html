@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load markdown_extras %}
+{% block content %}
+  <div class="container">
+    <h1>Liste des Articles</h1>
+    <div class="grid">
+      {% for article in object_list %}
+        <a href="{% url 'article_detail' article.slug %}" class="card" style="text-decoration: none; color: inherit;">
+          <article>
+            {% if article.image %}
+              <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy">
+            {% endif %}
+            <h3>{{ article.title }}</h3>
+            <p><small>Publié le {{ article.pub_date|date:"F d, Y" }} - Par Cabinet Digital</small></p>
+          </article>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

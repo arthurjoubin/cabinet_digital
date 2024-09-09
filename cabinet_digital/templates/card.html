@@ -1,0 +1,28 @@
+{% load custom_filters %}
+
+{% if software %}
+        <article>
+            <a href="{% url 'software_detail' software.slug %}" >
+                    <header>
+                        <fieldset role="group">
+                            {% if software.logo %}
+                                <img src="{{ software.logo.url }}" alt="{{ software.name }}" style="max-width: 100px; max-height: 100px;">
+                            {% endif %}
+                            <h3>{{ software.name }}</h3>
+                        </fieldset>
+                </header>
+                <p>
+                    {{ software.description|first_sentence }}
+                </p>
+                {% if software.category.all %}
+                    <footer>
+                        <div>
+                            {% for category in software.category.all %}
+                                <span style="display: inline-block; padding: 0.2em 0.5em; background-color: #e9ecef; color: #495057; border-radius: 0.25em; font-size: 0.875em; margin-right: 0.5em;">{{ category.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </footer>
+                {% endif %}
+                </a>
+        </article>
+{% endif %}
