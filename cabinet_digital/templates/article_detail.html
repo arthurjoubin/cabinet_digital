@@ -2,25 +2,24 @@
 {% load markdown_extras %}
 
 {% block content %}
-<nav class="container-fluid">
+<nav class="container mx-auto px-4 py-6">
   <ul>
-    <li><a href="{% url 'articles' %}" role="button" class="outline">Revenir aux articles</a></li>
+    <li><a href="{% url 'articles' %}" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">← Revenir aux articles</a></li>
   </ul>
 </nav>
 
-<div class="container">
-  <article>
-    <header>
-      <fieldset role="group" style="display: flex; align-items: center;">
-          <img src="{{ article.image.url }}" alt="{{ article.title }}" style="max-width: 20%; width: 20%; height: auto; object-fit: cover; border-radius: 5%; margin-right: 20px;">
+<div class="container mx-auto px-4 py-8">
+  <article class="max-w-3xl mx-auto">
+    <header class="mb-12">
+      <div class="flex items-center space-x-6">
+        <img src="{{ article.image.url }}" alt="{{ article.title }}" class="w-24 h-24 object-cover rounded-lg shadow-sm">
         <div>
-          <h1>{{ article.title }}</h1>
-          <p><small>Published on {{ article.pub_date|date:"F d, Y" }}</small></p>
+          <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ article.title }}</h1>
+          <p class="text-sm text-gray-500">Publié le {{ article.pub_date|date:"d F Y" }}</p>
         </div>
-      </fieldset>
-
+      </div>
     </header>
-    <div>
+    <div class="prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none text-gray-800">
       {{ article.content | markdown | safe }}
     </div>
   </article>

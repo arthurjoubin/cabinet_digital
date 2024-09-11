@@ -1,91 +1,71 @@
-{% extends 'base.html' %}   
+{% extends 'base.html' %}
 {% load custom_filters %}
 
-
 {% block content %}
-<div>
-    <h1>{{ category.name }}</h1>
-    <p>{{ category.description }}</p>
-</div>  
-<h2>Liste des logiciels de la catégorie {{ category.name }}</h2>
-    <div class="grid">
+
+<div class="container mx-auto px-4 py-12 max-w-5xl"> <div class="mb-12 text-center"> <h1 class="text-4xl font-light text-gray-900 mb-3">{{ category.name }}</h1> <p class="text-gray-600 max-w-2xl mx-auto">{{ category.description }}</p> </div>
+<div class="mb-16">
+    <h2 class="text-2xl font-light text-gray-800 mb-6 border-b pb-2">Logiciels</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         {% for software in softwares %}
-        <article>
-            <a href="{% url 'software_detail' software.slug %}" >
-                    <header>
-                        <fieldset role="group">
-                            {% if software.logo %}
-                                <img src="{{ software.logo.url }}" alt="{{ software.name }}" style="max-width: 100px; max-height: 100px;">
-                            {% endif %}
-                            <h3>{{ software.name }}</h3>
-                        </fieldset>
+        <article class="bg-white border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg">
+            <a href="{% url 'software_detail' software.slug %}" class="block p-6">
+                <header class="mb-4">
+                    <div class="flex items-center">
+                        {% if software.logo %}
+                            <img src="{{ software.logo.url }}" alt="{{ software.name }}" class="w-12 h-12 object-contain mr-4">
+                        {% endif %}
+                        <h3 class="text-xl font-medium text-gray-900">{{ software.name }}</h3>
+                    </div>
                 </header>
-                <p>
+                <p class="text-gray-600 text-sm mb-4">
                     {{ software.description|first_sentence }}
                 </p>
                 {% if software.category.all %}
                     <footer>
-                        <div>
+                        <div class="flex flex-wrap">
                             {% for category in software.category.all %}
-                                <span style="display: inline-block; padding: 0.2em 0.5em; background-color: #e9ecef; color: #495057; border-radius: 0.25em; font-size: 0.875em; margin-right: 0.5em;">{{ category.name }}</span>
+                                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded mr-2 mb-2">{{ category.name }}</span>
                             {% endfor %}
                         </div>
                     </footer>
                 {% endif %}
-                    </a>
-            </article>
+            </a>
+        </article>
         {% endfor %}
     </div>
+</div>
 
-    <h2>Liste des articles de la catégorie {{ category.name }}</h2>
-    <div class="grid">
+<div class="mt-16 pt-16 border-t border-gray-200">
+    <h2 class="text-2xl font-light text-gray-800 mb-6 border-b pb-2">Articles</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         {% for article in articles %}
-        <article>
-            <a href="{% url 'article_detail' article.slug %}" >
-                    <header>
-                        <fieldset role="group">
-                            {% if article.image %}
-                                <img src="{{ article.image.url }}" alt="{{ article.title }}" style="max-width: 100px; max-height: 100px;">
-                            {% endif %}
-                            <h3>{{ article.title }}</h3>
-                        </fieldset>
+        <article class="bg-white border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg">
+            <a href="{% url 'article_detail' article.slug %}" class="block p-6">
+                <header class="mb-4">
+                    <div class="flex items-center">
+                        {% if article.image %}
+                            <img src="{{ article.image.url }}" alt="{{ article.title }}" class="w-12 h-12 object-cover mr-4 rounded">
+                        {% endif %}
+                        <h3 class="text-xl font-medium text-gray-900">{{ article.title }}</h3>
+                    </div>
                 </header>
-                <p>
+                <p class="text-gray-600 text-sm mb-4">
                     {{ article.content|first_sentence }}
                 </p>
                 {% if article.category.all %}
                     <footer>
-                        <div>
+                        <div class="flex flex-wrap">
                             {% for category in article.category.all %}
-                                <span style="display: inline-block; padding: 0.2em 0.5em; background-color: #e9ecef; color: #495057; border-radius: 0.25em; font-size: 0.875em; margin-right: 0.5em;">{{ category.name }}</span>
+                                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded mr-2 mb-2">{{ category.name }}</span>
                             {% endfor %}
                         </div>
                     </footer>
                 {% endif %}
-                    </a>
-            </article>
+            </a>
+        </article>
         {% endfor %}
     </div>
-
-<style>
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-    }
-
-    @media (max-width: 768px) {
-        .software-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media (max-width: 480px) {
-        .software-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
-
+</div>
+</div>
 {% endblock %}
-

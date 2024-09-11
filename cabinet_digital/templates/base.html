@@ -1,40 +1,57 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="light">
-<head >
+<html lang="fr" class="bg-gray-100">
+
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Cabinet Digital{% endblock %}</title>
-    <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.indigo.min.css">
-  <script src="https://unpkg.com/htmx.org@2.0.2" integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/htmx.org@2.0.2/dist/ext/history.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.2"
+        integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.2/dist/ext/history.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
 </head>
-<body hx-boost="true" >
-    <header class="container">
-        <nav>
-            <ul>
-                <li><a href="{% url 'home' %}"><strong>Cabinet Digital</strong></a></li>
+
+<body hx-boost="true" class="flex flex-col min-h-screen text-black">
+    <header class="bg-white shadow-sm">
+        <nav class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <a href="{% url 'home' %}" class="text-2xl font-bold text-black">Cabinet Digital</a>
+                <ul class="flex">
+                    <li><a href="{% url 'software_list' %}" hx-boost="false"
+                            class="text-lg font-semibold text-black hover:text-gray-900 mx-4">Logiciels</a></li>
+                    <li><a href="{% url 'articles' %}" hx-boost="false"
+                            class="text-lg font-semibold text-black hover:text-gray-900 mx-4">Articles</a></li>
+                    <li><a href="{% url 'category_list' %}" hx-boost="false"
+                            class="text-lg font-semibold text-black hover:text-gray-900 mx-4">Catégories</a></li>
+                    <li class="ml-auto"><a href="{% url 'contact' %}"
+                            class="bg-black text-white px-4 py-2 hover:bg-gray-900 transition rounded-md duration-300 ease-in-out">Contact</a>
+                    </li>
                 </ul>
-                <ul>                 
-                
-                  <li><a href="{% url 'software_list' %}" hx-boost="false">Liste des logiciels</a></li>
-                  <li><a href="{% url 'articles' %}" hx-boost="false">Articles</a></li>
-                  <li><a href="{% url 'category_list' %}" hx-boost="false">Catégories</a></li>
-            </ul>
+            </div>
         </nav>
     </header>
-    <main class="container">
-    {% block content %}{% endblock %}
-  </main>
-    <footer class="container">  
-        <nav>
-            <ul>
-                <li>Cabinet Digital</li>
-                <li>About us</li>
-                <li>Contact</li>
-            </ul>
-        </nav>  
+    <main class="flex-grow container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="bg-white border-t border-white">
+        <div class="container mx-auto px-4 py-6">
+            <nav>
+                <ul class="flex justify-center space-x-8 text-base text-gray-600">
+                    <li class="font-semibold">Cabinet Digital</li>
+                    <li><a href="#" class="hover:text-gray-900 font-semibold">About us</a></li>
+                    <li><a href="#" class="hover:text-gray-900 font-semibold">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
     </footer>
 </body>
+
 </html>

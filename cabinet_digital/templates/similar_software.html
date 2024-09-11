@@ -1,29 +1,9 @@
 {% if similar_softwares %}
-    <div class="software-grid">
-        {% for software in similar_softwares %}
-            {% include 'card.html' with software=software %}
-        {% endfor %}
-    </div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+{% for software in similar_softwares %}
+{% include 'card.html' with software=software %}
+{% endfor %}
+</div>
 {% else %}
-    <p>Aucun logiciel similaire trouvé.</p>
+<p class="text-gray-600 text-center py-8">Aucun logiciel similaire trouvé.</p>
 {% endif %}
-
-<style>
-    .software-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-    }
-
-    @media (max-width: 768px) {
-        .software-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media (max-width: 480px) {
-        .software-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>

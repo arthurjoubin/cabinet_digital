@@ -34,6 +34,7 @@ urlpatterns = [
     path('logiciel/<int:software_id>/similar/', views.similar_software, name='similar_software'),    
     path('articles/', ArticleListView.as_view(), name='articles'),
     path('articles/<slug:slug>/', ArticleDetailView.as_view(), name='article_detail'),
+    path('contact/', views.contact, name='contact'),
 ]
 
 

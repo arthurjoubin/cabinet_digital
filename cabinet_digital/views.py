@@ -20,7 +20,8 @@ class ArticleDetailView(DetailView):
 def home(request):
     return render(request, 'home.html')  # Create a home.html template
 
-
+def contact(request):
+    return render(request, 'contact.html')
 
 def software_detail(request, slug):
     software = get_object_or_404(Software, slug=slug)

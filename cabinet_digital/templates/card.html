@@ -1,28 +1,5 @@
 {% load custom_filters %}
 
 {% if software %}
-        <article>
-            <a href="{% url 'software_detail' software.slug %}" >
-                    <header>
-                        <fieldset role="group">
-                            {% if software.logo %}
-                                <img src="{{ software.logo.url }}" alt="{{ software.name }}" style="max-width: 100px; max-height: 100px;">
-                            {% endif %}
-                            <h3>{{ software.name }}</h3>
-                        </fieldset>
-                </header>
-                <p>
-                    {{ software.description|first_sentence }}
-                </p>
-                {% if software.category.all %}
-                    <footer>
-                        <div>
-                            {% for category in software.category.all %}
-                                <span style="display: inline-block; padding: 0.2em 0.5em; background-color: #e9ecef; color: #495057; border-radius: 0.25em; font-size: 0.875em; margin-right: 0.5em;">{{ category.name }}</span>
-                            {% endfor %}
-                        </div>
-                    </footer>
-                {% endif %}
-                </a>
-        </article>
-{% endif %}
+
+<article class="relative bg-white shadow-sm rounded-lg overflow-hidden transition-shadow duration-300 hover:shadow-md p-6"> <header class="mb-6 flex items-center justify-between"> <div class="flex items-center space-x-4"> {% if software.logo %} <img src="{{ software.logo.url }}" alt="{{ software.name }}" class="w-20 h-20 object-contain"> {% endif %} <h3 class="text-2xl font-semibold text-gray-900">{{ software.name }}</h3> </div> {% if software.category.all %} <div class="absolute top-2 right-2"> {% for category in software.category.all|slice:":1" %} <span class="inline-block px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full"> {{ category.name }} </span> {% endfor %} </div> {% endif %} </header> <p class="text-gray-600 mb-6">{{ software.description|first_sentence }}</p> <a href="{% url 'software_detail' software.slug %}" class="inline-block px-6 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors duration-300"> Accéder à la fiche </a> </article> {% endif %}

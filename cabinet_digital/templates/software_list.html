@@ -2,19 +2,49 @@
 
 {% block content %}
 
-<div class="container">
 
-   <h1>Liste des logiciels</h1>
+<div class="container mx-auto px-4 py-8">
 
-<select id="category-filter" hx-get="{% url 'software_list' %}" hx-trigger="change" hx-target="#software-list-content" hx-push-url="true" name="categorie">
+   <h1 class="text-3xl font-light mb-8 text-gray-800">Liste des logiciels</h1>
+
+<select id="category-filter" hx-get="{% url 'software_list' %}" hx-trigger="change" hx-target="#software-list-content" hx-push-url="true" name="categorie" class="block w-full md:w-64 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent">
     <option value="">Toutes les catégories</option>
     {% for category in categories %}
         <option value="{{ category.slug }}" {% if category.id == selected_category %}selected{% endif %}>{{ category.name }}</option>
     {% endfor %}
 </select>
 
-<div id="software-list-content">
-    {% include 'software_list_partial.html' %}
+    <div id="software-list-content" class="container mx-auto px-4 py-8"> <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> {% for software in softwares %} <div class="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200"> {% include 'card.html' with software=software %} </div> {% empty %} <p class="text-gray-600 text-center col-span-full">Aucun logiciel trouvé</p> {% endfor %} </div>
+    <nav aria-label="Pagination" class="mt-8">
+        <div class="flex justify-between items-center">
+            {% if page_obj.has_previous %}
+                <a href="#" role="button"
+                    class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    hx-get="{% url 'software_list' %}?page={{ page_obj.previous_page_number }}&category={{ request.GET.category }}"
+                    hx-target="#software-list-content" hx-swap="innerHTML" hx-push-url="true">
+                    Précédent
+                </a>
+            {% else %}
+                <div></div>
+            {% endif %}
+    
+            <span class="text-sm text-gray-700">
+                Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+            </span>
+    
+            {% if page_obj.has_next %}
+                <a href="#" role="button"
+                    class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    hx-get="{% url 'software_list' %}?page={{ page_obj.next_page_number }}&category={{ request.GET.category }}"
+                    hx-target="#software-list-content" hx-swap="innerHTML" hx-push-url="true">
+                    Suivant
+                </a>
+            {% else %}
+                <div></div>
+            {% endif %}
+        </div>
+    </nav>
+    </div>
 </div>
 </div>
 {% endblock %}

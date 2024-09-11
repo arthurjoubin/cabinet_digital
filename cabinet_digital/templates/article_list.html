@@ -1,17 +1,20 @@
 {% extends "base.html" %}
-{% load markdown_extras %}
 {% block content %}
-  <div class="container">
-    <h1>Liste des Articles</h1>
-    <div class="grid">
+
+{% load markdown_extras %}
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-3xl font-light text-gray-900 mb-8">Liste des Articles</h1>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
       {% for article in object_list %}
-        <a href="{% url 'article_detail' article.slug %}" class="card" style="text-decoration: none; color: inherit;">
-          <article>
+        <a href="{% url 'article_detail' article.slug %}" class="group">
+          <article class="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 rounded-lg overflow-hidden">
             {% if article.image %}
-              <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy">
+              <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy" class="w-full h-48 object-cover">
             {% endif %}
-            <h3>{{ article.title }}</h3>
-            <p><small>Publié le {{ article.pub_date|date:"F d, Y" }} - Par Cabinet Digital</small></p>
+            <div class="p-6">
+              <h3 class="text-xl font-medium text-gray-900 mb-2 group-hover:text-gray-700">{{ article.title }}</h3>
+              <p class="text-sm text-gray-500">Publié le {{ article.pub_date|date:"F d, Y" }} - Par Cabinet Digital</p>
+            </div>
           </article>
         </a>
       {% endfor %}

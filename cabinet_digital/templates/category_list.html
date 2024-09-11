@@ -1,21 +1,20 @@
 {% extends 'base.html' %}
+{% block content %}
 
 {% load custom_filters %}
-{% block content %}
-<div>
-    <h1>Catégories de logiciels</h1>
 
-    <div class="software-grid">
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-light text-gray-900 mb-8">Catégories de logiciels</h1>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for category in categories%}
         {% if category.name != "Non catégorisé" %}
-        <article>
-            <a href="{% url 'category_detail' category.slug %}">
-                <header>
-                    <fieldset role="group">
-                        <h3>{{ category.name }}</h3>
-                    </fieldset>
+        <article
+            class="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden transition-shadow duration-300 hover:shadow-md">
+            <a href="{% url 'category_detail' category.slug %}" class="block p-6">
+                <header class="mb-4">
+                    <h3 class="text-xl font-medium text-gray-800">{{ category.name }}</h3>
                 </header>
-                <p>
+                <p class="text-sm text-gray-600 line-clamp-3">
                     {{ category.description|first_sentence }}
                 </p>
             </a>
