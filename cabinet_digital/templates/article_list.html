@@ -1,23 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
-
 {% load markdown_extras %}
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h1 class="text-3xl font-light text-gray-900 mb-8">Liste des Articles</h1>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      {% for article in object_list %}
-        <a href="{% url 'article_detail' article.slug %}" class="group">
-          <article class="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 rounded-lg overflow-hidden">
-            {% if article.image %}
-              <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy" class="w-full h-48 object-cover">
-            {% endif %}
-            <div class="p-6">
-              <h3 class="text-xl font-medium text-gray-900 mb-2 group-hover:text-gray-700">{{ article.title }}</h3>
-              <p class="text-sm text-gray-500">Publié le {{ article.pub_date|date:"F d, Y" }} - Par Cabinet Digital</p>
+
+<div class="container mx-auto">
+  <h1 class="text-3xl font-light text-black mb-8 border-b thin-border border-gray-200 pb-4 text-center bg-gray-50 py-4 flex items-center justify-center">Liste des articles</h1>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for article in object_list|dictsortreversed:"pub_date" %}
+      <a href="{% url 'article_detail' article.slug %}">
+        <div class="bg-white thin-border border-gray-200 hover:border-gray-400 transition-colors duration-300 rounded-lg overflow-hidden flex flex-col h-full">
+          {% if article.image %}
+            <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy" class="w-full h-48 object-cover">
+          {% else %}
+            <div class="w-full h-48 bg-gray-100 flex items-center justify-center">
+              <span class="text-gray-400">No image</span>
             </div>
-          </article>
-        </a>
-      {% endfor %}
-    </div>
+          {% endif %}
+          <div class="p-6 flex-grow flex flex-col justify-between">
+            <div>
+              <h3 class="text-xl font-medium text-black mb-2 group-hover:underline">{{ article.title }}</h3>
+              <p class="text-sm text-gray-600 mb-4">{{ article.excerpt|truncatewords:20 }}</p>
+            </div>
+            <p class="text-xs text-gray-500 mt-auto">{{ article.pub_date|date:"j F Y"|lower }} • Cabinet Digital</p>
+          </div>
+        </div>
+      </a>
+    {% empty %}
+      <p class="col-span-full text-center text-gray-500">Aucun article disponible pour le moment.</p>
+    {% endfor %}
   </div>
+</div>
+
 {% endblock %}

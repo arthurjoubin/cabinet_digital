@@ -29,23 +29,27 @@ def software_detail(request, slug):
     return render(request, 'software_detail.html', {'software': software, 'category': software.category})
 
 
-def category_list(request):
-    categories = SoftwareCategory.objects.all()
-    return render(request, 'category_list.html', {'categories': categories})
+class CategoryListView(ListView):
+    model = SoftwareCategory
+    template_name = 'category_list.html'
+    context_object_name = 'categories'
 
-def category_detail(request, slug):
-    category = get_object_or_404(SoftwareCategory, slug=slug)
-    softwares = Software.objects.filter(category=category)
-    articles = Article.objects.filter(category=category)
-    print(softwares)
-    print(articles)
-    return render(request, 'category_detail.html', {'category': category, 'softwares': softwares, 'articles': articles})
+class CategoryDetailView(DetailView):
+    model = SoftwareCategory
+    template_name = 'category_detail.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category = self.object
+        context['category'] = category
+        context['softwares'] = Software.objects.filter(category=category)
+        context['articles'] = Article.objects.filter(category=category)
+        return context
 
 
 def similar_software(request, software_id):
     software = get_object_or_404(Software, id=software_id)
     categories = software.category.all()
-    print(categories)
     similar_softwares = Software.objects.filter(category__in=categories).exclude(id=software.id).distinct()[:3]
     print(similar_softwares)
     context = {
@@ -67,13 +71,16 @@ class SoftwareListView(ListView):
         return context
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().order_by('-is_top_pick', 'name')
         slug = self.request.GET.get('categorie')
-        print(slug)
+        search = self.request.GET.get('search')
         if slug:
             queryset = queryset.filter(category__slug=slug)
+        if search:
+            queryset = queryset.filter(Q(name__icontains=search))
         print(f"Nombre de logiciels trouvés : {queryset.count()}")
         return queryset
+    
 
     def get(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()

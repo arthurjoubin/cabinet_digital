@@ -1,0 +1,9 @@
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for software in softwares %}
+        <div class="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200 relative">
+            {% include 'card.html' with software=software %}
+        </div>
+    {% empty %}
+        <p class="text-gray-600 text-center col-span-full">Aucun logiciel trouvé</p>
+    {% endfor %}
+</div>

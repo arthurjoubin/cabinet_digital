@@ -1,10 +1,13 @@
-<!DOCTYPE html>
-<html lang="fr" class="bg-gray-100">
+{% load static %}
 
+<!DOCTYPE html>
+<html lang="fr" class="bg-white">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Cabinet Digital{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@2.0.2"
         integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ"
@@ -16,42 +19,90 @@
         body {
             font-family: 'Manrope', sans-serif;
         }
+        .thin-border {
+            border-width: 1px;
+        }
     </style>
 </head>
 
 <body hx-boost="true" class="flex flex-col min-h-screen text-black">
-    <header class="bg-white shadow-sm">
-        <nav class="container mx-auto px-4 py-6">
-            <div class="flex justify-between items-center">
-                <a href="{% url 'home' %}" class="text-2xl font-bold text-black">Cabinet Digital</a>
-                <ul class="flex">
-                    <li><a href="{% url 'software_list' %}" hx-boost="false"
-                            class="text-lg font-semibold text-black hover:text-gray-900 mx-4">Logiciels</a></li>
-                    <li><a href="{% url 'articles' %}" hx-boost="false"
-                            class="text-lg font-semibold text-black hover:text-gray-900 mx-4">Articles</a></li>
-                    <li><a href="{% url 'category_list' %}" hx-boost="false"
-                            class="text-lg font-semibold text-black hover:text-gray-900 mx-4">Catégories</a></li>
-                    <li class="ml-auto"><a href="{% url 'contact' %}"
-                            class="bg-black text-white px-4 py-2 hover:bg-gray-900 transition rounded-md duration-300 ease-in-out">Contact</a>
-                    </li>
-                </ul>
+    <header class="bg-white thin-border border-b border-gray-200">
+        <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+            <div class="flex lg:flex-1 items-center">
+                <a href="{% url 'home' %}" class="flex items-center">
+                    <img src="{% static 'cabinet_logos/logo_cabinetdigital.png' %}" alt="Cabinet Digital" class="h-8 w-auto mr-2">
+                    <span class="text-2xl font-bold text-black">Cabinet Digital</span>
+                </a>
+            </div>
+            <div class="flex lg:hidden">
+                <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700" onclick="toggleMobileMenu()">
+                    <span class="sr-only">Open main menu</span>
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                </button>
+            </div>
+            <div class="hidden lg:flex lg:gap-x-12">
+                <a href="{% url 'software_list' %}" hx-boost="false" class="text-lg font-medium leading-6 text-gray-900 hover:text-black">Logiciels</a>
+                <a href="{% url 'articles' %}" hx-boost="false" class="text-lg font-medium leading-6 text-gray-900 hover:text-black">Articles</a>
+                <a href="{% url 'category_list' %}" hx-boost="false" class="text-lg font-medium leading-6 text-gray-900 hover:text-black">Catégories</a>
+            </div>
+            <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+                <a href="{% url 'contact' %}" class="rounded-md bg-black px-3.5 py-2 text-lg font-medium text-white hover:bg-gray-900">Contact</a>
             </div>
         </nav>
+        <!-- Mobile menu, show/hide based on menu open state. -->
+        <div class="lg:hidden hidden" id="mobile-menu" role="dialog" aria-modal="true">
+            <!-- Background backdrop, show/hide based on slide-over state. -->
+            <div class="fixed inset-0 z-10"></div>
+            <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+                <div class="flex items-center justify-between">
+                    <a href="{% url 'home' %}" class="flex items-center">
+                        <img src="{% static 'cabinet_logos/logo_cabinetdigital.png' %}" alt="Cabinet Digital" class="h-8 w-auto mr-2">
+                        <span class="text-2xl font-bold text-black">Cabinet Digital</span>
+                    </a>
+                    <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700" onclick="toggleMobileMenu()">
+                        <span class="sr-only">Close menu</span>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="mt-6 flow-root">
+                    <div class="-my-6 divide-y divide-gray-500/10">
+                        <div class="space-y-2 py-6">
+                            <a href="{% url 'software_list' %}" hx-boost="false" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Logiciels</a>
+                            <a href="{% url 'articles' %}" hx-boost="false" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Articles</a>
+                            <a href="{% url 'category_list' %}" hx-boost="false" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Catégories</a>
+                        </div>
+                        <div class="py-6">
+                            <a href="{% url 'contact' %}" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Contact</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
-    <main class="flex-grow container mx-auto px-4 py-8">
+    <main class="flex-grow container mx-auto px-4 py-6">
         {% block content %}{% endblock %}
     </main>
-    <footer class="bg-white border-t border-white">
+    <footer class="bg-white thin-border border-t border-gray-200">
         <div class="container mx-auto px-4 py-6">
             <nav>
-                <ul class="flex justify-center space-x-8 text-base text-gray-600">
-                    <li class="font-semibold">Cabinet Digital</li>
-                    <li><a href="#" class="hover:text-gray-900 font-semibold">About us</a></li>
-                    <li><a href="#" class="hover:text-gray-900 font-semibold">Contact</a></li>
+                <ul class="flex justify-center space-x-8 text-sm text-gray-600">
+                    <li class="font-medium">Cabinet Digital</li>
+                    <li><a href="#" class="hover:text-black">À propos</a></li>
+                    <li><a href="#" class="hover:text-black">Contact</a></li>
                 </ul>
             </nav>
         </div>
     </footer>
+    <script>
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+    </script>
 </body>
 
 </html>

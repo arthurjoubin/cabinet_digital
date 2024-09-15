@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from cabinet_digital import views
-from cabinet_digital.views import ArticleListView, ArticleDetailView
+from cabinet_digital.views import ArticleListView, ArticleDetailView, CategoryListView, CategoryDetailView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -28,13 +28,14 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('logiciels/',  views.SoftwareListView.as_view(), name='software_list'),
     path('', views.home, name='home'),
-    path('logiciel/<str:slug>/', views.software_detail, name='software_detail'),
-    path('categories/', views.category_list, name='category_list'),
-    path('category/<str:slug>/', views.category_detail, name='category_detail'),
-    path('logiciel/<int:software_id>/similar/', views.similar_software, name='similar_software'),    
+    path('logiciels/<str:slug>/', views.software_detail, name='software_detail'),
+    path('categories/', CategoryListView.as_view(), name='category_list'),
+    path('categories/<str:slug>/', CategoryDetailView.as_view(), name='category_detail'),
+    path('logiciels/<int:software_id>/similar/', views.similar_software, name='similar_software'),    
     path('articles/', ArticleListView.as_view(), name='articles'),
     path('articles/<slug:slug>/', ArticleDetailView.as_view(), name='article_detail'),
     path('contact/', views.contact, name='contact'),
+
 ]
 
 

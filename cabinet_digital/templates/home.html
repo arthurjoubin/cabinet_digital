@@ -3,14 +3,63 @@
 {% block content %}
 <div class="max-w-4xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
   <div class="text-center">
-    <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+    <h1 class="text-4xl font-bold text-black sm:text-5xl md:text-6xl">
       Découvrir +200 logiciels pour experts comptables et PME
     </h1>
-    <p class="mt-6 text-xl text-gray-500 leading-8">
+    <p class="mt-6 text-lg text-gray-600 leading-8">
       <span class="block">• Sélection des meilleurs logiciels pour gérer votre entreprise.</span>
-      <span class="block">• Des fiches pour chaque solutions sélectionnées.</span>
-      <span class="block">• Des guides et actualités sans superflus.</span>
+      <span class="block">• Des fiches pour chaque solution sélectionnée.</span>
+      <span class="block">• Des guides et actualités sans superflu.</span>
     </p>
   </div>
 </div>
+
+<section class="bg-gray-50 py-12">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl font-semibold text-center mb-8">Nos catégories populaires</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 class="text-xl font-medium mb-2">Comptabilité</h3>
+        <p class="text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 class="text-xl font-medium mb-2">Gestion de projet</h3>
+        <p class="text-gray-600">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 class="text-xl font-medium mb-2">CRM</h3>
+        <p class="text-gray-600">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-12">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl font-semibold text-center mb-8">Derniers articles</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <article class="border-b border-gray-200 pb-6">
+        <h3 class="text-2xl font-medium mb-2">Les tendances de la comptabilité en 2023</h3>
+        <p class="text-gray-600 mb-4">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <a href="#" class="text-black font-medium hover:underline">Lire la suite →</a>
+      </article>
+      <article class="border-b border-gray-200 pb-6">
+        <h3 class="text-2xl font-medium mb-2">Comment choisir le bon logiciel de facturation</h3>
+        <p class="text-gray-600 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <a href="#" class="text-black font-medium hover:underline">Lire la suite →</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="bg-black text-white py-16">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="text-3xl font-bold mb-4">Restez informé</h2>
+    <p class="text-xl mb-8">Inscrivez-vous à notre newsletter pour recevoir nos derniers articles et conseils.</p>
+    <form class="flex flex-col sm:flex-row justify-center">
+      <input type="email" placeholder="Votre adresse email" class="px-4 py-2 mb-2 sm:mb-0 sm:mr-2 text-black rounded-md w-full sm:w-64">
+      <button type="submit" class="bg-white text-black px-6 py-2 rounded-md font-medium hover:bg-gray-100">S'inscrire</button>
+    </form>
+  </div>
+</section>
 {% endblock %}

@@ -2,70 +2,70 @@
 {% load custom_filters %}
 
 {% block content %}
+<div class="container mx-auto px-4">
+    <div class="mb-12 text-center">
+        <div class="text-2xl font-light text-gray-600 mb-2">Catégorie</div>
+        <h1 class="text-4xl font-bold text-black mb-4">{{ category.name }}</h1>
+        <p class="text-gray-600">{{ category.description }}</p>
+    </div>
 
-<div class="container mx-auto px-4 py-12 max-w-5xl"> <div class="mb-12 text-center"> <h1 class="text-4xl font-light text-gray-900 mb-3">{{ category.name }}</h1> <p class="text-gray-600 max-w-2xl mx-auto">{{ category.description }}</p> </div>
-<div class="mb-16">
-    <h2 class="text-2xl font-light text-gray-800 mb-6 border-b pb-2">Logiciels</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {% for software in softwares %}
-        <article class="bg-white border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg">
-            <a href="{% url 'software_detail' software.slug %}" class="block p-6">
-                <header class="mb-4">
-                    <div class="flex items-center">
+    <div class="mb-16">
+        <h2 class="text-3xl font-light text-black mb-8 border-b thin-border border-gray-200 pb-4 text-center bg-gray-50 py-4 flex items-center justify-center">Logiciels</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {% for software in softwares %}
+            <article class="bg-white thin-border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:border-gray-400">
+                <a href="{% url 'software_detail' software.slug %}" class="block p-6">
+                    <header class="mb-4 flex items-center">
                         {% if software.logo %}
                             <img src="{{ software.logo.url }}" alt="{{ software.name }}" class="w-12 h-12 object-contain mr-4">
                         {% endif %}
-                        <h3 class="text-xl font-medium text-gray-900">{{ software.name }}</h3>
-                    </div>
-                </header>
-                <p class="text-gray-600 text-sm mb-4">
-                    {{ software.description|first_sentence }}
-                </p>
-                {% if software.category.all %}
-                    <footer>
-                        <div class="flex flex-wrap">
-                            {% for category in software.category.all %}
-                                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded mr-2 mb-2">{{ category.name }}</span>
-                            {% endfor %}
-                        </div>
-                    </footer>
-                {% endif %}
-            </a>
-        </article>
-        {% endfor %}
+                        <h3 class="text-xl font-medium text-black">{{ software.name }}</h3>
+                    </header>
+                    <p class="text-gray-600 text-sm mb-4">
+                        {{ software.description|first_sentence }}
+                    </p>
+                    {% if software.category.all %}
+                        <footer>
+                            <div class="flex flex-wrap">
+                                {% for category in software.category.all %}
+                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded mr-2 mb-2">{{ category.name }}</span>
+                                {% endfor %}
+                            </div>
+                        </footer>
+                    {% endif %}
+                </a>
+            </article>
+            {% endfor %}
+        </div>
     </div>
-</div>
-
-<div class="mt-16 pt-16 border-t border-gray-200">
-    <h2 class="text-2xl font-light text-gray-800 mb-6 border-b pb-2">Articles</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {% for article in articles %}
-        <article class="bg-white border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg">
-            <a href="{% url 'article_detail' article.slug %}" class="block p-6">
-                <header class="mb-4">
-                    <div class="flex items-center">
+    <div class="mb-16">
+        <h2 class="text-3xl font-light text-black mb-8 border-b thin-border border-gray-200 pb-4 text-center bg-gray-50 py-4 flex items-center justify-center">Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {% for article in articles %}
+            <article class="bg-white thin-border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:border-gray-400">
+                <a href="{% url 'article_detail' article.slug %}" class="block p-6">
+                    <header class="mb-4 flex items-center">
                         {% if article.image %}
                             <img src="{{ article.image.url }}" alt="{{ article.title }}" class="w-12 h-12 object-cover mr-4 rounded">
                         {% endif %}
-                        <h3 class="text-xl font-medium text-gray-900">{{ article.title }}</h3>
-                    </div>
-                </header>
-                <p class="text-gray-600 text-sm mb-4">
-                    {{ article.content|first_sentence }}
-                </p>
-                {% if article.category.all %}
-                    <footer>
-                        <div class="flex flex-wrap">
-                            {% for category in article.category.all %}
-                                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded mr-2 mb-2">{{ category.name }}</span>
-                            {% endfor %}
-                        </div>
-                    </footer>
-                {% endif %}
-            </a>
-        </article>
-        {% endfor %}
+                        <h3 class="text-xl font-medium text-black">{{ article.title }}</h3>
+                    </header>
+                    <p class="text-gray-600 text-sm mb-4">
+                        {{ article.content|first_sentence }}
+                    </p>
+                    {% if article.category.all %}
+                        <footer>
+                            <div class="flex flex-wrap">
+                                {% for category in article.category.all %}
+                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded mr-2 mb-2">{{ category.name }}</span>
+                                {% endfor %}
+                            </div>
+                        </footer>
+                    {% endif %}
+                </a>
+            </article>
+            {% endfor %}
+        </div>
     </div>
-</div>
 </div>
 {% endblock %}

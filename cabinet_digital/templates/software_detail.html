@@ -1,65 +1,90 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block content %}
+<div class="container mx-auto px-4">
+  <div class="flex justify-between items-center mb-6">
+    <nav>
+      <a href="{% url 'software_list' %}" class="text-sm font-medium text-gray-600 hover:text-black flex items-center" hx-boost="false">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        Retour à la liste des logiciels
+      </a>
+    </nav>
+    <a href="{{ software.site }}" target="_blank" rel="noopener noreferrer" class="inline-block px-4 py-2 bg-black text-white text-sm font-medium rounded hover:bg-gray-900 transition-colors duration-300 flex items-center">
+      Visiter leur site
+      <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+      </svg>
+    </a>
+  </div>
 
-<div class="container mx-auto px-4 py-8"> <nav class="mb-8"> <a href="{% url 'software_list' %}" class="text-sm font-medium text-gray-600 hover:text-gray-900 flex items-center" hx-boost="false"> <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Retour à la liste </a> </nav>
-<article class="bg-white shadow-sm rounded-lg overflow-hidden mb-8">
-    <header class="px-6 py-4 border-b border-gray-200">
-        <div class="flex items-center">
-            {% if software.logo %}
-            <img src="{{ software.logo.url }}" alt="{{ software.name }}" class="w-16 h-16 object-contain mr-4">
+  <div class="bg-white thin-border border-gray-200 rounded-lg overflow-hidden mb-12">
+    <div class="px-6 pb-4 pt-2 border-b thin-border border-gray-200 text-center">
+      {% if software.logo %}
+      <img src="{{ software.logo.url }}" alt="{{ software.name }}" class="w-24 h-24 object-contain mx-auto mb-2">
+      {% endif %}
+      <h1 class="text-4xl font-semibold text-black mb-2">{{ software.name }}</h1>
+      <p class="text-sm text-gray-600 mb-4">Par {{ software.editeur }}</p>
+      {% if software.category.all %}
+          <div class="flex flex-wrap justify-center mb-4">
+              {% for category in software.category.all %}
+                  <a href="{% url 'category_detail' category.slug %}">
+                      <span class="inline-block px-2 py-1 text-xs font-bold bg-white text-black border border-gray-200 rounded-full hover:bg-black hover:text-white transition-colors duration-300 mb-2 mr-2">
+                          {{ category.name }}
+                      </span>
+                  </a>
+              {% endfor %}
+          </div>
+      {% endif %}
+      <p class="text-gray-700 leading-relaxed">{{ software.description|first_sentence }}</p>
+    </div>
+    <div class="px-6 py-8">
+      <p class="text-gray-700 leading-relaxed whitespace-pre-line">{{ software.description|after_first_sentence }}</p>
+    </div>
+    <div class="px-6 py-8 bg-gray-50">
+      <dl class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div>
+          <dt class="text-sm font-medium text-gray-900 mb-2">Ressources liées</dt>
+          <dd class="text-sm text-gray-600">{{ software.image_principale|default:"Non spécifié" }}</dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-900 mb-2">Tags</dt>
+          <dd class="text-sm text-gray-600">{{ software.tags|default:"Non spécifié" }}</dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-900 mb-2">Site</dt>
+          <dd><a href="{{ software.site }}" class="text-sm text-blue-600 hover:underline">{{ software.site|default:"Non spécifié" }}</a></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-900 mb-2">Vidéo</dt>
+          <dd>
+            {% if software.video %}
+              <div class="aspect-w-16 aspect-h-9">
+                <iframe src="https://www.youtube.com/embed/{{ software.video|slice:'32:' }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
+              </div>
+            {% else %}
+              <p class="text-sm text-gray-600">Non spécifié</p>
             {% endif %}
-            <div>
-                <p class="text-sm text-gray-500">{{ category.name }}</p>
-                <h1 class="text-2xl font-bold text-gray-900">{{ software.name }}</h1>
-                <p class="text-sm text-gray-600">{{ software.editeur }}</p>
-            </div>
+          </dd>
         </div>
-    </header>
-    <div class="px-6 py-4">
-        <p class="text-gray-700">{{ software.description }}</p>
+      </dl>
     </div>
-    <footer class="px-6 py-4 bg-gray-50">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-                <h3 class="text-sm font-semibold text-gray-900 mb-2">Ressources liées</h3>
-                <p class="text-sm text-gray-600">{{ software.image_principale|default:"Non spécifié" }}</p>
-            </div>
-            <div>
-                <h3 class="text-sm font-semibold text-gray-900 mb-2">Tags</h3>
-                <p class="text-sm text-gray-600">{{ software.tags|default:"Non spécifié" }}</p>
-            </div>
-            <div>
-                <h3 class="text-sm font-semibold text-gray-900 mb-2">Site</h3>
-                <a href="{{ software.site }}" class="text-sm text-blue-600 hover:underline">{{ software.site|default:"Non spécifié" }}</a>
-            </div>
-            <div>
-                <h3 class="text-sm font-semibold text-gray-900 mb-2">Vidéo</h3>
-                {% if software.video %}
-                    <div class="aspect-w-16 aspect-h-9">
-                        <iframe src="https://www.youtube.com/embed/{{ software.video|slice:'32:' }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
-                    </div>
-                {% else %}
-                    <p class="text-sm text-gray-600">Non spécifié</p>
-                {% endif %}
-            </div>
-        </div>
-    </footer>
-</article>
+  </div>
 
-<article class="bg-white shadow-sm rounded-lg overflow-hidden mb-8 px-6 py-4">
-    <h2 class="text-xl font-semibold text-gray-900 mb-2">À propos de Cabinet Digital</h2>
-    <p class="text-gray-700">Votre ressource incontournable pour découvrir les meilleurs logiciels destinés aux experts-comptables et aux professionnels de la finance. Notre plateforme regroupe une sélection soignée d'outils innovants conçus pour optimiser votre productivité et simplifier vos tâches quotidiennes dans le domaine de la comptabilité et de la finance.</p>
-</article>
-
-<article class="bg-white shadow-sm rounded-lg overflow-hidden">
-    <header class="px-6 py-4 border-b border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-900">Logiciels similaires</h2>
-    </header>
+  <div class="bg-white thin-border border-gray-200 rounded-lg overflow-hidden mb-12">
+    <div class="px-6 py-8 border-b thin-border border-gray-200">
+      <h2 class="text-2xl font-semibold text-black">Logiciels similaires</h2>
+    </div>
     <div id="similar-software-container" 
-        hx-get="{% url 'similar_software' software_id=software.id %}" 
-        hx-trigger="load"
-        class="px-6 py-4">
+         hx-get="{% url 'similar_software' software_id=software.id %}" 
+         hx-trigger="load"
+         class="px-6 py-8">
     </div>
-</article>
-</div> {% endblock %}
+  </div>
+
+  <div class="bg-white thin-border border-gray-200 rounded-lg overflow-hidden px-6 py-8">
+    <h2 class="text-2xl font-semibold text-black mb-4">À propos de Cabinet Digital</h2>
+    <p class="text-gray-700 leading-relaxed">Votre ressource incontournable pour découvrir les meilleurs logiciels destinés aux experts-comptables et aux professionnels de la finance. Notre plateforme regroupe une sélection soignée d'outils innovants conçus pour optimiser votre productivité et simplifier vos tâches quotidiennes dans le domaine de la comptabilité et de la finance.</p>
+  </div>
+</div>
+{% endblock %}
