@@ -1,20 +1,20 @@
 {% load static %}
+{% load compress %}
+
 
 <!DOCTYPE html>
 <html lang="fr" class="bg-white">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Cabinet Digital{% endblock %}</title>
-    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/htmx.org@2.0.2"
-        integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ"
-        crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/htmx.org@2.0.2/dist/ext/history.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}" alt="Cabinet Digital favicon">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}" sizes="32x32">
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    {% endcompress %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <style>
         body {
             font-family: 'Manrope', sans-serif;
@@ -23,14 +23,15 @@
             border-width: 1px;
         }
     </style>
+    {% block meta_description %}{% endblock %}
 </head>
 
-<body hx-boost="true" class="flex flex-col min-h-screen text-black">
+<body class="flex flex-col min-h-screen text-black">
     <header class="bg-white thin-border border-b border-gray-200">
         <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
             <div class="flex lg:flex-1 items-center">
                 <a href="{% url 'home' %}" class="flex items-center">
-                    <img src="{% static 'cabinet_logos/logo_cabinetdigital.png' %}" alt="Cabinet Digital" class="h-8 w-auto mr-2">
+                    <img src="{% static 'cabinet_logos/logo_cabinetdigital.png' %}" alt="Cabinet Digital logo" class="h-8 w-auto mr-2">
                     <span class="text-2xl font-bold text-black">Cabinet Digital</span>
                 </a>
             </div>
@@ -43,12 +44,13 @@
                 </button>
             </div>
             <div class="hidden lg:flex lg:gap-x-12">
-                <a href="{% url 'software_list' %}" hx-boost="false" class="text-lg font-medium leading-6 text-gray-900 hover:text-black">Logiciels</a>
-                <a href="{% url 'articles' %}" hx-boost="false" class="text-lg font-medium leading-6 text-gray-900 hover:text-black">Articles</a>
-                <a href="{% url 'category_list' %}" hx-boost="false" class="text-lg font-medium leading-6 text-gray-900 hover:text-black">Catégories</a>
+                <a href="{% url 'software_list' %}" class="text-lg font-medium leading-6 text-gray-900 hover:text-black">Logiciels</a>
+                <a href="{% url 'articles' %}" class="text-lg font-medium leading-6 text-gray-900 hover:text-black">Articles</a>
+                <a href="{% url 'category_list' %}" class="text-lg font-medium leading-6 text-gray-900 hover:text-black">Catégories</a>
+                <a href="{% url 'news_list' %}" class="text-lg font-medium leading-6 text-gray-900 hover:text-black">Actualités</a>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                <a href="{% url 'contact' %}" class="rounded-md bg-black px-3.5 py-2 text-lg font-medium text-white hover:bg-gray-900">Contact</a>
+                <a href="{% url 'contact' %}" class="bg-white text-black px-4 py-2 text-lg font-medium border border-black hover:bg-black hover:text-white transition-colors duration-300">Contact</a>
             </div>
         </nav>
         <!-- Mobile menu, show/hide based on menu open state. -->
@@ -71,9 +73,10 @@
                 <div class="mt-6 flow-root">
                     <div class="-my-6 divide-y divide-gray-500/10">
                         <div class="space-y-2 py-6">
-                            <a href="{% url 'software_list' %}" hx-boost="false" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Logiciels</a>
-                            <a href="{% url 'articles' %}" hx-boost="false" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Articles</a>
-                            <a href="{% url 'category_list' %}" hx-boost="false" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Catégories</a>
+                            <a href="{% url 'software_list' %}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Logiciels</a>
+                            <a href="{% url 'articles' %}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Articles</a>
+                            <a href="{% url 'category_list' %}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Catégories</a>
+                            <a href="{% url 'news_list' %}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Actualités</a>
                         </div>
                         <div class="py-6">
                             <a href="{% url 'contact' %}" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Contact</a>

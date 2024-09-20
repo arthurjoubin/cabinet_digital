@@ -1,8 +1,5 @@
 from django.contrib import admin
-from .models import Software, SoftwareCategory, Article
-from django.urls import path
-from django.core.management import call_command
-from django.http import HttpResponseRedirect
+from .models import Software, SoftwareCategory, Article, News
 
 
 
@@ -38,12 +35,12 @@ class ArticleAdmin(admin.ModelAdmin):
     list_filter = ('category',)
     list_editable = ('image',)
 
-
-# Remove the CSVImportConf configuration as it's causing an error
-# If CSV import functionality is needed, consider using a custom admin action
-# or a management command instead
-
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ('title', 'excerpt')
+    search_fields = ('title', 'content')
 
 admin.site.register(Software, SoftwareAdmin)
 admin.site.register(SoftwareCategory, CategoryAdmin)
 admin.site.register(Article, ArticleAdmin)
+admin.site.register(News, NewsAdmin)
+

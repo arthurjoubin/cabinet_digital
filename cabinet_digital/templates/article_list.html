@@ -2,6 +2,11 @@
 {% block content %}
 {% load markdown_extras %}
 
+{% block meta_description %}
+<title>Cabinet Digital - Guides et comparatifs de logiciels pour experts-comptables</title>
+<meta name="description" content="Accéder à tous nos articles dédiés aux logiciels pour experts comptables et l'évolution technologique de la profession.">
+{% endblock %}
+
 <div class="container mx-auto">
   <h1 class="text-3xl font-light text-black mb-8 border-b thin-border border-gray-200 pb-4 text-center bg-gray-50 py-4 flex items-center justify-center">Liste des articles</h1>
   
@@ -9,13 +14,6 @@
     {% for article in object_list|dictsortreversed:"pub_date" %}
       <a href="{% url 'article_detail' article.slug %}">
         <div class="bg-white thin-border border-gray-200 hover:border-gray-400 transition-colors duration-300 rounded-lg overflow-hidden flex flex-col h-full">
-          {% if article.image %}
-            <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy" class="w-full h-48 object-cover">
-          {% else %}
-            <div class="w-full h-48 bg-gray-100 flex items-center justify-center">
-              <span class="text-gray-400">No image</span>
-            </div>
-          {% endif %}
           <div class="p-6 flex-grow flex flex-col justify-between">
             <div>
               <h3 class="text-xl font-medium text-black mb-2 group-hover:underline">{{ article.title }}</h3>

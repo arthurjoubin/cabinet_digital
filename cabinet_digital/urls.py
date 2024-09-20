@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from cabinet_digital import views
-from cabinet_digital.views import ArticleListView, ArticleDetailView, CategoryListView, CategoryDetailView
+from cabinet_digital.views import ArticleListView, ArticleDetailView, CategoryListView, CategoryDetailView, NewsListView, NewsDetailView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -31,11 +31,13 @@ urlpatterns = [
     path('logiciels/<str:slug>/', views.software_detail, name='software_detail'),
     path('categories/', CategoryListView.as_view(), name='category_list'),
     path('categories/<str:slug>/', CategoryDetailView.as_view(), name='category_detail'),
-    path('logiciels/<int:software_id>/similar/', views.similar_software, name='similar_software'),    
     path('articles/', ArticleListView.as_view(), name='articles'),
     path('articles/<slug:slug>/', ArticleDetailView.as_view(), name='article_detail'),
     path('contact/', views.contact, name='contact'),
-
+    path('news/', NewsListView.as_view(), name='news_list'),
+    path('news/<slug:slug>/', NewsDetailView.as_view(), name='news_detail'),
+    path('actualites/', NewsListView.as_view(), name='news_list'),  # Changé de 'news' à 'news_list'
+    path('actualites/<slug:slug>/', NewsDetailView.as_view(), name='news_detail'),
 ]
 
 

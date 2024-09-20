@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta_description %}
+<title>{{ news.title }} - Cabinet Digital</title>
+<meta name="description" content="{{ news.excerpt }}">
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <a href="{% url 'news_list' %}" class="inline-flex items-center text-sm text-gray-600 hover:text-black transition-colors duration-300 mb-6">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        Retour aux actualités
+    </a>
+    
+    <article class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div class="flex p-6 border-b border-gray-200">
+            {% if news.image %}
+            <figure class="mr-4">
+                <img src="{{ news.image.url }}" alt="{{ news.title }}" class="w-44 h-44 object-cover rounded-md">
+            </figure>
+            {% endif %}
+            <header class="flex-grow mt-4">
+                <h1 class="text-3xl font-light text-black mb-4">{{ news.title }}</h1>
+                <div class="flex items-center text-sm text-gray-500 mb-4">
+                    <time datetime="{{ news.date|date:'Y-m-d' }}">{{ news.date|date:"d F Y" }}</time>
+                    <span class="mx-2">•</span>
+                    {% for category in news.categories.all %}
+                        <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs mr-2">
+                            {{ category.name }}
+                        </span>
+                    {% endfor %}
+                </div>
+                <p class="text-gray-600">{{ news.excerpt }}</p>
+            </header>
+        </div>
+
+        <div class="prose max-w-none p-6">
+            {{ news.content|safe }}
+        </div>
+    </article>
+</div>
+{% endblock %}

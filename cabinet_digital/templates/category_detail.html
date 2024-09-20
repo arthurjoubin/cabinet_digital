@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
 
+{% block meta_description %}
+<title>Les {{ softwares|length }} meilleurs solutions de {{ category.name }} pour experts-comptables - Cabinet Digital</title>
+<meta name="description" content="Découvrez les {{ softwares|length }} meilleurs solutions de la catégorie {{ category.name }} pour experts-comptables. Trouvez la solution qui répond à vos besoins.">
+{% endblock %}  
+
 {% block content %}
 <div class="container mx-auto px-4">
     <div class="mb-12 text-center">
