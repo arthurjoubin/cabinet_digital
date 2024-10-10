@@ -10,7 +10,6 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-node_modules/
 dist/
 downloads/
 eggs/
@@ -36,6 +35,9 @@ MANIFEST
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+
+# Node.js
+node_modules/
 
 # Unit test / coverage reports
 htmlcov/
