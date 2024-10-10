@@ -1,74 +1,40 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
+{% load markdown_extras %}
 
 {% block meta_description %}
-<title>Les {{ softwares|length }} meilleurs solutions de {{ category.name }} pour experts-comptables - Cabinet Digital</title>
-<meta name="description" content="Découvrez les {{ softwares|length }} meilleurs solutions de la catégorie {{ category.name }} pour experts-comptables. Trouvez la solution qui répond à vos besoins.">
-{% endblock %}  
+<title>Les {{ softwares|length }} meilleures solutions de {{ category.name }} pour experts-comptables - Cabinet Digital</title>
+<meta name="description" content="Découvrez les {{ softwares|length }} meilleures solutions de la catégorie {{ category.name }} pour experts-comptables. Trouvez la solution qui répond à vos besoins.">
+{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4">
-    <div class="mb-12 text-center">
-        <div class="text-2xl font-light text-gray-600 mb-2">Catégorie</div>
-        <h1 class="text-4xl font-bold text-black mb-4">{{ category.name }}</h1>
-        <p class="text-gray-600">{{ category.description }}</p>
+<div class="bg-white p-8 rounded-lg shadow-sm border-2 border-gray-200">
+    <h1 class="text-3xl font-bold text-center mb-8">{{ category.name }}</h1>
+    
+    {% if category.description %}
+    <div class="mb-12 prose max-w-none bg-sky-50 p-6 rounded-lg border border-sky-200">
+        {{ category.description|markdown|safe }}
     </div>
-
-    <div class="mb-16">
-        <h2 class="text-3xl font-light text-black mb-8 border-b thin-border border-gray-200 pb-4 text-center bg-gray-50 py-4 flex items-center justify-center">Logiciels</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    {% endif %}
+    
+    <div class="mb-12 bg-white rounded-lg shadow-sm border border-gray-200">
+        <h2 class="text-2xl font-semibold p-4 border-b border-gray-200 bg-gray-50">Logiciels liés</h2>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for software in softwares %}
-            <article class="bg-white thin-border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:border-gray-400">
-                <a href="{% url 'software_detail' software.slug %}" class="block p-6">
-                    <header class="mb-4 flex items-center">
-                        {% if software.logo %}
-                            <img src="{{ software.logo.url }}" alt="{{ software.name }}" class="w-12 h-12 object-contain mr-4">
-                        {% endif %}
-                        <h3 class="text-xl font-medium text-black">{{ software.name }}</h3>
-                    </header>
-                    <p class="text-gray-600 text-sm mb-4">
-                        {{ software.description|first_sentence }}
-                    </p>
-                    {% if software.category.all %}
-                        <footer>
-                            <div class="flex flex-wrap">
-                                {% for category in software.category.all %}
-                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded mr-2 mb-2">{{ category.name }}</span>
-                                {% endfor %}
-                            </div>
-                        </footer>
-                    {% endif %}
-                </a>
-            </article>
+                {% include 'card_software.html' with software=software %}
+            {% empty %}
+            <p class="col-span-full text-center text-gray-600 py-8">Aucun logiciel disponible dans cette catégorie pour le moment.</p>
             {% endfor %}
         </div>
     </div>
-    <div class="mb-16">
-        <h2 class="text-3xl font-light text-black mb-8 border-b thin-border border-gray-200 pb-4 text-center bg-gray-50 py-4 flex items-center justify-center">Articles</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <h2 class="text-2xl font-semibold p-4 border-b border-gray-200 bg-gray-50">Articles liés</h2>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for article in articles %}
-            <article class="bg-white thin-border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:border-gray-400">
-                <a href="{% url 'article_detail' article.slug %}" class="block p-6">
-                    <header class="mb-4 flex items-center">
-                        {% if article.image %}
-                            <img src="{{ article.image.url }}" alt="{{ article.title }}" class="w-12 h-12 object-cover mr-4 rounded">
-                        {% endif %}
-                        <h3 class="text-xl font-medium text-black">{{ article.title }}</h3>
-                    </header>
-                    <p class="text-gray-600 text-sm mb-4">
-                        {{ article.content|first_sentence }}
-                    </p>
-                    {% if article.category.all %}
-                        <footer>
-                            <div class="flex flex-wrap">
-                                {% for category in article.category.all %}
-                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded mr-2 mb-2">{{ category.name }}</span>
-                                {% endfor %}
-                            </div>
-                        </footer>
-                    {% endif %}
-                </a>
-            </article>
+                {% include 'card_article.html' with article=article %}
+            {% empty %}
+            <p class="col-span-full text-center text-gray-600 py-8">Aucun article disponible dans cette catégorie pour le moment.</p>
             {% endfor %}
         </div>
     </div>

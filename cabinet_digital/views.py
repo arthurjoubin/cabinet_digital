@@ -3,52 +3,59 @@ from .models import Software, SoftwareCategory, Article, News
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, F
 from django.views.generic import ListView, DetailView
+from django.contrib.admin.views.decorators import staff_member_required
+import openai
+from django.conf import settings
+from openai import OpenAI
+from django.utils.safestring import mark_safe
+import markdown
+from markdown import markdown
+from django.db.models import Count  
+from django.http import Http404
+from django.shortcuts import redirect
 
 
 class ArticleListView(ListView):
     model = Article
     template_name = "article_list.html"
+    queryset = Article.objects.filter(is_published=True)
 
 class ArticleDetailView(DetailView):
     model = Article
     template_name = "article_detail.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        article = self.object
+        related_softwares = Software.objects.filter(category__in=article.category.all()).distinct()[:3]
+        context['related_softwares'] = related_softwares
+        return context
+
 def home(request):
-    return render(request, 'home.html')  # Create a home.html template
+    return render(request, 'home.html')
 
 def contact(request):
     return render(request, 'contact.html')
 
-def software_detail(request, slug):
-    software = get_object_or_404(Software, slug=slug)
-    categories = software.category.all()
-    # Get all softwares except the current one
-    all_softwares = Software.objects.exclude(slug=slug)
-    
-    similar_softwares = [
-        {
-            'software': s,
-            'common_categories': len(set(s.category.all()) & set(categories))
-        }
-        for s in all_softwares
-    ]
-    
-    # Sort by number of common categories and then take the top 3
-    similar_softwares.sort(key=lambda x: x['common_categories'], reverse=True)
-    similar_softwares = similar_softwares[:3]
-    print(similar_softwares)
-    context = {
-        'similar_softwares': similar_softwares,
-        'software': software,
-    }
-    return render(request, 'software_detail.html', context)
+def about(request):
+    return render(request, 'about.html')
+
 
 class CategoryListView(ListView):
     model = SoftwareCategory
     template_name = 'category_list.html'
     context_object_name = 'categories'
+
+    def get_queryset(self):
+        return SoftwareCategory.objects.annotate(
+            software_count=Count('categories_softwares_link')
+        ).order_by('name')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 class CategoryDetailView(DetailView):
     model = SoftwareCategory
@@ -62,24 +69,11 @@ class CategoryDetailView(DetailView):
         context['articles'] = Article.objects.filter(category=category)
         return context
 
-
-def similar_software(request, software_slug):
-    software = get_object_or_404(Software, slug=software_slug)
-    categories = software.category.all()
-    similar_softwares = Software.objects.filter(category__in=categories).exclude(id=software.id).distinct()[:3]
-    
-    context = {
-        'similar_softwares': similar_softwares,
-        'software': software,
-    }
-    return render(request, 'similar_software.html', context)
-
-
 class SoftwareListView(ListView):
     model = Software
     template_name = 'software_list.html'
     context_object_name = 'softwares'
-    paginate_by = 9  # Default value
+    paginate_by = 9
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -87,21 +81,17 @@ class SoftwareListView(ListView):
         context['selected_category'] = self.request.GET.get('categorie')
         context['search_query'] = self.request.GET.get('search', '')
         return context
-    
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-is_top_pick', 'name')
+        queryset = queryset.filter(is_published=True, slug__isnull=False).exclude(slug='')
         category = self.request.GET.get('categorie')
         search = self.request.GET.get('search')
-        if category:
+        queryset = queryset.filter(is_published=True)
+        if category and category != 'None':  # Check if category is not None or 'None'
             queryset = queryset.filter(category__slug=category)
-        if search:
+        if search and search.strip():  # Check if search is not empty or just whitespace
             queryset = queryset.filter(Q(name__icontains=search) | Q(description__icontains=search))
         return queryset
-
-    def get(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
-        context = self.get_context_data()
-        return super().get(request, *args, **kwargs)
 
 class NewsListView(ListView):
     model = News
@@ -114,11 +104,105 @@ class NewsListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         news_list = self.get_queryset()
-        categories = SoftwareCategory.objects.filter(news__in=news_list).distinct()
-        context['categories'] = categories
+        # Supprimez cette ligne qui cause l'erreur
+        # categories = SoftwareCategory.objects.filter(news__in=news_list).distinct()
+        # context['categories'] = categories
         return context
-
 
 class NewsDetailView(DetailView):
     model = News
     template_name = 'news_detail.html'
+
+def alternative_detail(request, slug):
+    software = get_object_or_404(Software, slug=slug)
+    alternatives = Software.objects.filter(category__in=software.category.all()).exclude(id=software.id).distinct()
+    
+    context = {
+        'software': software,
+        'alternatives': alternatives,
+    }
+    return render(request, 'alternative_detail.html', context)
+
+class SoftwareDetailView(DetailView):
+    model = Software
+    template_name = 'software_detail.html'
+    context_object_name = 'software'
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        
+        slug = self.kwargs.get('slug')
+        if not slug:
+            raise Http404("Aucun slug fourni pour le logiciel.")
+        
+        try:
+            software = queryset.get(slug=slug, is_published=True)
+        except Software.DoesNotExist:
+            raise Http404(f"Le logiciel publié avec le slug '{slug}' n'existe pas.")
+        
+        return software
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        software = self.object
+
+        if software.video:
+            if software.video.endswith('.webp'):
+                software.video = f'<img src="{software.video}" alt="Image de la solution" height="220">'
+            elif 'youtube.com' in software.video or 'youtu.be' in software.video:
+                video_id = software.video.split('v=')[-1] if 'v=' in software.video else software.video.split('/')[-1]
+                software.video = f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+
+        categories = software.category.all()
+        all_softwares = Software.objects.exclude(slug=software.slug)
+        
+        similar_softwares = [
+            {
+                'software': s,
+                'common_categories': len(set(s.category.all()) & set(categories))
+            }
+            for s in all_softwares
+        ]
+        
+        similar_softwares.sort(key=lambda x: x['common_categories'], reverse=True)
+        similar_softwares = similar_softwares[:3]
+        
+        from datetime import datetime, date
+        start_date = date(2024, 9, 26)
+        days_since = (date.today() - start_date).days
+
+        context.update({
+            'similar_softwares': similar_softwares,
+            'days_since': days_since,
+        })
+        return context
+
+@staff_member_required
+def ai_text_processor(request):
+    context = {
+        'prompt': "Mets en forme le texte en markdown. Utilise du gras et des bullets points. N'ajoute pas ''' markdown ''' ou autres instructions.",
+        'HTMX_SCRIPT': settings.HTMX_SCRIPT,
+    }
+    
+    if request.method == 'POST':
+        text = request.POST.get('text')
+        prompt = request.POST.get('prompt', context['prompt'])
+        
+        client = OpenAI(api_key=settings.OPENAI_API_KEY)
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": text}
+            ]
+        )
+        
+        ai_response = response.choices[0].message.content
+        output = markdown(ai_response)
+        return render(request, 'ai_text_processor_output.html', {'output': output})
+    
+    return render(request, 'ai_text_processor.html', context)
+
+def custom_404(request, exception):
+    return render(request, '404.html', status=404)

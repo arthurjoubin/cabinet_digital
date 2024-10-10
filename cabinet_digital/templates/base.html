@@ -1,9 +1,8 @@
 {% load static %}
 {% load compress %}
 
-
 <!DOCTYPE html>
-<html lang="fr" class="bg-white">
+<html lang="fr" class="bg-sky-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,15 +18,22 @@
         body {
             font-family: 'Manrope', sans-serif;
         }
-        .thin-border {
-            border-width: 1px;
+        .custom-header {
+            @apply text-4xl font-light text-black mb-8 pb-4 border-b-2 border-gray-200 text-center;
+        }
+        .menu-link {
+            @apply text-lg font-medium text-gray-800 hover:text-sky-600 transition-colors duration-300;
+        }
+        .menu-link-mobile {
+            @apply block py-2 px-4 text-lg font-medium text-gray-800 hover:bg-sky-100 hover:text-sky-600 transition-colors duration-300;
         }
     </style>
     {% block meta_description %}{% endblock %}
+    {% block extra_head %}{% endblock %}
 </head>
 
 <body class="flex flex-col min-h-screen text-black">
-    <header class="bg-white thin-border border-b border-gray-200">
+    <header class="border-b-2 border-gray-200 bg-white shadow-sm">
         <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
             <div class="flex lg:flex-1 items-center">
                 <a href="{% url 'home' %}" class="flex items-center">
@@ -37,25 +43,25 @@
             </div>
             <div class="flex lg:hidden">
                 <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700" onclick="toggleMobileMenu()">
-                    <span class="sr-only">Open main menu</span>
+                    <span class="sr-only">Ouvrir le menu principal</span>
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                     </svg>
                 </button>
             </div>
             <div class="hidden lg:flex lg:gap-x-12">
-                <a href="{% url 'software_list' %}" class="text-lg font-medium leading-6 text-gray-900 hover:text-black">Logiciels</a>
-                <a href="{% url 'articles' %}" class="text-lg font-medium leading-6 text-gray-900 hover:text-black">Articles</a>
-                <a href="{% url 'category_list' %}" class="text-lg font-medium leading-6 text-gray-900 hover:text-black">Catégories</a>
-                <a href="{% url 'news_list' %}" class="text-lg font-medium leading-6 text-gray-900 hover:text-black">Actualités</a>
+                <a href="{% url 'software_list' %}" class="menu-link">Logiciels</a>
+                <a href="{% url 'category_list' %}" class="menu-link">Catégories</a>
+                <a href="{% url 'articles' %}" class="menu-link">Articles</a>
+                <a href="{% url 'news_list' %}" class="menu-link">Actualités</a>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                <a href="{% url 'contact' %}" class="bg-white text-black px-4 py-2 text-lg font-medium border border-black hover:bg-black hover:text-white transition-colors duration-300">Contact</a>
+                <a href="{% url 'contact' %}" class="bg-sky-600 text-white px-4 py-2 text-lg font-medium rounded-lg shadow-md hover:bg-sky-700 transition-colors duration-300">Contact</a>
             </div>
         </nav>
-        <!-- Mobile menu, show/hide based on menu open state. -->
+        <!-- Menu mobile, afficher/masquer en fonction de l'état du menu. -->
         <div class="lg:hidden hidden" id="mobile-menu" role="dialog" aria-modal="true">
-            <!-- Background backdrop, show/hide based on slide-over state. -->
+            <!-- Arrière-plan, afficher/masquer en fonction de l'état du slide-over. -->
             <div class="fixed inset-0 z-10"></div>
             <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                 <div class="flex items-center justify-between">
@@ -64,7 +70,7 @@
                         <span class="text-2xl font-bold text-black">Cabinet Digital</span>
                     </a>
                     <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700" onclick="toggleMobileMenu()">
-                        <span class="sr-only">Close menu</span>
+                        <span class="sr-only">Fermer le menu</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -73,29 +79,29 @@
                 <div class="mt-6 flow-root">
                     <div class="-my-6 divide-y divide-gray-500/10">
                         <div class="space-y-2 py-6">
-                            <a href="{% url 'software_list' %}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Logiciels</a>
-                            <a href="{% url 'articles' %}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Articles</a>
-                            <a href="{% url 'category_list' %}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Catégories</a>
-                            <a href="{% url 'news_list' %}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Actualités</a>
+                            <a href="{% url 'software_list' %}" class="menu-link-mobile">Logiciels</a>
+                            <a href="{% url 'category_list' %}" class="menu-link-mobile">Catégories</a>
+                            <a href="{% url 'articles' %}" class="menu-link-mobile">Articles</a>
+                            <a href="{% url 'news_list' %}" class="menu-link-mobile">Actualités</a>
                         </div>
                         <div class="py-6">
-                            <a href="{% url 'contact' %}" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Contact</a>
+                            <a href="{% url 'contact' %}" class="menu-link-mobile bg-sky-600 text-white rounded-lg">Contact</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </header>
-    <main class="flex-grow container mx-auto px-4 py-6">
+    <main class="flex-grow container mx-auto px-4 py-8">
         {% block content %}{% endblock %}
     </main>
-    <footer class="bg-white thin-border border-t border-gray-200">
+    <footer class="border-t-2 border-gray-200 bg-white shadow-sm">
         <div class="container mx-auto px-4 py-6">
             <nav>
                 <ul class="flex justify-center space-x-8 text-sm text-gray-600">
                     <li class="font-medium">Cabinet Digital</li>
-                    <li><a href="#" class="hover:text-black">À propos</a></li>
-                    <li><a href="#" class="hover:text-black">Contact</a></li>
+                    <li><a href="{% url 'about' %}" class="hover:text-sky-600 transition-colors duration-300">À propos</a></li>
+                    <li><a href="{% url 'contact' %}" class="hover:text-sky-600 transition-colors duration-300">Contact</a></li>
                 </ul>
             </nav>
         </div>
@@ -107,5 +113,4 @@
         }
     </script>
 </body>
-
 </html>

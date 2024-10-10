@@ -7,20 +7,51 @@
 {% endblock %}
 
 {% block content %}
-  <nav class="mb-8">
-    <a href="{% url 'articles' %}" class="inline-block text-sm font-medium text-gray-600 hover:text-black transition duration-150 ease-in-out border-b border-gray-300 hover:border-black">← Revenir aux articles</a>
-  </nav>
-  <div class="text-3xl font-light text-black bg-gray-50 border-b thin-border border-gray-200 pb-4 mb-4 text-center py-4 items-center justify-center">
+<div class="bg-white rounded-lg shadow-sm overflow-hidden border-2 border-gray-200 mb-12">
+  <article class="bg-white rounded-lg shadow-sm overflow-hidden border-2 border-gray-200 mb-12">
+    <div class="p-6">
+      <nav class="mb-4">
+        <a href="{% url 'articles' %}" class="inline-flex items-center text-sm text-gray-600 hover:text-black transition duration-150 ease-in-out">
+          <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+          Revenir aux articles
+        </a>
+      </nav>
 
-      <h1 class="text-4xl font-light text-black mb-4">{{ article.title }}</h1>
-      <p class="text-sm text-gray-800 text-center">Publié le {{ article.pub_date|date:"d F Y" }}</p>
+      <header class="mb-6 border-2 border-gray-200 rounded-lg p-6 relative bg-gray-100">
+        <h1 class="text-3xl font-light text-black mb-4">{{ article.title }}</h1>
+        <p class="text-gray-600 mb-4">{{ article.excerpt | safe }}</p>
+        {% if article.category.all %}
+        <div class="absolute top-4 right-4">
+          {% for category in article.category.all %}
+          <a href="{% url 'category_detail' category.slug %}" class="inline-block px-2 py-1 text-xs font-bold bg-gray-200 text-gray-700 rounded-full hover:bg-black hover:text-white transition-colors duration-300 mb-2 mr-2">
+            {{ category.name }}
+          </a>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <p class="text-sm text-gray-500">Publié le {{ article.pub_date|date:"d F Y" }}</p>
+      </header>
+
+      <div class="prose max-w-none">
+        {{ article.content | markdown | safe }}
+      </div>
     </div>
-    <div class="italic text-gray-600 text-lg mb-6 border-l-4 border-gray-300 pl-4">
-      {{ article.excerpt | markdown | safe }}
+  </article>
+
+  <div class="bg-white rounded-lg overflow-hidden mb-12 border border-gray-200">
+    <div class="px-6 py-4 border-b border-gray-200 flex justify-center">
+      <h2 class="text-2xl font-semibold text-black">Logiciels liés à cet article</h2>
     </div>
-    <hr>
-    <div class="max-w-3xl mx-auto prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none text-gray-800">
-      {{ article.content | markdown | safe }}
+    <div class="px-6 py-8">
+      {% if related_softwares %}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for software in related_softwares %}
+        {% include 'card_software.html' with software=software %}
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-gray-600 text-center">Aucun logiciel lié trouvé.</p>
+      {% endif %}
     </div>
   </div>
 </div>

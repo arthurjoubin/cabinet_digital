@@ -2,111 +2,90 @@
 {% load custom_filters %}
 
 {% block meta_description %}
-<title>{{ software.name }} - Solution de {{ software.category.first.name|lower }} pour experts-comptables</title>
-<meta name="description" content="Déccouvrez notre fiche logiciel sur {{ software.name }}. {{ software.excerpt }}">
+<title>{{ software.name }} - Solution de la catégorie : {{ software.category.first.name|lower }} pour experts-comptables</title>
+<meta name="description" content="Découvrez notre fiche logiciel sur {{ software.name }}. {{ software.excerpt }}">
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4">
-  <div class="flex justify-between items-center mb-6">
-    <nav>
-      <a href="{% url 'software_list' %}" class="text-sm font-medium text-gray-600 hover:text-black flex items-center" hx-boost="false">
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-        Retour à la liste
-      </a>
-    </nav>
-    <a href="{{ software.site }}" target="_blank" rel="noopener noreferrer" class="inline-block px-4 py-2 bg-black text-white text-sm font-medium rounded hover:bg-gray-900 transition-colors duration-300 flex items-center">
-      Leur site
-      <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-      </svg>
+<div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-12">
+  <div class="flex justify-between items-center p-6 border-b border-gray-200">
+    <a href="{% url 'software_list' %}" class="text-sm font-medium text-gray-600 hover:text-black flex items-center transition-colors duration-300" hx-boost="false">
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+      Retour à la liste
     </a>
-  </div>
-
-  <div class="bg-white thin-border border-gray-200 rounded-lg overflow-hidden mb-12">
-    <div class="px-6 pb-4 pt-2 border-b thin-border border-gray-200 text-center">
-      {% if software.logo %}
-      <img src="{{ software.logo.url }}" alt="{{ software.name }}" class="w-24 h-24 object-contain mx-auto mb-2">
-      {% endif %}
-      <h1 class="text-4xl font-semibold text-black mb-2">{{ software.name }}</h1>
-      <p class="text-sm text-gray-600 mb-4">Par {{ software.editeur }}</p>
-      {% if software.category.all %}
-          <div class="flex flex-wrap justify-center mb-4">
-              {% for category in software.category.all %}
-                  <a href="{% url 'category_detail' category.slug %}">
-                      <span class="inline-block px-2 py-1 text-xs font-bold bg-white text-black border border-gray-200 rounded-full hover:bg-black hover:text-white transition-colors duration-300 mb-2 mr-2">
-                          {{ category.name }}
-                      </span>
-                  </a>
-              {% endfor %}
-          </div>
-      {% endif %}
-      <p class="text-gray-700 leading-relaxed">{{ software.description|first_sentence }}</p>
-    </div>
-    <div class="px-6 py-8">
-      <p class="text-gray-700 leading-relaxed whitespace-pre-line">{{ software.description|after_first_sentence }}</p>
-    </div>
-    <div class="px-6 py-8 bg-gray-50">
-      <dl class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div>
-          <dt class="text-sm font-medium text-gray-900 mb-2">Ressources liées</dt>
-          <dd class="text-sm text-gray-600">{{ software.image_principale|default:"Non spécifié" }}</dd>
-        </div>
-        <div>
-          <dt class="text-sm font-medium text-gray-900 mb-2">Tags</dt>
-          <dd class="text-sm text-gray-600">{{ software.tags|default:"Non spécifié" }}</dd>
-        </div>
-        <div>
-          <dt class="text-sm font-medium text-gray-900 mb-2">Site</dt>
-          <dd><a href="{{ software.site }}" class="text-sm text-blue-600 hover:underline">{{ software.site|default:"Non spécifié" }}</a></dd>
-        </div>
-        <div>
-          <dt class="text-sm font-medium text-gray-900 mb-2">Vidéo</dt>
-          <dd>
-            {% if software.video %}
-              <div class="aspect-w-16 aspect-h-9">
-                <iframe src="https://www.youtube.com/embed/{{ software.video|slice:'32:' }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
-              </div>
-            {% else %}
-              <p class="text-sm text-gray-600">Non spécifié</p>
-            {% endif %}
-          </dd>
-        </div>
-      </dl>
-    </div>
-  </div>
-
-  <div class="bg-white thin-border border-gray-200 rounded-lg overflow-hidden mb-12">
-    <div class="px-6 py-8 border-b thin-border border-gray-200">
-      <h2 class="text-2xl font-semibold text-black">Logiciels similaires</h2>
-    </div>
-    <div id="similar-software-container" class="px-6 py-8">
-      {% if similar_softwares %}
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
-      {% for software in similar_softwares %}
-      {% include 'card.html' with software=software.software %}
-      {% endfor %}
+    <div class="flex items-center justify-end space-x-4">
+      <div class="text-sm text-gray-600">
+        <span class="font-bold">{{ software.unique_views }}</span> visites
+        <span class="text-xs text-gray-500">({{ days_since }} jours)</span>
       </div>
-      {% else %}
-      <p class="text-gray-600 text-center py-8">Aucun logiciel similaire trouvé.</p>
-      {% endif %}
-        <div class="px-6 py-4">
-    <p class="text-lg font-semibold mb-2">Logiciels de sa catégorie : 
-      {% for category in software.category.all %}
-        <a href="{% url 'category_detail' category.slug %}" class="inline-block px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm font-semibold mr-2 mb-2 hover:bg-black hover:text-white transition-colors duration-300">
-          {{ category.name }}
-        </a>
-      {% endfor %}
-    </p>
-  </div>
+      <a href="{{ software.site }}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-sky-50 text-sky-700 text-sm font-medium rounded-md hover:bg-sky-100 transition-colors duration-300 flex items-center">
+        Visiter le site
+        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+        </svg>
+      </a>
     </div>
-    
   </div>
-  
 
+  <div class="p-6">
+    <div class="flex flex-col md:flex-row items-center mb-8">
+      {% if software.logo %}
+      <div class="w-32 h-32 flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+        <img src="{{ software.logo.url }}" alt="{{ software.name }}" class="w-full h-full object-contain">
+      </div>
+      {% endif %}
+      <div class="flex-grow text-center md:text-left">
+        <h1 class="text-3xl font-semibold text-gray-800 mb-2">{{ software.name }}</h1>
+        {% if software.category.all %}
+        <div class="flex flex-wrap justify-center md:justify-start mb-4">
+          {% for category in software.category.all %}
+          <a href="{% url 'category_detail' category.slug %}" class="inline-block px-3 py-1 text-xs font-semibold bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors duration-300 mr-2 mb-2">
+            {{ category.name }}
+          </a>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <p class="text-gray-700 leading-relaxed italic">{{ software.excerpt|safe }}</p>
+      </div>
+    </div>
 
-  <div class="bg-white thin-border border-gray-200 rounded-lg overflow-hidden px-6 py-8">
-    <h2 class="text-2xl font-semibold text-black mb-4">À propos de Cabinet Digital</h2>
+    <hr class="my-8 border-t border-gray-200">
+
+    <div class="prose max-w-none text-gray-700 leading-relaxed">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Présentation de {{ software.name }}</h2>
+      {{ software.description|safe }}
+    </div>
+
+    {% if software.video %}
+    <div class="mt-8">
+      <h3 class="text-xl font-semibold text-gray-800 mb-4">Vidéo de présentation</h3>
+      <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
+        {{ software.video|safe }}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="border-t border-gray-200 p-6">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Logiciels similaires</h2>
+    {% if similar_softwares %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for software in similar_softwares %}
+      {% include 'card_software.html' with software=software %}
+      {% endfor %}
+    </div>
+    <div class="flex justify-center mt-8">
+      <a href="{% url 'alternative_detail' software.slug %}" class="inline-block px-6 py-3 bg-sky-50 text-sky-700 text-sm font-medium rounded-md hover:bg-sky-100 transition-colors duration-300">
+        Voir toutes les alternatives
+      </a>
+    </div>
+    {% else %}
+    <p class="text-gray-600 text-center">Aucun logiciel similaire trouvé.</p>
+    {% endif %}
+  </div>
+
+  <div class="bg-gray-50 p-6 border-t border-gray-200">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">À propos de Cabinet Digital</h2>
     <p class="text-gray-700 leading-relaxed">Votre ressource incontournable pour découvrir les meilleurs logiciels destinés aux experts-comptables et aux professionnels de la finance. Notre plateforme regroupe une sélection soignée d'outils innovants conçus pour optimiser votre productivité et simplifier vos tâches quotidiennes dans le domaine de la comptabilité et de la finance.</p>
   </div>
 </div>

@@ -6,14 +6,12 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4">
-    <h1 class="text-3xl font-light text-black mb-8 border-b thin-border border-gray-200 pb-4 text-center bg-gray-50 py-4 flex items-center justify-center">Liste des logiciels</h1>
-    <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+<div class="bg-white p-8 rounded-lg shadow-sm border-2 border-gray-200">
+    <h1 class="custom-header">Liste des logiciels</h1>
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8">
         <form action="{% url 'software_list' %}" method="get" class="w-full md:w-64 mb-4 md:mb-0">
             <input type="hidden" name="search" value="{{ search_query }}">
-
-            <label for="category-filter" class="sr-only">Filtrer par catégorie</label>
-            <select id="category-filter" name="categorie" onchange="this.form.submit()" class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent" aria-label="Filtrer par catégorie">
+            <select id="category-filter" name="categorie" onchange="this.form.submit()" class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-400">
                 <option value="">Toutes les catégories</option>
                 {% for category in categories %}
                     <option value="{{ category.slug }}" {% if category.slug == selected_category %}selected{% endif %}>{{ category.name }}</option>
@@ -24,9 +22,8 @@
         <form action="{% url 'software_list' %}" method="get" class="w-full md:w-auto">
             <input type="hidden" name="categorie" value="{{ selected_category }}">
             <div class="flex">
-                <label for="search-input" class="sr-only">Rechercher un logiciel</label>
-                <input type="text" id="search-input" name="search" placeholder="Rechercher un logiciel" class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-transparent" value="{{ search_query }}">
-                <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-r-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-opacity-50">
+                <input type="text" id="search-input" name="search" placeholder="Rechercher un logiciel" class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-gray-400" value="{{ search_query }}">
+                <button type="submit" class="px-6 py-2 bg-black text-white rounded-r-md hover:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-gray-400">
                     Rechercher
                 </button>
             </div>
@@ -34,47 +31,36 @@
     </div>
 
     <div id="software-list-content" class="w-full">
-        <div id="software-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+        <div id="software-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for software in softwares %}
-                {% include 'card.html' %}
-            {% empty %}
-                <p class="col-span-full text-center text-gray-500">Aucun logiciel trouvé.</p>
+            {% include 'card_software.html' with software=software %}
             {% endfor %}
         </div>
-        <div class="flex justify-center items-center mt-6">
-            <div class="flex flex-wrap items-center">
+        <div class="flex justify-center mt-12">
+            <div class="inline-flex rounded-md shadow-sm">
                 {% if page_obj.has_previous %}
                     <a href="?page={{ page_obj.previous_page_number }}&categorie={{ selected_category|default:'' }}&search={{ search_query }}"
-                       class="px-4 py-2 bg-black text-white rounded-l hover:bg-gray-800 transition-colors duration-300">
+                       class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50">
                         Précédent
                     </a>
                 {% else %}
-                    <span class="px-4 py-2 bg-gray-400 text-gray-800 rounded-l cursor-not-allowed">Précédent</span>
+                    <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-300 rounded-l-md cursor-not-allowed">Précédent</span>
                 {% endif %}
                 
-                <div class="relative inline-block text-left mx-2">
-                    <label for="page-select" class="sr-only">Sélectionner une page</label>
-                    <select id="page-select" onchange="window.location.href=this.value" class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" aria-label="Sélectionner une page">
-                        {% for i in page_obj.paginator.page_range %}
-                            <option value="?page={{ i }}&categorie={{ selected_category|default:'' }}&search={{ search_query }}"
-                                    {% if i == page_obj.number %}selected{% endif %}>
-                                Page {{ i }} sur {{ page_obj.paginator.num_pages }} &nbsp;&nbsp;
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
+                <span class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border-t border-b border-gray-300">
+                    Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+                </span>
                 
                 {% if page_obj.has_next %}
                     <a href="?page={{ page_obj.next_page_number }}&categorie={{ selected_category|default:'' }}&search={{ search_query }}"
-                       class="px-4 py-2 bg-black text-white rounded-r hover:bg-gray-800 transition-colors duration-300">
+                       class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50">
                         Suivant
                     </a>
                 {% else %}
-                    <span class="px-4 py-2 bg-gray-400 text-gray-800 rounded-r cursor-not-allowed">Suivant</span>
+                    <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-300 rounded-r-md cursor-not-allowed">Suivant</span>
                 {% endif %}
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
-

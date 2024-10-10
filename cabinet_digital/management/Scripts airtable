@@ -1,0 +1,84 @@
+// Script Airtable pour exporter les données de la table "Liste des news marché"
+
+let table = base.getTable('Liste des news marché');
+let view = table.getView('Export');
+let query = await view.selectRecordsAsync();
+let records = query.records;
+
+let fields = table.fields;
+let headers = fields.map(field => field.name).join(',');
+let csv = headers + '\n';
+
+for (let record of records) {
+    let row = fields.map(field => {
+        let value = record.getCellValue(field);
+        if (typeof value === 'string') {
+            return `"${value.replace(/"/g, '""')}"`;
+        } else if (value === null || value === undefined) {
+            return '';
+        } else {
+            return String(value);
+        }
+    }).join(',');
+    csv += row + '\n';
+}
+
+output.markdown("```\n" + csv + "\n```");
+output.markdown("Copiez le contenu ci-dessus et collez-le dans un fichier .csv");
+
+// Script Airtable pour exporter les données de la table "Liste des catégories"
+
+let table = base.getTable('Liste des catégories');
+let query = await table.selectRecordsAsync();
+let records = query.records;
+
+
+let fields = table.fields;
+let headers = fields.map(field => field.name).join(',');
+let csv = headers + '\n';
+
+for (let record of records) {
+    let row = fields.map(field => {
+        let value = record.getCellValue(field);
+        if (typeof value === 'string') {
+            return `"${value.replace(/"/g, '""')}"`;
+        } else if (value === null || value === undefined) {
+            return '';
+        } else {
+            return String(value);
+        }
+    }).join(',');
+    csv += row + '\n';
+}
+
+output.markdown("```\n" + csv + "\n```");
+output.markdown("Copiez le contenu ci-dessus et collez-le dans un fichier .csv");
+
+
+// Script Airtable pour exporter les données de la table "Liste des articles"
+
+let table = base.getTable('Liste des articles');
+let query = await table.selectRecordsAsync();
+let records = query.records;
+
+
+let fields = table.fields;
+let headers = fields.map(field => field.name).join(',');
+let csv = headers + '\n';
+
+for (let record of records) {
+    let row = fields.map(field => {
+        let value = record.getCellValue(field);
+        if (typeof value === 'string') {
+            return `"${value.replace(/"/g, '""')}"`;
+        } else if (value === null || value === undefined) {
+            return '';
+        } else {
+            return String(value);
+        }
+    }).join(',');
+    csv += row + '\n';
+}
+
+output.markdown("```\n" + csv + "\n```");
+output.markdown("Copiez le contenu ci-dessus et collez-le dans un fichier .csv");

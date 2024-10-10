@@ -7,24 +7,12 @@
 <meta name="description" content="Accéder à tous nos articles dédiés aux logiciels pour experts comptables et l'évolution technologique de la profession.">
 {% endblock %}
 
-<div class="container mx-auto">
-  <h1 class="text-3xl font-light text-black mb-8 border-b thin-border border-gray-200 pb-4 text-center bg-gray-50 py-4 flex items-center justify-center">Liste des articles</h1>
+<div class="bg-white p-8 rounded-lg shadow-sm border-2 border-gray-200">
+  <h1 class="custom-header">Articles</h1>
   
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
     {% for article in object_list|dictsortreversed:"pub_date" %}
-      <a href="{% url 'article_detail' article.slug %}">
-        <div class="bg-white thin-border border-gray-200 hover:border-gray-400 transition-colors duration-300 rounded-lg overflow-hidden flex flex-col h-full">
-          <div class="p-6 flex-grow flex flex-col justify-between">
-            <div>
-              <h3 class="text-xl font-medium text-black mb-2 group-hover:underline">{{ article.title }}</h3>
-              <p class="text-sm text-gray-600 mb-4">{{ article.excerpt|truncatewords:20 }}</p>
-            </div>
-            <p class="text-xs text-gray-500 mt-auto">{{ article.pub_date|date:"j F Y"|lower }} • Cabinet Digital</p>
-          </div>
-        </div>
-      </a>
-    {% empty %}
-      <p class="col-span-full text-center text-gray-500">Aucun article disponible pour le moment.</p>
+   {% include 'card_article.html' %}
     {% endfor %}
   </div>
 </div>

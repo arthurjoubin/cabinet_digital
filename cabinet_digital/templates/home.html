@@ -2,89 +2,49 @@
 {% load static %}
 
 {% block meta_description %}
-<title>Cabinet Digital - Les meilleurs logiciels pour PME et experts comptables</title>
-<meta name="description" content="Découvrir les meilleurs logiciels pour experts-comptables et entreprises dans notre liste. Plus de 200 solutions classées par catégorie et présentées dans des fiche détaillées.">
+<title>Cabinet Digital - Logiciels pour PME et experts-comptables</title>
+<meta name="description" content="Découvrez plus de 200 logiciels pour experts-comptables et entreprises. Solutions classées par catégorie avec fiches détaillées.">
 {% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
-  <div class="text-center">
-    <h1 class="text-5xl font-extrabold text-black sm:text-6xl md:text-7xl mb-6">
-      Découvrez +200 logiciels pour experts comptables et PME
+<main class="max-w-6xl mx-auto px-4 py-8">
+  <section class="text-center mb-16 py-12 rounded-lg bg-white border-2 border-gray-200 shadow-sm">
+    <h1 class="text-5xl font-bold text-black mb-6">
+      Découvrir +200 logiciels pour experts comptables et PME
     </h1>
-    <p class="text-xl text-gray-600 mb-8">
-      Votre guide ultime pour la gestion d'entreprise, avec des fiches détaillées et des actualités pertinentes.
-    </p>
-    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8 inline-block transition-all duration-300 hover:shadow-md">
-      <div class="flex flex-col items-center justify-center">
-        <div class="flex items-center mb-4">
-          <img src="{% static 'icons/users-group.svg' %}" alt="Users" class="w-12 h-12 mr-3">
-          <p class="text-3xl font-bold text-black">+10 000 visiteurs</p>
-        </div>
-        <p class="text-gray-600 text-lg text-center">ont découvert des logiciels sur notre site cette année</p>
+    <div class="text-lg text-gray-600 mb-8 space-y-2">
+      <p>• Sélection des meilleurs logiciels pour gérer votre entreprise.</p>
+      <p>• Des fiches pour chaque solution sélectionnée.</p>
+      <p>• Des guides et actualités sans superflu.</p>
+    </div>
+    <div class="flex flex-wrap justify-center gap-2 mb-10">
+      <span class="badge bg-red-100 text-black text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded border border-gray-200">production comptable</span>
+      <span class="badge bg-blue-100 text-black text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded border border-gray-200">production sociale</span>
+      <span class="badge bg-green-100 text-black text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded border border-gray-200">facturation</span>
+      <span class="badge bg-yellow-100 text-black text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded border border-gray-200">gestion financière</span>
+      <span class="badge bg-purple-100 text-black text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded border border-gray-200">gestion de la paie</span>
+      <span class="badge bg-pink-100 text-black text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded border border-gray-200">gestion des notes de frais</span>
+      <span class="badge bg-indigo-100 text-black text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded border border-gray-200 hidden sm:inline-block">audit</span>
+      <span class="badge bg-teal-100 text-black text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded border border-gray-200 hidden sm:inline-block">CRM</span>
+      <span class="badge bg-orange-100 text-black text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded border border-gray-200 hidden sm:inline-block">gestion de projet</span>
+      <span class="badge bg-cyan-100 text-black text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded border border-gray-200 hidden sm:inline-block">business intelligence</span>
+      <span class="badge bg-lime-100 text-black text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded border border-gray-200 hidden sm:inline-block">gestion documentaire</span>
+      <span class="badge bg-fuchsia-100 text-black text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded border border-gray-200 hidden sm:inline-block">signature électronique</span>
+      <span class="badge bg-gray-100 text-black text-xs sm:text-sm font-bold px-2 sm:px-4 py-1 sm:py-2 rounded border border-gray-200">..et bien d'autres</span>
+
+    </div>
+  </section>
+  <section class="text-center my-16">
+    <div class="inline-block bg-white border-2 border-gray-200 rounded-lg p-8 shadow-sm hover:shadow-lg transition-shadow duration-300">
+      <div class="flex items-center space-x-6">
+        <img src="{% static 'icons/users-group.svg' %}" alt="Users" class="w-12 h-12">
+      <div>
+        <p class="text-3xl font-bold text-black">+10 000 visiteurs</p>
+        <p class="text-xl text-gray-600">ont découvert nos logiciels cette année</p>
       </div>
     </div>
   </div>
-</div>
-
-<section class="bg-gradient-to-r from-blue-50 to-green-50 py-16 rounded-lg">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="text-3xl font-bold text-center mb-12">Catégories populaires</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <div class="bg-white p-8 rounded-xl shadow-md transition-transform duration-300 hover:scale-105">
-        <h3 class="text-2xl font-semibold mb-4">Comptabilité</h3>
-        <p class="text-gray-600">Simplifiez votre gestion financière avec nos outils de comptabilité recommandés.</p>
-      </div>
-      <div class="bg-white p-8 rounded-xl shadow-md transition-transform duration-300 hover:scale-105">
-        <h3 class="text-2xl font-semibold mb-4">Gestion de projet</h3>
-        <p class="text-gray-600">Optimisez la collaboration et le suivi de vos projets avec nos solutions éprouvées.</p>
-      </div>
-      <div class="bg-white p-8 rounded-xl shadow-md transition-transform duration-300 hover:scale-105">
-        <h3 class="text-2xl font-semibold mb-4">CRM</h3>
-        <p class="text-gray-600">Améliorez vos relations clients grâce à nos outils CRM performants et intuitifs.</p>
-      </div>
-    </div>
-  </div>
 </section>
+</main>
 
-<section class="py-16">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="text-3xl font-bold text-center mb-12">Derniers articles</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-      <article class="bg-white rounded-xl shadow-md overflow-hidden transition-transform duration-300 hover:scale-105">
-        <div class="p-8">
-          <img src="{% static 'icons/trends.svg' %}" alt="Tendances" class="w-12 h-12 mb-4">
-          <h3 class="text-2xl font-semibold mb-4">Les tendances de la comptabilité en 2023</h3>
-          <p class="text-gray-600 mb-6">Découvrez les innovations qui transforment le secteur de la comptabilité cette année.</p>
-          <a href="#" class="text-black font-medium hover:underline inline-flex items-center">
-            Lire la suite
-            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-          </a>
-        </div>
-      </article>
-      <article class="bg-white rounded-xl shadow-md overflow-hidden transition-transform duration-300 hover:scale-105">
-        <div class="p-8">
-          <img src="{% static 'icons/invoice.svg' %}" alt="Facturation" class="w-12 h-12 mb-4">
-          <h3 class="text-2xl font-semibold mb-4">Comment choisir le bon logiciel de facturation</h3>
-          <p class="text-gray-600 mb-6">Guide pratique pour sélectionner l'outil de facturation adapté à votre entreprise.</p>
-          <a href="#" class="text-black font-medium hover:underline inline-flex items-center">
-            Lire la suite
-            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-          </a>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section class="bg-black text-white py-20">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <h2 class="text-4xl font-bold mb-6">Restez informé</h2>
-    <p class="text-xl mb-10">Inscrivez-vous à notre newsletter pour recevoir nos derniers articles et conseils.</p>
-    <form class="flex flex-col sm:flex-row justify-center items-center">
-      <input type="email" placeholder="Votre adresse email" class="px-6 py-3 mb-4 sm:mb-0 sm:mr-4 text-black rounded-full w-full sm:w-96 focus:outline-none focus:ring-2 focus:ring-white">
-      <button type="submit" class="bg-white text-black px-8 py-3 rounded-full font-medium hover:bg-gray-200 transition duration-300 w-full sm:w-auto">S'inscrire</button>
-    </form>
-  </div>
-</section>
 {% endblock %}

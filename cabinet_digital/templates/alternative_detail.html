@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block meta_description %}
+<title>Alternatives à {{ software.name }} - Cabinet Digital</title>
+<meta name="description" content="Découvrez les meilleures alternatives à {{ software.name }} pour experts-comptables et PME. Comparez les fonctionnalités et trouvez la solution idéale pour votre entreprise.">
+{% endblock %}
+
+{% block content %}
+<div class="bg-white p-8 rounded-lg shadow-sm border-2 border-gray-200">
+    <h1 class="text-3xl font-bold text-center mb-6">Alternatives à {{ software.name }}</h1>
+    
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">À propos de {{ software.name }}</h2>
+        <a href="{% url 'software_detail' software.slug %}" class="inline-flex items-center px-4 py-2 bg-black text-white text-sm font-medium rounded-full hover:bg-gray-800 transition-all duration-300">
+            En savoir plus sur {{ software.name }}
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </a>
+    </div>
+
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Alternatives recommandées</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for alternative in alternatives %}
+                {% include 'card_software.html' with software=alternative %}
+            {% empty %}
+                <p class="col-span-full text-center text-gray-500">Aucune alternative trouvée pour le moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
