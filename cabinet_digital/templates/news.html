@@ -7,41 +7,44 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-white p-8 rounded-lg shadow-sm border-2 border-gray-200">
-    <h1 class="custom-header">Actualités</h1>
+<div class="bg-white p-4 sm:p-8 rounded-lg shadow-sm border-2 border-gray-200">
+    <h1 class="custom-header mb-6">Actualités</h1>
 
-    <table class="w-full border-collapse">
-        <thead>
-            <tr class="bg-gray-100">
-                <th class="py-2 px-4 text-left">Date</th>
-                <th class="py-2 px-4 text-left">Actualité</th>
-                <th class="py-2 px-4 text-left">Tags</th>
- 
-            </tr>
-        </thead>
-        <tbody>
-            {% for news in news_list %}
-            <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
-                <td class="py-4 px-4 text-sm text-gray-500">{{ news.date|date:"d/m/Y" }}</td>
-                <td class="py-4 px-4">
-                    <a href="{% url 'news_detail' news.slug %}" class="text-black hover:text-gray-700 transition-colors duration-200 font-semibold">
+    <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="py-2 px-4 text-left">Date</th>
+                    <th class="py-2 px-4 text-left">Actualité</th>
+                    <th class="py-2 px-4 text-left">Tags</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for news in news_list %}
+                <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200">
+                    <td class="py-4 px-4 text-sm text-gray-500">{{ news.date|date:"d/m/Y" }}</td>
+                    <td class="py-4 px-4">
+                        <a href="{% url 'news_detail' news.slug %}" class="text-black hover:text-gray-700 transition-colors duration-200 font-semibold">
                             {{ news.title }}
-                    </a>
-                </td>
-                <td class="py-4 px-4">
-                    {% for tag in news.tags.all %}
-                        <span class="inline-block px-2 py-1 text-xs font-bold rounded-full mr-2" style="background-color: {{ tag.color }}; color: {% if tag.color == '#FFFFFF' %}#000000{% else %}#FFFFFF{% endif %};">
-                            {{ tag.name }}
-                        </span>
-                    {% endfor %}
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4" class="text-center text-gray-600 py-8">Aucune actualité disponible pour le moment.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                        </a>
+                    </td>
+                    <td class="py-4 px-4">
+                        <div class="flex flex-wrap gap-2">
+                            {% for tag in news.tags.all %}
+                                <span class="inline-block px-2 py-1 text-xs font-bold rounded-full" style="background-color: {{ tag.color }}; color: {% if tag.color == '#FFFFFF' %}#000000{% else %}#FFFFFF{% endif %};">
+                                    {{ tag.name }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center text-gray-600 py-8">Aucune actualité disponible pour le moment.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

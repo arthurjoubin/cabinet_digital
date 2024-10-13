@@ -7,26 +7,34 @@
 
 {% block content %}
 <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-12">
-  <div class="flex justify-between items-center p-6 border-b border-gray-200">
-    <a href="{% url 'software_list' %}" class="text-sm font-medium text-gray-600 hover:text-black flex items-center transition-colors duration-300" hx-boost="false">
-      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-      Retour à la liste
-    </a>
-    <div class="flex items-center justify-end space-x-4">
-      <div class="text-sm text-gray-600">
-        <span class="font-bold">{{ software.unique_views }}</span> visites
-        <span class="text-xs text-gray-500">({{ days_since }} jours)</span>
+  <div class="p-4 sm:p-6 border-b border-gray-200">
+    <div class="flex flex-col space-y-4">
+      <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4">
+        <a href="{% url 'software_list' %}" class="text-sm font-medium text-gray-600 hover:text-black flex items-center transition-colors duration-300" hx-boost="false">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+          Retour à la liste des logiciels
+        </a>
+        <div class="bg-sky-50 text-sky-700 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center sm:justify-start">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+          </svg>
+          <span class="font-bold">{{ software.unique_views }}</span> visites
+          <span class="text-xs text-sky-600 ml-1">({{ days_since }} jours)</span>
+        </div>
+        <a href="{{ software.site }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center">
+          Visiter leur site
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+          </svg>
+        </a>
+  
       </div>
-      <a href="{{ software.site }}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-sky-50 text-sky-700 text-sm font-medium rounded-md hover:bg-sky-100 transition-colors duration-300 flex items-center">
-        Visiter le site
-        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-        </svg>
-      </a>
+
     </div>
   </div>
 
-  <div class="p-6">
+  <div class="p-4 sm:p-6">
     <div class="flex flex-col md:flex-row items-center mb-8">
       {% if software.logo %}
       <div class="w-32 h-32 flex-shrink-0 mb-4 md:mb-0 md:mr-6">
@@ -34,7 +42,7 @@
       </div>
       {% endif %}
       <div class="flex-grow text-center md:text-left">
-        <h1 class="text-3xl font-semibold text-gray-800 mb-2">{{ software.name }}</h1>
+        <h1 class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-2">{{ software.name }}</h1>
         {% if software.category.all %}
         <div class="flex flex-wrap justify-center md:justify-start mb-4">
           {% for category in software.category.all %}
@@ -48,15 +56,15 @@
       </div>
     </div>
 
-    <hr class="my-8 border-t border-gray-200">
+    <hr class="my-6 sm:my-8 border-t border-gray-200">
 
     <div class="prose max-w-none text-gray-700 leading-relaxed">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Présentation de <span class="bg-black text-white rounded px-2"> {{ software.name }} </span></h2>
+      <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">Présentation de <span class="bg-black text-white rounded px-2"> {{ software.name }} </span></h2>
       {{ software.description|safe }}
     </div>
     {% if software.video %}
-    <div class="mt-12 bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-      <h3 class="text-xl font-semibold text-gray-800 p-4 border-b border-gray-200">Vidéo de présentation</h3>
+    <div class="mt-8 sm:mt-12 bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+      <h3 class="text-lg sm:text-xl font-semibold text-gray-800 p-4 border-b border-gray-200">Vidéo de présentation</h3>
       <div class="p-4">
         <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
           {{ software.video|safe }}
@@ -66,14 +74,15 @@
     {% endif %}
   </div>
 
-  <div class="border-t border-gray-200 p-6">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Logiciels similaires</h2>
+  <div class="border-t border-gray-200 p-4 sm:p-6">
+    <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6">Logiciels similaires</h2>
     {% if similar_softwares %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
       {% for software in similar_softwares %}
       {% include 'card_software.html' %}
       {% endfor %}
     </div>
+    <div class="flex justify-center mt-6 sm:mt-8">
     <div class="flex justify-center mt-8">
       <a href="{% url 'alternative_detail' software.slug %}" class="inline-block px-6 py-3 bg-sky-50 text-sky-700 text-sm font-medium rounded-md hover:bg-sky-100 transition-colors duration-300">
         Voir toutes les alternatives

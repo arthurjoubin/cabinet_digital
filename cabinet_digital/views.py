@@ -15,7 +15,9 @@ from markdown import markdown
 from django.db.models import Count  
 from django.http import Http404
 from django.shortcuts import redirect
-
+from django.utils.text import slugify
+import unidecode
+from urllib.parse import unquote
 
 class ArticleListView(ListView):
     model = Article
@@ -26,12 +28,16 @@ class ArticleDetailView(DetailView):
     model = Article
     template_name = "article_detail.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        article = self.object
-        related_softwares = Software.objects.filter(category__in=article.category.all()).distinct()[:3]
-        context['related_softwares'] = related_softwares
-        return context
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        
+        slug = self.kwargs.get('slug')
+        # Décoder et nettoyer le slug
+        decoded_slug = unidecode.unidecode(slug)
+        clean_slug = slugify(decoded_slug)[:49]  # Limiter à 49 caractères
+        
+        return get_object_or_404(queryset, slug=clean_slug, is_published=True)
 
 def home(request):
     return render(request, 'home.html')
@@ -58,6 +64,18 @@ class CategoryListView(ListView):
 class CategoryDetailView(DetailView):
     model = SoftwareCategory
     template_name = 'category_detail.html'
+    
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        
+        slug = self.kwargs.get('slug')
+        # Décoder et nettoyer le slug
+        decoded_slug = unidecode.unidecode(slug)
+        clean_slug = slugify(decoded_slug)[:49]  # Limiter à 49 caractères
+        
+        # Chercher la catégorie avec le slug nettoyé
+        return get_object_or_404(queryset, slug=clean_slug)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -111,6 +129,17 @@ class NewsDetailView(DetailView):
     model = News
     template_name = 'news_detail.html'
 
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        
+        slug = self.kwargs.get('slug')
+        # Décoder et nettoyer le slug
+        decoded_slug = unidecode.unidecode(slug)
+        clean_slug = slugify(decoded_slug)[:49]  # Limiter à 49 caractères
+        
+        return get_object_or_404(queryset, slug=clean_slug, is_published=True)
+
 def alternative_detail(request, slug):
     software = get_object_or_404(Software, slug=slug)
     alternatives = Software.objects.filter(category__in=software.category.all()).exclude(id=software.id).distinct()
@@ -134,10 +163,14 @@ class SoftwareDetailView(DetailView):
         if not slug:
             raise Http404("Aucun slug fourni pour le logiciel.")
         
+        # Décoder et nettoyer le slug
+        decoded_slug = unidecode.unidecode(slug)
+        clean_slug = slugify(decoded_slug)[:49]  # Limiter à 49 caractères
+        
         try:
-            software = queryset.get(slug=slug, is_published=True)
+            software = queryset.get(slug=clean_slug, is_published=True)
         except Software.DoesNotExist:
-            raise Http404(f"Le logiciel publié avec le slug '{slug}' n'existe pas.")
+            raise Http404(f"Le logiciel publié avec le slug '{clean_slug}' n'existe pas.")
         
         return software
 
@@ -201,3 +234,25 @@ def ai_text_processor(request):
 
 def custom_404(request, exception):
     return render(request, '404.html', status=404)
+
+def custom_redirect_view(request, old_path, slug, any_value):
+    # Mapping des anciens chemins vers les nouveaux
+    path_mapping = {
+        'solution': 'logiciels',
+        'news': 'actualites',
+        'article': 'articles',
+        'categorie': 'categories'
+    }
+
+    # Décoder l'URL pour gérer les caractères spéciaux
+    decoded_slug = unquote(slug)
+    # Supprimer les accents et appliquer slugify
+    unaccented_slug = unidecode.unidecode(decoded_slug)
+    new_slug = slugify(unaccented_slug)
+
+    # Obtenir le nouveau chemin
+    new_path = path_mapping.get(old_path, old_path)
+
+    # Construire l'URL de redirection
+    redirect_url = f'/{new_path}/{new_slug}/'
+    return redirect(redirect_url, permanent=True)
