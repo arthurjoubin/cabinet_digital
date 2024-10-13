@@ -158,14 +158,11 @@ class SoftwareDetailView(DetailView):
         all_softwares = Software.objects.exclude(slug=software.slug)
         
         similar_softwares = [
-            {
-                'software': s,
-                'common_categories': len(set(s.category.all()) & set(categories))
-            }
-            for s in all_softwares
+            s for s in all_softwares
+            if set(s.category.all()) & set(categories)
         ]
         
-        similar_softwares.sort(key=lambda x: x['common_categories'], reverse=True)
+        similar_softwares.sort(key=lambda x: len(set(x.category.all()) & set(categories)), reverse=True)
         similar_softwares = similar_softwares[:3]
         
         from datetime import datetime, date

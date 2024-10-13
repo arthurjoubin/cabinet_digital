@@ -1,0 +1,66 @@
+import os
+import sys
+import django
+from django.db.models import Q
+
+# Obtenez le chemin absolu du répertoire parent du répertoire courant
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Ajoutez le chemin du projet à sys.path
+sys.path.append(project_root)
+
+# Configurez les paramètres Django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cabinet_digital.settings")
+
+# Initialisez Django
+django.setup()
+
+from django.conf import settings
+from cabinet_digital.models import Software
+
+def import_logos():
+    logos_dir = os.path.join(project_root, 'cabinet_digital', 'management', 'logos_comprimes')
+    
+    print(f"Starting logo import from directory: {logos_dir}")
+    
+    success_count = 0
+    failure_count = 0
+    
+    all_software = list(Software.objects.all())
+    print(f"Total software in database: {len(all_software)}")
+    
+    for filename in os.listdir(logos_dir):
+        if filename.endswith(('.webp', '.jpg', '.jpeg', '.png')):
+            slug = os.path.splitext(filename)[0]
+            print(f"Processing file: {filename} for slug: {slug}")
+            
+            try:
+                # Vérifier si le logiciel existe
+                software = next((s for s in all_software if s.slug == slug), None)
+                
+                if software:
+                    # Mettre à jour le chemin du logo dans la base de données
+                    logo_path = os.path.join('logos', filename)
+                    software.logo = logo_path
+                    software.save()
+                    
+                    # Copier le fichier dans le répertoire media
+                    destination = os.path.join(settings.MEDIA_ROOT, 'logos', filename)
+                    os.makedirs(os.path.dirname(destination), exist_ok=True)
+                    with open(os.path.join(logos_dir, filename), 'rb') as src, open(destination, 'wb') as dst:
+                        dst.write(src.read())
+                    
+                    print(f'Successfully imported logo for slug: {slug}')
+                    success_count += 1
+                else:
+                    print(f'No software found with slug: {slug}')
+                    failure_count += 1
+                
+            except Exception as e:
+                print(f'Error importing logo for slug {slug}: {str(e)}')
+                failure_count += 1
+
+    print(f'Logo import completed. Successes: {success_count}, Failures: {failure_count}')
+
+if __name__ == "__main__":
+    import_logos()

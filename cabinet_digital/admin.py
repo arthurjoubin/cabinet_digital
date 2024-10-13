@@ -15,11 +15,11 @@ class ArticleInline(admin.TabularInline):
 
 
 class SoftwareAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category_display', 'is_top_pick', 'is_published')
+    list_display = ('name', 'logo', 'category_display', 'is_top_pick', 'is_published')
     list_filter = ('category', 'is_top_pick', 'is_published')
     search_fields = ('name', 'description')
     filter_horizontal = ('category',)
-    list_editable = ('is_top_pick', 'is_published')
+    list_editable = ('logo', 'is_top_pick', 'is_published')
 
     def category_display(self, obj):
         return ", ".join([category.name for category in obj.category.all()])

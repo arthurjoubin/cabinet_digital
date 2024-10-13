@@ -70,7 +70,7 @@
     {% if similar_softwares %}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {% for software in similar_softwares %}
-      {% include 'card_software.html' with software=software %}
+      {% include 'card_software.html' %}
       {% endfor %}
     </div>
     <div class="flex justify-center mt-8">
