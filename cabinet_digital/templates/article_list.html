@@ -1,20 +1,37 @@
 {% extends "base.html" %}
-{% block content %}
-{% load markdown_extras %}
+{% load static %}
 
 {% block meta_description %}
 <title>Cabinet Digital - Guides et comparatifs de logiciels pour experts-comptables</title>
 <meta name="description" content="Accéder à tous nos articles dédiés aux logiciels pour experts comptables et l'évolution technologique de la profession.">
 {% endblock %}
 
-<div class="bg-white p-8 rounded-lg shadow-sm border-2 border-gray-200">
-  <h1 class="custom-header">Articles</h1>
-  
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    {% for article in object_list|dictsortreversed:"pub_date" %}
-   {% include 'card_article.html' %}
-    {% endfor %}
-  </div>
-</div>
+{% block content %}
+<div class="bg-white p-8 rounded-lg shadow-md border border-gray-200">
+    <h1 class="custom-header">Articles</h1>
 
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {% for article in object_list|dictsortreversed:"pub_date" %}
+        <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-200">
+            <div class="p-6">
+                <p class="text-sm text-gray-500 mb-2">{{ article.pub_date|date:"d/m/Y" }}</p>
+                <a href="{% url 'article_detail' article.slug %}" class="block mb-3">
+                    <h2 class="text-xl font-semibold text-gray-800 hover:text-sky-600 transition-colors duration-200">{{ article.title }}</h2>
+                </a>
+                <div class="flex flex-wrap gap-2 mt-4">
+                    {% for category in article.category.all %}
+                    <span class="px-3 py-1 text-xs font-medium rounded-full bg-sky-100 text-sky-800">
+                        {{ category.name }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center text-gray-600 py-12">
+            <p class="text-lg">Aucun article disponible pour le moment.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

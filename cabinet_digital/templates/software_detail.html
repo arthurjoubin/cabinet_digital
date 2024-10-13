@@ -51,15 +51,16 @@
     <hr class="my-8 border-t border-gray-200">
 
     <div class="prose max-w-none text-gray-700 leading-relaxed">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Présentation de {{ software.name }}</h2>
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Présentation de <span class="bg-black text-white rounded px-2"> {{ software.name }} </span></h2>
       {{ software.description|safe }}
     </div>
-
     {% if software.video %}
-    <div class="mt-8">
-      <h3 class="text-xl font-semibold text-gray-800 mb-4">Vidéo de présentation</h3>
-      <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
-        {{ software.video|safe }}
+    <div class="mt-12 bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+      <h3 class="text-xl font-semibold text-gray-800 p-4 border-b border-gray-200">Vidéo de présentation</h3>
+      <div class="p-4">
+        <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
+          {{ software.video|safe }}
+        </div>
       </div>
     </div>
     {% endif %}
@@ -83,9 +84,11 @@
     {% endif %}
   </div>
 
-  <div class="bg-gray-50 p-6 border-t border-gray-200">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">À propos de Cabinet Digital</h2>
-    <p class="text-gray-700 leading-relaxed">Votre ressource incontournable pour découvrir les meilleurs logiciels destinés aux experts-comptables et aux professionnels de la finance. Notre plateforme regroupe une sélection soignée d'outils innovants conçus pour optimiser votre productivité et simplifier vos tâches quotidiennes dans le domaine de la comptabilité et de la finance.</p>
+  <div class="bg-white p-6 border-t border-gray-200 rounded-b-lg shadow-sm">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">À propos de <span class="bg-black text-white px-1 rounded">Cabinet Digital</span></h2>
+    <p class="text-gray-700 leading-relaxed">
+      Cabinet Digital est votre guide de confiance pour découvrir les meilleurs logiciels de comptabilité et finance. Notre équipe sélectionne méticuleusement des outils conçus pour optimiser votre productivité et simplifier vos tâches quotidiennes.
+    </p>
   </div>
 </div>
 {% endblock %}

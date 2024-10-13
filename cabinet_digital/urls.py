@@ -37,7 +37,6 @@ urlpatterns = [
     path('actualites/', NewsListView.as_view(), name='news_list'),
     path('actualites/<slug:slug>/', NewsDetailView.as_view(), name='news_detail'),
     path('markdownx/', include('markdownx.urls')),
-    path('a_propos/', views.about, name='about'),
     path('tinymce/', include('tinymce.urls')),
     path('logiciels/<str:slug>/alternatives/', alternative_detail, name='alternative_detail'),
     path('sitemap.xml', sitemap_index, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.index'),

@@ -8,7 +8,7 @@
 
 {% block content %}
 <div class="bg-white rounded-lg shadow-sm overflow-hidden border-2 border-gray-200 mb-12">
-  <article class="bg-white rounded-lg shadow-sm overflow-hidden border-2 border-gray-200 mb-12">
+  <article class="bg-white rounded-lg shadow-sm overflow-hidden border-2 border-gray-200">
     <div class="p-6">
       <nav class="mb-4">
         <a href="{% url 'articles' %}" class="inline-flex items-center text-sm text-gray-600 hover:text-black transition duration-150 ease-in-out">
@@ -37,22 +37,21 @@
       </div>
     </div>
   </article>
+  {% if related_softwares %}
 
   <div class="bg-white rounded-lg overflow-hidden mb-12 border border-gray-200">
     <div class="px-6 py-4 border-b border-gray-200 flex justify-center">
       <h2 class="text-2xl font-semibold text-black">Logiciels liés à cet article</h2>
     </div>
     <div class="px-6 py-8">
-      {% if related_softwares %}
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for software in related_softwares %}
         {% include 'card_software.html' with software=software %}
         {% endfor %}
       </div>
-      {% else %}
-      <p class="text-gray-600 text-center">Aucun logiciel lié trouvé.</p>
-      {% endif %}
     </div>
   </div>
+  {% endif %}
+
 </div>
 {% endblock %}

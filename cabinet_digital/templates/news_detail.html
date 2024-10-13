@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<article class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+<article class="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-sm border border-gray-200">
     <header class="mb-6 border-b border-gray-200 pb-6">
         <div class="flex flex-wrap gap-2 mb-3">
             {% for tag in news.tags.all %}
@@ -15,7 +15,7 @@
             {% endfor %}
         </div>
         <h1 class="text-3xl font-bold mb-2">{{ news.title }}</h1>
-        <p class="text-gray-500 text-sm">Publié le {{ news.date|date:"d F Y" }}</p>
+        <p class="text-gray-500 text-sm">Publié le {{ news.date|date:"d F Y"|lower }}</p>
     </header>
 
     <div class="prose max-w-none">

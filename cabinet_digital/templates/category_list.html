@@ -1,16 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-    <h1 class="text-3xl font-light text-center mb-8">Catégories de logiciels</h1>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <h1 class="custom-header">Catégories de logiciels</h1>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {% for category in categories %}
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-lg hover:border-black relative">
-                <span class="absolute top-2 right-2 bg-gray-100 text-xs font-semibold px-2 py-1 rounded-full text-gray-700">
-                    {{ category.software_count }} logiciel{{ category.software_count|pluralize }}
-                </span>
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">{{ category.name }}</h2>
-                <a href="{% url 'category_detail' category.slug %}" class="inline-block px-4 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition-colors duration-300 text-sm font-medium">
-                    Voir les logiciels
+            <div class="group">
+                <a href="{% url 'category_detail' category.slug %}" class="block h-full">
+                    <div class="bg-white border border-gray-200 rounded-lg p-4 transition-all duration-300 hover:shadow-md hover:border-sky-100 group-hover:border-sky-200 h-full flex flex-col justify-between">
+                        <h2 class="text-lg font-medium text-gray-800 group-hover:text-sky-600 mb-2">{{ category.name }}</h2>
+                        <span class="text-sm font-semibold text-sky-600 bg-sky-50 px-2 py-1 rounded-full self-start">
+                            {{ category.software_count }} logiciel{% if category.software_count > 1 %}s{% endif %}
+                        </span>
+                    </div>
                 </a>
             </div>
         {% endfor %}
