@@ -38,11 +38,17 @@
     </div>
   </section>
 
-  <section class="my-16 overflow-hidden">
-    <div class="flex animate-scroll">
-      {% for software in featured_softwares %}
-        <img src="{{ software.logo.url }}" alt="{{ software.name }}" class="h-12 mx-4 object-contain">
-      {% endfor %}
+  <section class="my-16">
+    <div class="bg-white border-2 border-gray-200 rounded-lg p-8 shadow-sm max-w-4xl mx-auto">
+      <h2 class="text-2xl font-bold text-black text-center mb-8">Logiciels présents sur Cabinet Digital</h2>
+      <div class="flex flex-wrap justify-center items-center gap-8">
+        <img src="{% static 'featured_logos/pennylane.webp' %}" alt="Pennylane" class="h-10 object-contain">
+        <img src="{% static 'featured_logos/qonto.webp' %}" alt="Qonto" class="h-10 object-contain">
+        <img src="{% static 'featured_logos/odoo.webp' %}" alt="Odoo" class="h-10 object-contain">
+        <img src="{% static 'featured_logos/agicap.webp' %}" alt="Agicap" class="h-10 object-contain">
+        <img src="{% static 'featured_logos/sellsy.png' %}" alt="Sellsy" class="h-10 object-contain">
+        <img src="{% static 'featured_logos/fulll.webp' %}" alt="Fulll" class="h-10 object-contain">
+      </div>
     </div>
   </section>
 

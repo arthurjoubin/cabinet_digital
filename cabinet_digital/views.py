@@ -153,7 +153,7 @@ class SoftwareDetailView(DetailView):
                 software.video = f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
 
         categories = software.category.all()
-        all_softwares = Software.objects.exclude(slug=software.slug)
+        all_softwares = Software.objects.filter(is_published=True).exclude(slug=software.slug)
         
         similar_softwares = [
             s for s in all_softwares
