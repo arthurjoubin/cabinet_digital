@@ -12,19 +12,19 @@
 
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {% for article in object_list|dictsortreversed:"pub_date" %}
-        <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-200">
+        <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-200 relative">
+            <div class="absolute top-2 right-4">
+                {% for tags in article.tags.all %}
+                <span class="px-3 py-1 text-s font-medium rounded-full text-white inline-block mb-1" style="background-color: {{ tags.color }};">
+                    {{ tags.name }}
+                </span>
+                {% endfor %}
+            </div>
             <div class="p-6">
                 <p class="text-sm text-gray-500 mb-2">{{ article.pub_date|date:"d/m/Y" }}</p>
                 <a href="{% url 'article_detail' article.slug %}" class="block mb-3">
                     <h2 class="text-xl font-semibold text-gray-800 hover:text-sky-600 transition-colors duration-200">{{ article.title }}</h2>
                 </a>
-                <div class="flex flex-wrap gap-2 mt-4">
-                    {% for category in article.category.all %}
-                    <span class="px-3 py-1 text-xs font-medium rounded-full bg-sky-100 text-sky-800">
-                        {{ category.name }}
-                    </span>
-                    {% endfor %}
-                </div>
             </div>
         </div>
         {% empty %}

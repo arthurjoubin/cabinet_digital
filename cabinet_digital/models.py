@@ -21,6 +21,14 @@ class SoftwareCategory(models.Model):
     class Meta:
         verbose_name_plural = "Software Categories"
 
+class Tag(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    color = models.CharField(max_length=7, default='#000000')
+
+    def __str__(self):
+        return self.name
+    
+
 class Software(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
@@ -62,7 +70,7 @@ class Article(models.Model):
     pub_date = models.DateTimeField(default=timezone.now)
     slug = models.SlugField(unique=True)
     image = models.ImageField(upload_to='articles/images', null=True, blank=True)
-    category = models.ManyToManyField('SoftwareCategory', related_name='categories_articles_link')
+    tags = models.ManyToManyField(Tag, blank=True)
     is_published = models.BooleanField(default=True)
 
     def __str__(self):
@@ -71,12 +79,7 @@ class Article(models.Model):
     def get_absolute_url(self):
         return reverse('article_detail', kwargs={'slug': self.slug})
 
-class Tag(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    color = models.CharField(max_length=7, default='#000000')
 
-    def __str__(self):
-        return self.name
 
 class News(models.Model):
     title = models.CharField(max_length=200)

@@ -10,7 +10,11 @@ class SoftwareInline(admin.TabularInline):
     extra = 1
 
 class ArticleInline(admin.TabularInline):
-    model = Article.category.through
+    model = Article.tags.through
+    extra = 1
+
+class NewsInline(admin.TabularInline):
+    model = News.tags.through
     extra = 1
 
 
@@ -34,7 +38,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'software_count', 'metier')
     search_fields = ('name', 'description')
     list_editable = ('metier',)
-    inlines = [SoftwareInline, ArticleInline]
+    inlines = [SoftwareInline]
 
     def software_count(self, obj):
         return obj.categories_softwares_link.count()
@@ -47,7 +51,7 @@ class CategoryAdmin(admin.ModelAdmin):
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ('title', 'pub_date', 'is_published')
     search_fields = ('title', 'content')
-    list_filter = ('category', 'is_published')
+    list_filter = ('tags', 'is_published')
 
     formfield_overrides = {
         models.TextField: {'widget': TinyMCE()},
@@ -79,6 +83,8 @@ class TagAdmin(admin.ModelAdmin):
     form = TagAdminForm
     list_display = ('name', 'color', 'colored_tag')
     search_fields = ('name',)
+    inlines = [NewsInline, ArticleInline]
+
 
     def colored_tag(self, obj):
         return format_html('<span style="background-color: {}; color: {}; padding: 3px; border-radius: 5px;">{}</span>', obj.color, '#000000' if obj.color == '#FFFFFF' else '#FFFFFF', obj.name)

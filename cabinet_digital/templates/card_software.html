@@ -1,17 +1,17 @@
 {% if software %}
-<article class="bg-white border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md p-6 h-full flex flex-col relative">
+<article class="bg-white border border-gray-200 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md p-2 h-full flex flex-col relative">
     {% if software.is_top_pick %}
         <div class="absolute top-2 right-2 bg-sky-50 text-sky-700 px-3 py-1 text-xs font-semibold rounded-full">Top Pick</div>
     {% endif %}
-    <header class="flex flex-col items-center mb-4">
+    <header class="flex flex-col items-center mb-2">
         {% if software.logo %}
         <div class="w-24 h-24 flex items-center justify-center mb-3">
             <img src="{{ software.logo.url }}" alt="{{ software.name }}" class="max-w-full max-h-full object-contain">
         </div>
         {% endif %}
-        <h3 class="text-xl font-semibold text-gray-900 text-center">{{ software.name }}</h3>
+        <h3 class="text-2xl font-semibold text-gray-900 text-center">{{ software.name }}</h3>
     </header>
-    <p class="text-sm text-gray-600 mb-4 text-center flex-grow">{{ software.excerpt|safe|truncatechars:100 }}</p>
+    <p class="text-base text-gray-600 mb-4 text-center flex-grow">{{ software.excerpt|safe|truncatechars:100 }}</p>
 
     {% if software.category.all %}
     <div class="flex justify-center flex-wrap mb-2">
