@@ -205,6 +205,15 @@ class SoftwareDetailView(DetailView):
             'days_since': days_since,
         })
         return context
+    
+from django.views.generic import TemplateView
+
+class Custom404View(TemplateView):
+    template_name = '404.html'
+
+# Ajoutez cette fonction à la fin du fichier
+def custom_404_view(request, exception):
+    return Custom404View.as_view()(request, exception=exception)
 
 @staff_member_required
 def ai_text_processor(request):

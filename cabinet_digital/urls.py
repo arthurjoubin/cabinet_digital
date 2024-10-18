@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from cabinet_digital import views
-from cabinet_digital.views import ArticleListView, ArticleDetailView, CategoryListView, CategoryDetailView, NewsListView, NewsDetailView, alternative_detail, SoftwareDetailView, SoftwareListView
+from cabinet_digital.views import ArticleListView, ArticleDetailView, CategoryListView, CategoryDetailView, NewsListView, NewsDetailView, alternative_detail, SoftwareDetailView, SoftwareListView, Custom404View
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap, index as sitemap_index
@@ -61,4 +61,8 @@ urlpatterns = [
     re_path(r'^(?P<old_path>solution|news|article|categorie)/(?P<slug>.*)/r/(?P<any_value>.*)$', views.custom_redirect_view, name='custom_redirect')]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += [
+        path('404/', views.Custom404View.as_view(), name='404'),
+    ]
+
+handler404 = 'cabinet_digital.views.custom_404_view'

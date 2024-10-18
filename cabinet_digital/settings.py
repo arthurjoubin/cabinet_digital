@@ -23,9 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-#azpt&8a3so^68v6*@ah7!b++k1w6560^x@iuq(4!9%sh6pcg%'
 
-DEBUG = False
+# Utilisez une variable d'environnement pour contrôler le mode DEBUG
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*']
+# Ajoutez votre nom de domaine à ALLOWED_HOSTS
+ALLOWED_HOSTS = ['cabinetdigital.fr', 'www.cabinetdigital.fr', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -69,6 +71,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'debug': DEBUG,  # Ajoutez cette ligne
         },
     },
 ]
