@@ -24,7 +24,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#azpt&8a3so^68v6*@ah7!b++k1w6560^x@iuq(4!9%sh6pcg%'
 
 # Utilisez une variable d'environnement pour contrôler le mode DEBUG
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+DEBUG = os.environ.get('DJANGO_DEBUG', '').lower() == 'true'
+
+# Forcer DEBUG à False si nous sommes sur PythonAnywhere
+if 'PYTHONANYWHERE_SITE' in os.environ:
+    DEBUG = False
 
 # Ajoutez votre nom de domaine à ALLOWED_HOSTS
 ALLOWED_HOSTS = ['sansdistraction.pythonanywhere.com', 'www.sansdistraction.pythonanywhere.com', 'cabinetdigital.fr', 'www.cabinetdigital.fr', '127.0.0.1', 'localhost']
