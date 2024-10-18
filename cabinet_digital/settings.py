@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-#azpt&8a3so^68v6*@ah7!b++k1w6560^x@iuq(4!9%sh6pcg%
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
 # Ajoutez votre nom de domaine à ALLOWED_HOSTS
-ALLOWED_HOSTS = ['cabinetdigital.fr', 'www.cabinetdigital.fr', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['sansdistraction.pythonanywhere.com', 'www.sansdistraction.pythonanywhere.com', 'cabinetdigital.fr', 'www.cabinetdigital.fr', '127.0.0.1', 'localhost']
 
 
 # Application definition
