@@ -81,8 +81,8 @@ class CategoryDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         category = self.object
         context['category'] = category
+        context['count'] = Software.objects.filter(category=category).count()
         context['softwares'] = Software.objects.filter(category=category)
-        context['articles'] = Article.objects.filter(category=category)
         return context
 
 class SoftwareListView(ListView):

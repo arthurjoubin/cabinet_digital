@@ -12,6 +12,7 @@ class SoftwareCategory(models.Model):
     description = HTMLField()
     slug = models.SlugField(blank=True, unique=False)
     metier = models.ForeignKey('Metier', on_delete=models.CASCADE, null=True, blank=True)
+    is_published = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
