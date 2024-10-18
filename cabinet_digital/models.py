@@ -5,6 +5,7 @@ from django.urls import reverse
 from markdownx.models import MarkdownxField
 from tinymce.models import HTMLField
 from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 
 class SoftwareCategory(models.Model):
     name = models.CharField(max_length=100)
@@ -39,16 +40,18 @@ class Software(models.Model):
     is_published = models.BooleanField(default=False)
     image_principale = models.ImageField(upload_to='images/',null=True, blank=True)
     site = models.URLField(max_length=200, blank=True)
-    video = models.URLField(max_length=200, blank=True)
+    video = models.URLField(max_length=1000, blank=True)
     is_top_pick = models.BooleanField(default=False)
     unique_views = models.IntegerField(default=0)
     metier = models.ForeignKey('Metier', on_delete=models.CASCADE, null=True, blank=True)
 
     def clean(self):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        if Software.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
-            raise ValidationError({'slug': 'Un logiciel avec ce slug existe déjà.'})
+        super().clean()
+        if self.video:
+            try:
+                URLValidator()(self.video)
+            except ValidationError:
+                raise ValidationError({'video': 'Entrez une URL valide.'})
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -102,4 +105,5 @@ class Metier(models.Model):
 
     def __str__(self):
         return self.name
+
 

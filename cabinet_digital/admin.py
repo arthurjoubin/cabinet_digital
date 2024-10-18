@@ -19,15 +19,17 @@ class NewsInline(admin.TabularInline):
 
 
 class SoftwareAdmin(admin.ModelAdmin):
-    list_display = ('name', 'logo', 'category_display', 'is_top_pick', 'is_published')
-    list_filter = ('category', 'is_top_pick', 'is_published')
-    search_fields = ('name', 'description')
-    filter_horizontal = ('category',)
-    list_editable = ('logo', 'is_top_pick', 'is_published')
-
-    def category_display(self, obj):
-        return ", ".join([category.name for category in obj.category.all()])
-    category_display.short_description = 'Categories'
+    list_display = ['name', 'logo', 'video', 'is_published', 'is_top_pick']  # Ajoutez d'autres champs si nécessaire
+    fields = ['name', 'slug', 'description', 'excerpt', 'category', 'logo', 
+              'is_published', 'image_principale', 'site', 'video', 'is_top_pick', 
+              'unique_views', 'metier']
+    list_editable = ['logo', 'video']
+    # fieldsets = [
+    #     (None, {'fields': ['name', 'slug', 'description', 'excerpt']}),
+    #     ('Catégorie et métier', {'fields': ['category', 'metier']}),
+    #     ('Média', {'fields': ['logo', 'image_principale', 'site', 'video']}),
+    #     ('Statut', {'fields': ['is_published', 'is_top_pick', 'unique_views']}),
+    # ]
 
     formfield_overrides = {
         models.TextField: {'widget': TinyMCE()},
