@@ -7,22 +7,28 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-white p-8 rounded-lg shadow-sm border-2 border-gray-200">
-    <h1 class="text-3xl font-semibold text-center mb-8">Les {{ count }} meilleurs logiciels de la catégorie <span class="bg-black text-white px-2 py-1 rounded-lg">{{ category.name }}</span></h1>
+<div class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border-2 border-gray-200">
+    <h1 class="text-2xl sm:text-3xl font-semibold text-center mb-4 sm:mb-6">
+        Les {{ count }} meilleurs logiciels de la catégorie 
+        <span class="inline-block bg-black text-white px-2 py-1 rounded-lg mt-2 sm:mt-0">{{ category.name }}</span>
+    </h1>
     
     {% if category.description %}
-    <div class="mb-12 prose max-w-none bg-sky-50 p-6 rounded-lg border border-sky-200">
+    <div class="mb-6 sm:mb-8 prose max-w-none bg-sky-50 p-4 sm:p-6 rounded-lg border border-sky-200">
         {{ category.description|markdown|safe }}
     </div>
     {% endif %}
     
-    <div class="mb-12 bg-white rounded-lg shadow-sm border border-gray-200">
-        <h2 class="text-2xl font-semibold p-4 border-b border-gray-200 bg-gray-50">Logiciels de la catégorie &nbsp;<span class="bg-black text-white px-2 py-1 rounded-lg">{{ category.name }}</span></h2>
-        <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="mb-6 sm:mb-8 bg-white rounded-lg shadow-sm border border-gray-200">
+        <h2 class="text-xl sm:text-2xl font-semibold p-3 sm:p-4 border-b border-gray-200 bg-gray-50">
+            Logiciels de la catégorie
+            <span class="inline-block bg-black text-white px-2 py-1 rounded-lg mt-2 sm:mt-0">{{ category.name }}</span>
+        </h2>
+        <div class="p-3 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {% for software in softwares %}
                 {% include 'card_software.html' with software=software %}
             {% empty %}
-            <p class="col-span-full text-center text-gray-600 py-8">Aucun logiciel disponible dans cette catégorie pour le moment.</p>
+            <p class="col-span-full text-center text-gray-600 py-4 sm:py-6">Aucun logiciel disponible dans cette catégorie pour le moment.</p>
             {% endfor %}
         </div>
     </div>
