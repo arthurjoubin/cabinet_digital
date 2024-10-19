@@ -18,6 +18,7 @@ from django.shortcuts import redirect
 from django.utils.text import slugify
 import unidecode
 from urllib.parse import unquote
+import os
 
 class ArticleListView(ListView):
     model = Article
@@ -265,3 +266,9 @@ def custom_redirect_view(request, old_path, slug, any_value):
     # Construire l'URL de redirection
     redirect_url = f'/{new_path}/{new_slug}/'
     return redirect(redirect_url, permanent=True)
+
+def software_detail_view(request, slug):
+    software = get_object_or_404(Software, slug=slug)
+    if software.logo:
+        print(f"Chemin absolu du logo : {os.path.join(settings.MEDIA_ROOT, software.logo.name)}")
+    # ... reste de la vue ...
