@@ -19,6 +19,7 @@ from django.utils.text import slugify
 import unidecode
 from urllib.parse import unquote
 import os
+from django.utils.html import escape
 
 class ArticleListView(ListView):
     model = Article
@@ -153,6 +154,8 @@ def alternative_detail(request, slug):
     }
     return render(request, 'alternative_detail.html', context)
 
+from django.utils.safestring import mark_safe
+
 class SoftwareDetailView(DetailView):
     model = Software
     template_name = 'software_detail.html'
@@ -183,24 +186,12 @@ class SoftwareDetailView(DetailView):
 
         if software.video:
             if software.video.endswith('.webp'):
-                software.video = f'<img src="{software.video}" alt="Image de la solution" height="220">'
+                software.video = mark_safe(f'<img src="{escape(software.video)}" alt="Image de la solution" height="220">')
             elif 'youtube.com' in software.video or 'youtu.be' in software.video:
                 video_id = software.video.split('v=')[-1] if 'v=' in software.video else software.video.split('/')[-1]
-                software.video = f'''
-                <div class="youtube-video-container flex justify-center p-4">
-                    <iframe 
-                        width="560" 
-                        height="200" 
-                        src="https://www.youtube.com/embed/{video_id}" 
-                        title="YouTube video player" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen 
-                        loading="lazy"
-                        class="w-full md:w-3/4 lg:w-2/3 xl:w-1/2 aspect-video rounded-lg shadow-md">
-                    </iframe>
-                </div>
-                '''
+                software.video = mark_safe(f'''
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/{escape(video_id)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                ''')
 
         categories = software.category.all()
         all_softwares = Software.objects.filter(is_published=True).exclude(slug=software.slug)
@@ -282,9 +273,3 @@ def custom_redirect_view(request, old_path, slug, any_value):
     # Construire l'URL de redirection
     redirect_url = f'/{new_path}/{new_slug}/'
     return redirect(redirect_url, permanent=True)
-
-def software_detail_view(request, slug):
-    software = get_object_or_404(Software, slug=slug)
-    if software.logo:
-        print(f"Chemin absolu du logo : {os.path.join(settings.MEDIA_ROOT, software.logo.name)}")
-    # ... reste de la vue ...
