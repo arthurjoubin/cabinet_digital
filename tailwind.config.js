@@ -2,11 +2,12 @@
 module.exports = {
   content: [
     './cabinet_digital/templates/**/*.html',
-    './static/src/**/*.css',  // Ajout pour inclure vos fichiers CSS personnalisés
+    './static/src/**/*.css', // Inclure les fichiers CSS personnalisés
   ],
   theme: {
-    extend: {
-    },
+    extend: {},
   },
-  plugins: [require('@tailwindcss/typography')],
-}
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
+};

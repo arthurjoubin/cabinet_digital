@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from cabinet_digital import views
-from cabinet_digital.views import ArticleListView, ArticleDetailView, CategoryListView, CategoryDetailView, NewsListView, NewsDetailView, alternative_detail, SoftwareDetailView, SoftwareListView, Custom404View
+from cabinet_digital.views import ArticleListView, ArticleDetailView, CategoryListView, CategoryDetailView, ActualitesListView, ActualitesDetailView, alternative_detail, SoftwareDetailView, SoftwareListView, Custom404View
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap, index as sitemap_index
@@ -42,7 +42,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('logiciels/<str:slug>/', SoftwareDetailView.as_view(), name='software_detail'),
     re_path(r'^solution/(?P<slug>[\w-]+[^/]+)/r/(?P<any_value>.+)$', views.custom_redirect_view, {'target_path': 'logiciels'}, name='solution_redirect'),
-    re_path(r'^news/(?P<slug>[\w-]+[^/]+)/r/(?P<any_value>.+)$', views.custom_redirect_view, {'target_path': 'actualites'}, name='news_redirect'),
+    re_path(r'^actualites/(?P<slug>[\w-]+[^/]+)/r/(?P<any_value>.+)$', views.custom_redirect_view, {'target_path': 'actualites'}, name='actualites_redirect'),
     re_path(r'^article/(?P<slug>[\w-]+[^/]+)/r/(?P<any_value>.+)$', views.custom_redirect_view, {'target_path': 'articles'}, name='article_redirect'),
     re_path(r'^categorie/(?P<slug>[\w-]+[^/]+)/r/(?P<any_value>.+)$', views.custom_redirect_view, {'target_path': 'categories'}, name='category_redirect'),
     path('categories/', CategoryListView.as_view(), name='category_list'),
@@ -50,8 +50,8 @@ urlpatterns = [
     path('articles/', ArticleListView.as_view(), name='articles'),
     path('articles/<slug:slug>/', ArticleDetailView.as_view(), name='article_detail'),
     path('contact/', views.contact, name='contact'),
-    path('actualites/', NewsListView.as_view(), name='news_list'),
-    path('actualites/<slug:slug>/', NewsDetailView.as_view(), name='news_detail'),
+    path('actualites/', ActualitesListView.as_view(), name='actualites'),
+    path('actualites/<slug:slug>/', ActualitesDetailView.as_view(), name='actualites_detail'),
     path('markdownx/', include('markdownx.urls')),
     path('tinymce/', include('tinymce.urls')),
     path('logiciels/<str:slug>/alternatives/', alternative_detail, name='alternative_detail'),

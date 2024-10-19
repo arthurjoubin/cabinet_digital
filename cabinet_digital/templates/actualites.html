@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta_description %}
+<title>Actualités de l'expertise comptable - Cabinet Digital</title>
+<meta name="description" content="Dernières actualités et tendances en expertise comptable et logiciels pour experts-comptables.">
+{% endblock %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+    <h1 class="text-2xl font-bold mb-4">Actualités</h1>
+
+    <div class="space-y-4">
+        {% for actualite in actualites %}
+        <article class="pb-4 border-b border-gray-100 last:border-b-0">
+            <time class="text-sm text-gray-500">{{ actualite.date|date:"d/m/Y" }}</time>
+            <h2 class="mt-1 mb-2">
+                <a href="{% url 'actualites_detail' actualite.slug %}" class="text-lg font-semibold text-black hover:text-gray-700 transition-colors duration-200">
+                    {{ actualite.title }}
+                </a>
+            </h2>
+            <div class="flex flex-wrap gap-2">
+                {% for tag in actualite.tags.all %}
+                    <span class="px-2 py-1 text-xs font-semibold rounded" style="background-color: {{ tag.color }}; color: {% if tag.color == '#FFFFFF' %}#000000{% else %}#FFFFFF{% endif %};">
+                        {{ tag.name }}
+                    </span>
+                {% endfor %}
+            </div>
+        </article>
+        {% empty %}
+        <p class="text-center text-gray-600 py-4">Aucune actualité disponible pour le moment.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

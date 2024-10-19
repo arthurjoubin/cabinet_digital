@@ -20,11 +20,11 @@
     {% endif %}
     
     <div class="mb-6 sm:mb-8 bg-white rounded-lg shadow-sm border border-gray-200">
-        <h2 class="text-xl sm:text-2xl font-semibold p-3 sm:p-4 border-b border-gray-200 bg-gray-50">
+        <h2 class="text-xl sm:text-2xl font-semibold p-2 border-b border-gray-200 bg-sky-50 text-center">
             Logiciels de la catégorie
             <span class="inline-block bg-black text-white px-2 py-1 rounded-lg mt-2 sm:mt-0">{{ category.name }}</span>
         </h2>
-        <div class="p-3 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div class="p-4 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {% for software in softwares %}
                 {% include 'card_software.html' with software=software %}
             {% empty %}

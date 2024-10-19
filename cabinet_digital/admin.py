@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Software, SoftwareCategory, Article, News, Tag, Metier
+from .models import Software, SoftwareCategory, Article, Actualites, Tag, Metier
 from django.db import models
 from tinymce.widgets import TinyMCE
 from django import forms
@@ -13,8 +13,8 @@ class ArticleInline(admin.TabularInline):
     model = Article.tags.through
     extra = 1
 
-class NewsInline(admin.TabularInline):
-    model = News.tags.through
+class ActualitesInline(admin.TabularInline):
+    model = Actualites.tags.through
     extra = 1
 
 
@@ -59,7 +59,7 @@ class ArticleAdmin(admin.ModelAdmin):
         models.TextField: {'widget': TinyMCE()},
     }
 
-class NewsAdmin(admin.ModelAdmin):
+class ActualitesAdmin(admin.ModelAdmin):
     list_display = ('title', 'date', 'is_published', 'tag_list')
     list_filter = ('is_published', 'date', 'tags')
     search_fields = ('title', 'content')
@@ -85,7 +85,7 @@ class TagAdmin(admin.ModelAdmin):
     form = TagAdminForm
     list_display = ('name', 'color', 'colored_tag')
     search_fields = ('name',)
-    inlines = [NewsInline, ArticleInline]
+    inlines = [ActualitesInline, ArticleInline]
 
 
     def colored_tag(self, obj):
@@ -98,6 +98,6 @@ class MetierAdmin(admin.ModelAdmin):
 admin.site.register(Software, SoftwareAdmin)
 admin.site.register(SoftwareCategory, CategoryAdmin)
 admin.site.register(Article, ArticleAdmin)
-admin.site.register(News, NewsAdmin)
+admin.site.register(Actualites, ActualitesAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Metier, MetierAdmin)

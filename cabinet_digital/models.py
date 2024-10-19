@@ -85,7 +85,7 @@ class Article(models.Model):
 
 
 
-class News(models.Model):
+class Actualites(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
     excerpt = models.TextField(blank=True)
@@ -98,7 +98,7 @@ class News(models.Model):
         return self.title
 
     class Meta:
-        verbose_name_plural = "News"
+        verbose_name_plural = "Actualites"
 
 class Metier(models.Model):
     name = models.CharField(max_length=100)

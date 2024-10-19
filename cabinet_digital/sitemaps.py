@@ -1,6 +1,6 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from .models import SoftwareCategory, Software, Article, News
+from .models import SoftwareCategory, Software, Article, Actualites
 from django.utils import timezone
 
 class StaticViewSitemap(Sitemap):
@@ -34,9 +34,9 @@ class ArticleSitemap(Sitemap):
     def lastmod(self, obj):
         return obj.pub_date
 
-class NewsSitemap(Sitemap):
+class ActualitesSitemap(Sitemap):
     def items(self):
-        return News.objects.filter(is_published=True)
+        return Actualites.objects.filter(is_published=True)
 
     def lastmod(self, obj):
         return obj.date
@@ -46,5 +46,5 @@ sitemaps = {
     'categories': CategorySitemap,
     'softwares': SoftwareSitemap,
     'articles': ArticleSitemap,
-    'news': NewsSitemap,
+    'actualites': ActualitesSitemap,
 }

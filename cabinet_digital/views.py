@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Software, SoftwareCategory, Article, News
+from .models import Software, SoftwareCategory, Article, Actualites
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
@@ -94,7 +94,9 @@ class SoftwareListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['categories'] = SoftwareCategory.objects.all()
+        context['categories'] = SoftwareCategory.objects.annotate(
+            software_count=Count('categories_softwares_link')
+        ).order_by('name')
         context['selected_category'] = self.request.GET.get('categorie')
         context['search_query'] = self.request.GET.get('search', '')
         return context
@@ -110,25 +112,25 @@ class SoftwareListView(ListView):
             queryset = queryset.filter(Q(name__icontains=search) | Q(description__icontains=search))
         return queryset
 
-class NewsListView(ListView):
-    model = News
-    template_name = 'news.html'
-    context_object_name = 'news_list'
+class ActualitesListView(ListView):
+    model = Actualites
+    template_name = 'actualites.html'
+    context_object_name = 'actualites'
 
     def get_queryset(self):
-        return News.objects.filter(is_published=True).order_by('-date')
+        return Actualites.objects.filter(is_published=True).order_by('-date')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        news_list = self.get_queryset()
+        actualites = self.get_queryset()
         # Supprimez cette ligne qui cause l'erreur
         # categories = SoftwareCategory.objects.filter(news__in=news_list).distinct()
         # context['categories'] = categories
         return context
 
-class NewsDetailView(DetailView):
-    model = News
-    template_name = 'news_detail.html'
+class ActualitesDetailView(DetailView):
+    model = Actualites
+    template_name = 'actualites_detail.html'
 
     def get_object(self, queryset=None):
         if queryset is None:
@@ -184,7 +186,7 @@ class SoftwareDetailView(DetailView):
                 software.video = f'<img src="{software.video}" alt="Image de la solution" height="220">'
             elif 'youtube.com' in software.video or 'youtu.be' in software.video:
                 video_id = software.video.split('v=')[-1] if 'v=' in software.video else software.video.split('/')[-1]
-                software.video = f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+                software.video = f'<div class="flex justify-center p-4"><iframe class="aspect-video md:aspect-[16/9] lg:aspect-[16/9] xl:aspect-[16/9] w-full md:w-3/4 lg:w-2/3 xl:w-1/2 rounded-lg shadow-md" src="https://www.youtube.com/embed/{video_id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>'
 
         categories = software.category.all()
         all_softwares = Software.objects.filter(is_published=True).exclude(slug=software.slug)
