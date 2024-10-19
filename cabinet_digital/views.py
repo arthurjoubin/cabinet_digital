@@ -186,7 +186,29 @@ class SoftwareDetailView(DetailView):
                 software.video = f'<img src="{software.video}" alt="Image de la solution" height="220">'
             elif 'youtube.com' in software.video or 'youtu.be' in software.video:
                 video_id = software.video.split('v=')[-1] if 'v=' in software.video else software.video.split('/')[-1]
-                software.video = f'<div class="flex justify-center p-4"><iframe class="aspect-video md:aspect-[16/9] lg:aspect-[16/9] xl:aspect-[16/9] w-full md:w-3/4 lg:w-2/3 xl:w-1/2 rounded-lg shadow-md" src="https://www.youtube.com/embed/{video_id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>'
+                software.video = f'''
+                <div class="flex justify-center p-4">
+                    <div class="aspect-video w-full md:w-3/4 lg:w-2/3 xl:w-1/2 rounded-lg shadow-md bg-gray-200 flex items-center justify-center cursor-pointer" onclick="loadYouTubeVideo(this, '{video_id}')">
+                        <img src="https://img.youtube.com/vi/{video_id}/0.jpg" alt="Thumbnail de la vidéo YouTube" class="w-full h-full object-cover rounded-lg">
+                        <div class="absolute flex items-center justify-center">
+                            <svg class="w-20 h-20 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                function loadYouTubeVideo(element, videoId) {{
+                    var iframe = document.createElement('iframe');
+                    iframe.setAttribute('src', 'https://www.youtube.com/embed/' + videoId + '?autoplay=1');
+                    iframe.setAttribute('frameborder', '0');
+                    iframe.setAttribute('allowfullscreen', '');
+                    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+                    iframe.className = element.className;
+                    element.parentNode.replaceChild(iframe, element);
+                }}
+                </script>
+                '''
 
         categories = software.category.all()
         all_softwares = Software.objects.filter(is_published=True).exclude(slug=software.slug)
