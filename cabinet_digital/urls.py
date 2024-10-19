@@ -67,7 +67,6 @@ if settings.DEBUG:
 handler404 = 'cabinet_digital.views.custom_404_view'
 
 # Servir les fichiers média en production et en développement
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
 if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
