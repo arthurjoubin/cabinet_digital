@@ -8,14 +8,14 @@
 
 {% block content %}
 <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-    <h1 class="text-2xl font-bold mb-4">Actualités</h1>
+    <h1 class="custom-header">Actualités</h1>
 
-    <div class="space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         {% for actualite in actualites %}
-        <article class="pb-4 border-b border-gray-100 last:border-b-0">
-            <time class="text-sm text-gray-500">{{ actualite.date|date:"d/m/Y" }}</time>
+        <article class="border border-gray-100 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+            <time class="text-sm text-sky-600">{{ actualite.date|date:"d/m/Y" }}</time>
             <h2 class="mt-1 mb-2">
-                <a href="{% url 'actualites_detail' actualite.slug %}" class="text-lg font-semibold text-black hover:text-gray-700 transition-colors duration-200">
+                <a href="{% url 'actualites_detail' actualite.slug %}" class="text-lg font-semibold text-black hover:text-sky-600 transition-colors duration-200">
                     {{ actualite.title }}
                 </a>
             </h2>
@@ -28,7 +28,7 @@
             </div>
         </article>
         {% empty %}
-        <p class="text-center text-gray-600 py-4">Aucune actualité disponible pour le moment.</p>
+        <p class="text-center text-gray-600 py-4 col-span-2">Aucune actualité disponible pour le moment.</p>
         {% endfor %}
     </div>
 </div>

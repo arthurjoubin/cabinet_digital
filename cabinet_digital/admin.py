@@ -37,9 +37,9 @@ class SoftwareAdmin(admin.ModelAdmin):
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'software_count', 'metier')
+    list_display = ('name', 'software_count', 'metier', 'is_published')
     search_fields = ('name', 'description')
-    list_editable = ('metier',)
+    list_editable = ('metier','is_published')
     inlines = [SoftwareInline]
 
     def software_count(self, obj):
