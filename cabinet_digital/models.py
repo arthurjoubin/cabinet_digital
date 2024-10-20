@@ -90,7 +90,7 @@ class Actualites(models.Model):
     content = models.TextField()
     excerpt = models.TextField(blank=True)
     slug = models.SlugField(unique=True)
-    date = models.DateTimeField(default=timezone.now)
+    pub_date = models.DateTimeField(default=timezone.now)
     is_published = models.BooleanField(default=True)
     tags = models.ManyToManyField(Tag, blank=True)
 

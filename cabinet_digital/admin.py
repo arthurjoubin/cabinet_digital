@@ -60,8 +60,8 @@ class ArticleAdmin(admin.ModelAdmin):
     }
 
 class ActualitesAdmin(admin.ModelAdmin):
-    list_display = ('title', 'date', 'is_published', 'tag_list')
-    list_filter = ('is_published', 'date', 'tags')
+    list_display = ('title', 'pub_date', 'is_published', 'tag_list')
+    list_filter = ('is_published', 'pub_date', 'tags')
     search_fields = ('title', 'content')
     prepopulated_fields = {'slug': ('title',)}
     filter_horizontal = ('tags',)

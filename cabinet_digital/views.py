@@ -119,7 +119,7 @@ class ActualitesListView(ListView):
     context_object_name = 'actualites'
 
     def get_queryset(self):
-        return Actualites.objects.filter(is_published=True).order_by('-date')
+        return Actualites.objects.filter(is_published=True).order_by('pub_date')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -131,7 +131,8 @@ class ActualitesListView(ListView):
 
 class ActualitesDetailView(DetailView):
     model = Actualites
-    template_name = 'actualites_detail.html'
+    template_name = 'actualite_detail.html'
+    context_object_name = 'actualite'  # Ajoutez cette ligne
 
     def get_object(self, queryset=None):
         if queryset is None:
@@ -143,6 +144,10 @@ class ActualitesDetailView(DetailView):
         clean_slug = slugify(decoded_slug)[:49]  # Limiter à 49 caractères
         
         return get_object_or_404(queryset, slug=clean_slug, is_published=True)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 def alternative_detail(request, slug):
     software = get_object_or_404(Software, slug=slug)

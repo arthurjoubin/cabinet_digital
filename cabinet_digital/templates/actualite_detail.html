@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block meta_description %}
+<title>{{ actualite.title }} - Cabinet Digital</title>
+<meta name="description" content="{{ actualite.excerpt }}">
+{% endblock %}
+
+{% block content %}
+{% include "template_article.html" with variable=actualite custom_plural='actualités' %}
+
+{% endblock %}

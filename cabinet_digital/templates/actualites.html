@@ -7,28 +7,15 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+<div class="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
     <h1 class="custom-header">Actualités</h1>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {% for actualite in actualites %}
-        <article class="border border-gray-100 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
-            <time class="text-sm text-sky-600">{{ actualite.date|date:"d/m/Y" }}</time>
-            <h2 class="mt-1 mb-2">
-                <a href="{% url 'actualites_detail' actualite.slug %}" class="text-lg font-semibold text-black hover:text-sky-600 transition-colors duration-200">
-                    {{ actualite.title }}
-                </a>
-            </h2>
-            <div class="flex flex-wrap gap-2">
-                {% for tag in actualite.tags.all %}
-                    <span class="px-2 py-1 text-xs font-semibold rounded" style="background-color: {{ tag.color }}; color: {% if tag.color == '#FFFFFF' %}#000000{% else %}#FFFFFF{% endif %};">
-                        {{ tag.name }}
-                    </span>
-                {% endfor %}
-            </div>
-        </article>
+            {% include "template_card_article.html" with article=actualite articles='actualités' article_detail='actualite_detail' %}
         {% empty %}
-        <p class="text-center text-gray-600 py-4 col-span-2">Aucune actualité disponible pour le moment.</p>
+        <div class="col-span-full text-center text-gray-600 py-16">
+            <p class="text-xl">Aucune actualité disponible pour le moment.</p>
+        </div>
         {% endfor %}
     </div>
 </div>

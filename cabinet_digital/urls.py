@@ -51,7 +51,7 @@ urlpatterns = [
     path('articles/<slug:slug>/', ArticleDetailView.as_view(), name='article_detail'),
     path('contact/', views.contact, name='contact'),
     path('actualites/', ActualitesListView.as_view(), name='actualites'),
-    path('actualites/<slug:slug>/', ActualitesDetailView.as_view(), name='actualites_detail'),
+    path('actualites/<slug:slug>/', ActualitesDetailView.as_view(), name='actualite_detail'),
     path('markdownx/', include('markdownx.urls')),
     path('tinymce/', include('tinymce.urls')),
     path('logiciels/<str:slug>/alternatives/', alternative_detail, name='alternative_detail'),

@@ -1,0 +1,35 @@
+{% load markdown_extras %}
+
+<article class="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+    <header class="mb-8 border-b border-gray-200 pb-6">
+        <nav class="mb-6">
+            <a href="{% url 'articles' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-sky-700 bg-sky-50 rounded-lg hover:bg-sky-100 transition-colors duration-300">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                {% if custom_plural %}
+                    Revenir aux {{ custom_plural }}
+                {% else %}
+                    Revenir à la liste
+                {% endif %}
+            </a>
+        </nav>
+        <h1 class="text-3xl font-bold mb-4 text-gray-800">{{ variable.title }}</h1>
+        <p class="text-gray-600 text-sm mb-4">Publié le {{ variable.pub_date|date:"d F Y"|lower }}</p>
+        <div class="flex flex-wrap gap-2">
+            {% for tag in variable.tags.all %}
+                <span class="px-2 py-1 text-xs font-semibold rounded-full" style="background-color: {{ tag.color }}; color: {% if tag.color == '#FFFFFF' %}#000000{% else %}#FFFFFF{% endif %};">{{ tag.name }}</span>
+            {% endfor %}
+        </div>
+    </header>
+    <content>
+        <div class="prose max-w-none mb-16">
+            {{ variable.content|markdown|safe }}
+        </div>
+    </content>
+    <footer class="bg-white p-12 border-t border-gray-200 rounded-b-lg shadow-sm text-center">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">À propos de <span class="bg-black text-white px-1 rounded">Cabinet Digital</span></h2>
+        <p class="text-gray-700 leading-relaxed max-w-2xl mx-auto">
+          Cabinet Digital est un site indépendant dédié aux entreprises et experts-comptables. Notre mission est de vous aider à choisir les logiciels les plus adaptés à vos besoins spécifiques en matière de comptabilité, gestion et finance.
+        </p>
+    </footer>
+</article>
+
