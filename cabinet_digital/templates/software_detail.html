@@ -10,9 +10,9 @@
   <div class="p-4 sm:p-6 border-b border-gray-200">
     <div class="flex flex-col space-y-4">
       <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4">
-        <a href="{% url 'software_list' %}" class="text-sm font-medium text-gray-600 hover:text-black flex items-center transition-colors duration-300" hx-boost="false">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-          Retour à la liste des logiciels
+        <a href="{% url 'software_list' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-sky-700 bg-sky-50 rounded-lg hover:bg-sky-100 transition-colors duration-300">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Retour à la liste des logiciels
         </a>
         <div class="bg-sky-50 text-sky-700 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center sm:justify-start">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -78,7 +78,7 @@
     {% if similar_softwares %}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 justify-items-center">
       {% for software in similar_softwares %}
-      {% include 'card_software.html' %}
+      {% include 'template_card_software.html' %}
       {% endfor %}
     </div>
     <div class="flex justify-center mt-6 sm:mt-8">
