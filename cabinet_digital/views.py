@@ -223,6 +223,9 @@ class Custom404View(TemplateView):
 def custom_404_view(request, exception):
     return Custom404View.as_view()(request, exception=exception)
 
+def robots_txt(request):
+    return render(request, 'robots.txt', content_type='text/plain')
+
 @staff_member_required
 def ai_text_processor(request):
     context = {

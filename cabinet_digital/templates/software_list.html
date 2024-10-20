@@ -12,6 +12,7 @@
         <form action="{% url 'software_list' %}" method="get" class="w-full md:w-[40%]">
             <input type="hidden" name="search" value="{{ search_query }}">
             <div class="relative">
+                <label for="category-filter" class="sr-only">Filtrer par catégorie</label>
                 <select id="category-filter" name="categorie" onchange="this.form.submit()" class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-300 appearance-none transition-all duration-300 hover:border-sky-200">
                     <option value="">Toutes les catégories</option>
                     {% for category in categories %}
@@ -31,8 +32,9 @@
         <form action="{% url 'software_list' %}" method="get" class="w-full md:w-[30%]">
             <input type="hidden" name="categorie" value="{{ selected_category }}">
             <div class="flex flex-col sm:flex-row">
+                <label for="search-input" class="sr-only">Rechercher un logiciel</label>
                 <input type="text" id="search-input" name="search" placeholder="Rechercher un logiciel" class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-300 rounded-md sm:rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-200" value="{{ search_query }}">
-                <button type="submit" class="w-full sm:w-auto mt-2 sm:mt-0 px-6 py-3 bg-sky-600 text-white rounded-md sm:rounded-l-none hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-400 transition duration-300">
+                <button type="submit" class="w-full sm:w-auto mt-2 sm:mt-0 px-6 py-3 bg-sky-700 text-white rounded-md sm:rounded-l-none hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-400 transition duration-300">
                     Rechercher
                 </button>
             </div>
@@ -49,20 +51,20 @@
             <div class="inline-flex rounded-md shadow-sm">
                 {% if page_obj.has_previous %}
                     <a href="?page={{ page_obj.previous_page_number }}&categorie={{ selected_category|default:'' }}&search={{ search_query }}"
-                       class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50 transition duration-300">
+                       class="px-4 py-2 text-sm font-semibold text-black bg-white border border-black rounded-l-md hover:bg-black hover:text-white transition duration-300">
                         Précédent
                     </a>
                 {% else %}
                     <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-300 rounded-l-md cursor-not-allowed">Précédent</span>
                 {% endif %}
                 
-                <span class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border-t border-b border-gray-300">
+                <span class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-300">
                     Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
                 </span>
                 
                 {% if page_obj.has_next %}
                     <a href="?page={{ page_obj.next_page_number }}&categorie={{ selected_category|default:'' }}&search={{ search_query }}"
-                       class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50 transition duration-300">
+                       class="px-4 py-2 text-sm font-semibold text-black bg-white border border-black rounded-r-md hover:bg-black hover:text-white transition duration-300">
                         Suivant
                     </a>
                 {% else %}

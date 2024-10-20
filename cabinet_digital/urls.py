@@ -58,7 +58,9 @@ urlpatterns = [
     path('sitemap.xml', sitemap_index, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.index'),
     path('sitemap-<section>.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('ai-text-processor/', views.ai_text_processor, name='ai_text_processor'),
-    re_path(r'^(?P<old_path>solution|news|article|categorie)/(?P<slug>.*)/r/(?P<any_value>.*)$', views.custom_redirect_view, name='custom_redirect')]
+    re_path(r'^(?P<old_path>solution|news|article|categorie)/(?P<slug>.*)/r/(?P<any_value>.*)$', views.custom_redirect_view, name='custom_redirect'),
+    path('robots.txt', views.robots_txt, name='robots_txt'),
+    ]
 
 if settings.DEBUG:
     urlpatterns += [
