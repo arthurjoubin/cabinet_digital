@@ -190,11 +190,11 @@ class SoftwareDetailView(DetailView):
 
         if software.video:
             if software.video.endswith('.webp'):
-                software.video = mark_safe(f'<img src="{escape(software.video)}" alt="Image de la solution" height="220">')
+                software.video = mark_safe(f'<img src="{escape(software.video)}" alt="Image de la solution" height="220" loading="lazy">')
             elif 'youtube.com' in software.video or 'youtu.be' in software.video:
                 video_id = software.video.split('v=')[-1] if 'v=' in software.video else software.video.split('/')[-1]
                 software.video = mark_safe(f'''
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/{escape(video_id)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/{escape(video_id)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
                 ''')
 
         categories = software.category.all()
