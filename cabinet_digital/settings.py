@@ -35,7 +35,7 @@ if not DEBUG:
     ALLOWED_HOSTS = ['cabinetdigital.fr', 'www.cabinetdigital.fr']
 
 # Ajoutez votre nom de domaine à ALLOWED_HOSTS
-ALLOWED_HOSTS = ['sansdistraction.pythonanywhere.com', 'www.sansdistraction.pythonanywhere.com', 'cabinetdigital.fr', 'www.cabinetdigital.fr', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['sansdistraction.eu.pythonanywhere.com', 'www.sansdistraction.eu.pythonanywhere.com', 'cabinetdigital.fr', 'www.cabinetdigital.fr', '127.0.0.1', 'localhost']
 
 
 # Application definition

@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
 
+
 {% block meta_description %}
-<title>Actualités de l'expertise comptable - Cabinet Digital</title>
+<title>Cabinet Digital - Actualités des logiciels pour experts-comptables et financiers</title>
 <meta name="description" content="Dernières actualités et tendances en expertise comptable et logiciels pour experts-comptables.">
 {% endblock %}
 
 {% block content %}
-<div class="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
+<div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
     <h1 class="custom-header">Actualités</h1>
     <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {% for actualite in actualites %}

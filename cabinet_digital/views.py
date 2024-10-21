@@ -53,11 +53,10 @@ class CategoryListView(ListView):
     model = SoftwareCategory
     template_name = 'category_list.html'
     context_object_name = 'categories'
-
     def get_queryset(self):
         return SoftwareCategory.objects.annotate(
             software_count=Count('categories_softwares_link')
-        ).order_by('name')
+        ).order_by('name').filter(software_count__gt=0)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
