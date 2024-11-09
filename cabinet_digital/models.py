@@ -13,6 +13,7 @@ class SoftwareCategory(models.Model):
     slug = models.SlugField(blank=True, unique=False)
     metier = models.ForeignKey('Metier', on_delete=models.CASCADE, null=True, blank=True)
     is_published = models.BooleanField(default=False)
+    icon = models.FileField(upload_to='icons/', null=True, blank=True)
 
     def __str__(self):
         return self.name

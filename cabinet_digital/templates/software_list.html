@@ -1,8 +1,14 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block meta_description %}
-<title>Cabinet Digital - Les meilleurs logiciels pour experts-comptables</title>
+<title>Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital</title>
 <meta name="description" content="Découvrez notre liste complète de logiciels. Trouvez les meilleurs outils pour vos besoins professionnels, filtrés par catégorie et facilement recherchables.">
+<meta property="og:title" content="Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital">
+<meta property="og:description" content="Découvrez notre liste complète de logiciels. Trouvez les meilleurs outils pour vos besoins professionnels, filtrés par catégorie et facilement recherchables.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
 {% endblock %}
 
 {% block content %}

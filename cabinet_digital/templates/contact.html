@@ -1,8 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
 {% block meta_description %}
-<title>Cabinet Digital - Formulaire de contact</title>
+<title>Formulaire de contact - Cabinet Digital</title>
 <meta name="description" content="Contactez-nous pour toute question ou suggestion concernant Cabinet Digital. Nous sommes là pour vous aider.">
+<meta property="og:title" content="Formulaire de contact - Cabinet Digital">
+<meta property="og:description" content="Contactez-nous pour toute question ou suggestion concernant Cabinet Digital. Nous sommes là pour vous aider.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
 {% endblock %}
 <div class="bg-white p-8 rounded-lg shadow-sm border-2 border-gray-200">
     <h1 class="custom-header">Formulaire de contact</h1>

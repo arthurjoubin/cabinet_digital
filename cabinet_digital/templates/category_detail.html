@@ -1,9 +1,14 @@
 {% extends 'base.html' %}
-{% load markdown_extras %}
+{% load static %}
 
 {% block meta_description %}
-<title>Cabinet Digital - Les {{ softwares|length }} meilleures solutions de {{ category.name }}</title>
-<meta name="description" content="Découvrez les {{ softwares|length }} meilleures solutions de la catégorie {{ category.name }}. Trouvez la solution qui répond à vos besoins.">
+<title>Les {{ softwares|length }} meilleures solutions de la catégorie {{ category.name }} - Cabinet Digital</title>
+<meta name="description" content="Découvrez les {{ softwares|length }} meilleures solutions de la catégorie {{ category.name }}. Découvrir et trouver la solution qui répond à vos besoins parmis la liste.">
+<meta property="og:title" content="Les {{ softwares|length }} meilleures solutions de la catégorie {{ category.name }} - Cabinet Digital">
+<meta property="og:description" content="Découvrez les {{ softwares|length }} meilleures solutions de la catégorie {{ category.name }}. Découvrir et trouver la solution qui répond à vos besoins parmis la liste.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
 {% endblock %}
 
 {% block content %}
@@ -15,7 +20,7 @@
     
     {% if category.description %}
     <div class="mb-6 sm:mb-8 prose max-w-none bg-sky-50 p-4 sm:p-6 rounded-lg border border-sky-200">
-        {{ category.description|markdown|safe }}
+        {{ category.description|safe }}
     </div>
     {% endif %}
     

@@ -5,31 +5,37 @@ from tinymce.widgets import TinyMCE
 from django import forms
 from django.utils.html import format_html
 
-class SoftwareInline(admin.TabularInline):
-    model = Software.category.through
+class ActualitesInline(admin.TabularInline):
+    model = Actualites.tags.through
     extra = 1
+    ordering = ('tag__name',)
 
 class ArticleInline(admin.TabularInline):
     model = Article.tags.through
     extra = 1
+    ordering = ('tag__name',)
 
-class ActualitesInline(admin.TabularInline):
-    model = Actualites.tags.through
+class SoftwareInline(admin.TabularInline):
+    model = Software.category.through
     extra = 1
+    ordering = ('softwarecategory__name',)
 
 
 class SoftwareAdmin(admin.ModelAdmin):
-    list_display = ['name', 'logo', 'video', 'is_published', 'is_top_pick']  # Ajoutez d'autres champs si nécessaire
+    list_display = ['name', 'formatted_description', 'categories_list', 'is_published']
     fields = ['name', 'slug', 'description', 'excerpt', 'category', 'logo', 
               'is_published', 'image_principale', 'site', 'video', 'is_top_pick', 
               'unique_views', 'metier']
-    list_editable = ['logo', 'video']
-    # fieldsets = [
-    #     (None, {'fields': ['name', 'slug', 'description', 'excerpt']}),
-    #     ('Catégorie et métier', {'fields': ['category', 'metier']}),
-    #     ('Média', {'fields': ['logo', 'image_principale', 'site', 'video']}),
-    #     ('Statut', {'fields': ['is_published', 'is_top_pick', 'unique_views']}),
-    # ]
+    list_filter = ('is_published',)
+
+
+    def formatted_description(self, obj):
+        return format_html(obj.description)
+    formatted_description.short_description = 'Description'
+
+    def categories_list(self, obj):
+        return ", ".join([category.name for category in obj.category.all()])
+    categories_list.short_description = 'Catégories'
 
     formfield_overrides = {
         models.TextField: {'widget': TinyMCE()},
@@ -37,14 +43,14 @@ class SoftwareAdmin(admin.ModelAdmin):
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'software_count', 'metier', 'is_published')
+    list_display = ('name', 'slug', 'is_published', 'icon', 'software_count')
     search_fields = ('name', 'description')
-    list_editable = ('metier','is_published')
+    list_editable = ('slug', 'is_published', 'icon')
     inlines = [SoftwareInline]
 
     def software_count(self, obj):
-        return obj.categories_softwares_link.count()
-    software_count.short_description = 'Number of Software'
+        return Software.objects.filter(category=obj).count()
+    software_count.short_description = 'Nombre de logiciels'
 
     formfield_overrides = {
         models.TextField: {'widget': TinyMCE()},

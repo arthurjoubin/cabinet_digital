@@ -1,8 +1,13 @@
 {% extends 'base.html' %}
 
 {% block meta_description %}
-<title>Cabinet Digital - {{ actualite.title }}</title>
+<title>{{ actualite.title }} - Cabinet Digital</title>
 <meta name="description" content="{{ actualite.excerpt }}">
+<meta property="og:title" content="{{ actualite.title }} - Cabinet Digital">
+<meta property="og:description" content="{{ actualite.excerpt }}">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
 {% endblock %}
 
 {% block content %}

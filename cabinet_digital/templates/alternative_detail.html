@@ -1,8 +1,13 @@
 {% extends 'base.html' %}
 
 {% block meta_description %}
-<title>Cabinet Digital - Alternatives à {{ software.name }} </title>
+<title>Alternatives à {{ software.name }} - Cabinet Digital</title>
 <meta name="description" content="Découvrez les meilleures alternatives à {{ software.name }}. Comparez les fonctionnalités et trouvez la solution idéale pour votre entreprise.">
+<meta property="og:title" content="Alternatives à {{ software.name }} - Cabinet Digital">
+<meta property="og:description" content="Découvrez les meilleures alternatives à {{ software.name }}. Comparez les fonctionnalités et trouvez la solution idéale pour votre entreprise.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
 {% endblock %}
 
 {% block content %}
