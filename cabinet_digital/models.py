@@ -9,7 +9,7 @@ from django.core.validators import URLValidator
 
 class SoftwareCategory(models.Model):
     name = models.CharField(max_length=100)
-    description = HTMLField()
+    description = HTMLField(blank=True)
     slug = models.SlugField(blank=True, unique=False)
     metier = models.ForeignKey('Metier', on_delete=models.CASCADE, null=True, blank=True)
     is_published = models.BooleanField(default=False)

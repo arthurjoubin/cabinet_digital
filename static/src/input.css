@@ -4,17 +4,12 @@
 
 @layer components {
     .custom-header {
-        @apply text-3xl md:text-4xl font-bold text-black mb-6 md:mb-8 flex items-center justify-center relative;
+        @apply text-3xl md:text-4xl font-bold text-gray-800 mb-8 text-center;
+        @apply relative pb-4;
     }
-    .custom-header::before,
     .custom-header::after {
-        @apply absolute w-full border-t border-gray-300;
         content: "";
-    }
-    .custom-header::before {
-        @apply -top-4;
-    }
-    .custom-header::after {
-        @apply -bottom-4;
+        @apply absolute bottom-0 left-1/2 transform -translate-x-1/2;
+        @apply w-[20%] h-1 bg-sky-100 rounded-full;
     }
 }
