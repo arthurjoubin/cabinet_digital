@@ -1,5 +1,3 @@
-{% load markdown_extras %}
-
 <article class="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-sm border border-gray-200">
     <header class="mb-8 border-b border-gray-200 pb-6">
         <nav class="mb-6">
@@ -22,7 +20,7 @@
     </header>
     <content>
         <div class="prose max-w-none mb-16">
-            {{ variable.content|markdown|safe }}
+            {{ variable.content|safe }}
         </div>
     </content>
     <footer class="bg-white p-12 border-t border-gray-200 rounded-b-lg shadow-sm text-center">

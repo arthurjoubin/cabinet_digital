@@ -22,12 +22,12 @@ class SoftwareInline(admin.TabularInline):
 
 
 class SoftwareAdmin(admin.ModelAdmin):
-    list_display = ['name', 'categories_list', 'metier', 'is_top_pick', 'is_published']
+    list_display = ['name', 'categories_list','unique_views', 'metier', 'is_top_pick', 'is_published']
     fields = ['name', 'slug', 'description', 'excerpt', 'category', 'logo', 
               'is_published', 'image_principale', 'site', 'video', 'is_top_pick', 
               'unique_views', 'metier']
     list_filter = ('is_published',)
-    list_editable = ['is_top_pick', 'metier']
+    list_editable = ['is_top_pick', 'metier', 'unique_views']
 
 
     def formatted_description(self, obj):

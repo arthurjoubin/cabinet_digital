@@ -13,10 +13,17 @@
 
 {% block content %}
 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border-2 border-gray-200">
-    <h1 class="text-2xl sm:text-3xl font-semibold text-center mb-4 sm:mb-6">
-        Les {{ count }} meilleurs logiciels de la catégorie 
-        <span class="inline-block bg-black text-white px-2 py-1 rounded-lg mt-2 sm:mt-0">{{ category.name }}</span>
-    </h1>
+    <div class="relative mb-8">
+        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+            <div class="w-full border-t border-gray-300"></div>
+        </div>
+        <div class="relative flex justify-center">
+            <h1 class="px-4 text-2xl sm:text-3xl font-semibold bg-white">
+                Les {{ count }} meilleurs logiciels de la catégorie
+                <span class="inline-block bg-black text-white px-2 py-1 rounded-lg mt-2 sm:mt-0">{{ category.name }}</span>
+            </h1>
+        </div>
+    </div>
     
     {% if category.description %}
     <div class="mb-6 sm:mb-8 prose max-w-none bg-sky-50 p-4 sm:p-6 rounded-lg border border-sky-200">

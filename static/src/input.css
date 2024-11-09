@@ -4,6 +4,17 @@
 
 @layer components {
     .custom-header {
-        @apply text-3xl md:text-4xl font-bold text-black mb-6 md:mb-8 flex items-center justify-center border-b border-sky-100 pb-4 tracking-tight;
+        @apply text-3xl md:text-4xl font-bold text-black mb-6 md:mb-8 flex items-center justify-center relative;
+    }
+    .custom-header::before,
+    .custom-header::after {
+        @apply absolute w-full border-t border-gray-300;
+        content: "";
+    }
+    .custom-header::before {
+        @apply -top-4;
+    }
+    .custom-header::after {
+        @apply -bottom-4;
     }
 }
