@@ -119,7 +119,7 @@ class ActualitesListView(ListView):
     context_object_name = 'actualites'
 
     def get_queryset(self):
-        return Actualites.objects.filter(is_published=True).order_by('pub_date')
+        return Actualites.objects.filter(is_published=True).order_by('-pub_date')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
