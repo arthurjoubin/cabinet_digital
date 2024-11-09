@@ -20,6 +20,7 @@ import unidecode
 from urllib.parse import unquote
 import os
 from django.utils.html import escape
+from django.db.models.functions import Lower
 
 class ArticleListView(ListView):
     model = Article
@@ -90,25 +91,25 @@ class SoftwareListView(ListView):
     model = Software
     template_name = 'software_list.html'
     context_object_name = 'softwares'
-    paginate_by = 12
+    paginate_by = 16
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['categories'] = SoftwareCategory.objects.annotate(
             software_count=Count('categories_softwares_link')
-        ).order_by('name')
+        ).order_by(Lower('name'))
         context['selected_category'] = self.request.GET.get('categorie')
         context['search_query'] = self.request.GET.get('search', '')
         return context
     def get_queryset(self):
-        queryset = super().get_queryset().order_by('-is_top_pick', 'name')
+        queryset = super().get_queryset().order_by('-is_top_pick', Lower('name'))
         queryset = queryset.filter(is_published=True, slug__isnull=False).exclude(slug='')
         category = self.request.GET.get('categorie')
         search = self.request.GET.get('search')
         queryset = queryset.filter(is_published=True)
-        if category and category != 'None':  # Check if category is not None or 'None'
+        if category and category != 'None':
             queryset = queryset.filter(category__slug=category)
-        if search and search.strip():  # Check if search is not empty or just whitespace
+        if search and search.strip():
             queryset = queryset.filter(Q(name__icontains=search) | Q(description__icontains=search))
         return queryset
 

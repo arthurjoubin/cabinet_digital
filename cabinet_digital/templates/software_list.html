@@ -19,12 +19,14 @@
             <input type="hidden" name="search" value="{{ search_query }}">
             <div class="relative">
                 <label for="category-filter" class="sr-only">Filtrer par catégorie</label>
-                <select id="category-filter" name="categorie" onchange="this.form.submit()" class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-300 appearance-none transition-all duration-300 hover:border-sky-200">
+                <select id="category-filter" name="categorie" onchange="this.form.submit()" class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-100 appearance-none transition-all duration-300 hover:border-sky-100">
                     <option value="">Toutes les catégories</option>
                     {% for category in categories %}
-                        <option value="{{ category.slug }}" {% if category.slug == selected_category %}selected{% endif %}>
-                            {{ category.name }} ({{ category.software_count }})
-                        </option>
+                        {% if category.software_count > 0 %}
+                            <option value="{{ category.slug }}" {% if category.slug == selected_category %}selected{% endif %}>
+                                {{ category.name }} ({{ category.software_count }})
+                            </option>
+                        {% endif %}
                     {% endfor %}
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
@@ -39,8 +41,8 @@
             <input type="hidden" name="categorie" value="{{ selected_category }}">
             <div class="flex flex-col sm:flex-row">
                 <label for="search-input" class="sr-only">Rechercher un logiciel</label>
-                <input type="text" id="search-input" name="search" placeholder="Rechercher un logiciel" class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-300 rounded-md sm:rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-200" value="{{ search_query }}">
-                <button type="submit" class="w-full sm:w-auto mt-2 sm:mt-0 px-6 py-3 bg-sky-700 text-white rounded-md sm:rounded-l-none hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-400 transition duration-300">
+                <input type="text" id="search-input" name="search" placeholder="Rechercher un logiciel" class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg sm:rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-100" value="{{ search_query }}">
+                <button type="submit" class="w-full sm:w-auto mt-2 sm:mt-0 px-6 py-3 bg-black text-white rounded-lg sm:rounded-l-none hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 transition duration-300">
                     Rechercher
                 </button>
             </div>
@@ -48,7 +50,7 @@
     </div>
 
     <div id="software-list-content" class="w-full">
-        <div id="software-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div id="software-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {% for software in softwares %}
             {% include 'template_card_software.html' with software=software %}
             {% endfor %}

@@ -50,8 +50,8 @@
         <p class="text-gray-700 text-base leading-relaxed">{{ software.excerpt|safe }}</p>
         {% if software.category.all %}
         <div class="flex flex-wrap mt-2">
-          {% for category in software.category.all %}
-          <a href="{% url 'category_detail' category.slug %}" class="inline-block px-3 py-1 text-xs font-medium bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors duration-300 mr-2 mb-2">
+          {% for category in software.category.all|dictsort:"name" %}
+          <a href="{% url 'category_detail' category.slug %}" class="inline-block px-2 py-1 text-xs font-medium bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors duration-300 mr-1 mb-2">
             {{ category.name }}
           </a>
           {% endfor %}
@@ -68,14 +68,6 @@
         {{ software.description|safe }}
       </div>
     </div>
-    {% if software.video %}
-    <div class="mt-8 sm:mt-12 flex justify-center">
-        <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden inline-block">
-            <h3 class="text-lg sm:text-xl font-semibold text-gray-800 p-4 border-b border-gray-200">Vidéo de présentation</h3>
-            {{ software.video|safe }}
-        </div>
-    </div>
-    {% endif %}
   </div>
 
   <div class="border-t border-gray-200 p-4 sm:p-6 text-center">
