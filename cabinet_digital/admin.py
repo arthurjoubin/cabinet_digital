@@ -44,9 +44,12 @@ class SoftwareAdmin(admin.ModelAdmin):
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'is_published', 'icon', 'software_count')
+    list_display = ('name', 'formatted_description')
+
+    def formatted_description(self, obj):
+        return format_html(obj.description)
+    formatted_description.short_description = 'Description'
     search_fields = ('name', 'description')
-    list_editable = ('slug', 'is_published', 'icon')
     inlines = [SoftwareInline]
 
     def software_count(self, obj):
