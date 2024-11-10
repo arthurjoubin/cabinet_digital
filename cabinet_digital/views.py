@@ -163,26 +163,30 @@ class SoftwareDetailView(DetailView):
     context_object_name = 'software'
     
     def get_queryset(self):
-        # Préchargement des catégories pour éviter les requêtes N+1
         return Software.objects.prefetch_related('category')
 
     def get_object(self, queryset=None):
-        if queryset is None:
-            queryset = self.get_queryset()
+        obj = super().get_object(queryset)
         
-        slug = self.kwargs.get('slug')
-        if not slug:
-            raise Http404("Aucun slug fourni pour le logiciel.")
+        # Créer une clé unique pour ce logiciel dans la session
+        viewed_softwares = self.request.session.get('viewed_softwares', [])
         
-        decoded_slug = unidecode.unidecode(slug)
-        clean_slug = slugify(decoded_slug)[:49]
+        # Si l'ID du logiciel n'est pas dans la session, on incrémente le compteur
+        if obj.id not in viewed_softwares:
+            # Incrémenter le compteur de manière atomique
+            Software.objects.filter(id=obj.id).update(unique_views=F('unique_views') + 1)
+            
+            # Rafraîchir l'objet depuis la base de données
+            obj.refresh_from_db()
+            
+            # Ajouter l'ID à la liste des logiciels vus
+            viewed_softwares.append(obj.id)
+            self.request.session['viewed_softwares'] = viewed_softwares
+            
+            # Définir une expiration de session après 24h
+            self.request.session.set_expiry(86400)  # 24 heures en secondes
         
-        try:
-            software = queryset.get(slug=clean_slug, is_published=True)
-        except Software.DoesNotExist:
-            raise Http404(f"Le logiciel publié avec le slug '{clean_slug}' n'existe pas.")
-        
-        return software
+        return obj
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
