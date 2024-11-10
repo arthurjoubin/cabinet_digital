@@ -15,9 +15,9 @@
 {% block content %}
 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
     <h1 class="custom-header">Actualités</h1>
-    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {% for actualite in actualites %}
-            {% include "template_card_article.html" with article=actualite articles='actualités' article_detail='actualite_detail' %}
+            {% include "template_card_article.html" with article=actualite articles='actualites' article_detail='actualite_detail' %}
         {% empty %}
         <div class="col-span-full text-center text-gray-600 py-16">
             <p class="text-xl">Aucune actualité disponible pour le moment.</p>
