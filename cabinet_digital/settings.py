@@ -29,15 +29,6 @@ ALLOWED_HOSTS = ['sansdistraction.eu.pythonanywhere.com', 'www.sansdistraction.e
 # Configuration de DEBUG
 DEBUG = False  # En production, toujours mettre False
 
-# Configuration CSRF et SECURE
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
-SECURE_HSTS_SECONDS = 31536000  # 1 an
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -174,5 +165,3 @@ TINYMCE_DEFAULT_CONFIG = {
     'menubar': True,
     'statusbar': True,
 }
-
-OPENAI_API_KEY = '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'

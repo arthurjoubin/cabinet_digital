@@ -55,18 +55,14 @@ urlpatterns = [
     path('logiciels/<str:slug>/alternatives/', alternative_detail, name='alternative_detail'),
     path('sitemap.xml', sitemap_index, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.index'),
     path('sitemap-<section>.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
-    path('ai-text-processor/', views.ai_text_processor, name='ai_text_processor'),
     re_path(r'^(?P<old_path>solution|news|article|categorie)/(?P<slug>.*)/r/(?P<any_value>.*)$', views.custom_redirect_view, name='custom_redirect'),
     path('robots.txt', views.robots_txt, name='robots_txt'),
     ]
 
-if settings.DEBUG:
-    urlpatterns += [
-        path('404/', views.Custom404View.as_view(), name='404'),
-    ]
+urlpatterns += [
+    path('404/', views.Custom404View.as_view(), name='404'),
+]
 handler404 = 'cabinet_digital.views.custom_404_view'
 
-# Servir les fichiers média en production et en développement
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

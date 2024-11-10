@@ -6,12 +6,8 @@ from django.core.paginator import Paginator
 from django.db.models import Q, F
 from django.views.generic import ListView, DetailView
 from django.contrib.admin.views.decorators import staff_member_required
-import openai
 from django.conf import settings
-from openai import OpenAI
 from django.utils.safestring import mark_safe
-import markdown
-from markdown import markdown
 from django.db.models import Count  
 from django.http import Http404
 from django.shortcuts import redirect
@@ -231,31 +227,6 @@ def custom_404_view(request, exception):
 def robots_txt(request):
     return render(request, 'robots.txt', content_type='text/plain')
 
-@staff_member_required
-def ai_text_processor(request):
-    context = {
-        'prompt': "Mets en forme le texte en markdown. Utilise du gras et des bullets points. N'ajoute pas ''' markdown ''' ou autres instructions.",
-        'HTMX_SCRIPT': settings.HTMX_SCRIPT,
-    }
-    
-    if request.method == 'POST':
-        text = request.POST.get('text')
-        prompt = request.POST.get('prompt', context['prompt'])
-        
-        client = OpenAI(api_key=settings.OPENAI_API_KEY)
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": prompt},
-                {"role": "user", "content": text}
-            ]
-        )
-        
-        ai_response = response.choices[0].message.content
-        output = markdown(ai_response)
-        return render(request, 'ai_text_processor_output.html', {'output': output})
-    
-    return render(request, 'ai_text_processor.html', context)
 
 def custom_404(request, exception):
     return render(request, '404.html', status=404)
