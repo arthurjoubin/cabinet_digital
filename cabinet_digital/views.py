@@ -206,7 +206,7 @@ class SoftwareDetailView(DetailView):
         similar_softwares = similar_softwares[:3]
         
         from datetime import datetime, date
-        start_date = date(2024, 9, 26)
+        start_date = date(2024, 11, 10)
         days_since = (date.today() - start_date).days
 
         context.update({
