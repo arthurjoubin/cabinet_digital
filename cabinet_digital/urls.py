@@ -41,11 +41,7 @@ urlpatterns = [
     path('logiciels/',  views.SoftwareListView.as_view(), name='software_list'),
     path('', views.home, name='home'),
     path('logiciels/<str:slug>/', SoftwareDetailView.as_view(), name='software_detail'),
-    re_path(r'^solution/(?P<slug>[\w-]+[^/]+)/r/(?P<any_value>.+)$', views.custom_redirect_view, {'target_path': 'logiciels'}, name='solution_redirect'),
-    re_path(r'^actualites/(?P<slug>[\w-]+[^/]+)/r/(?P<any_value>.+)$', views.custom_redirect_view, {'target_path': 'actualites'}, name='actualites_redirect'),
-    re_path(r'^article/(?P<slug>[\w-]+[^/]+)/r/(?P<any_value>.+)$', views.custom_redirect_view, {'target_path': 'articles'}, name='article_redirect'),
-    re_path(r'^categorie/(?P<slug>[\w-]+[^/]+)/r/(?P<any_value>.+)$', views.custom_redirect_view, {'target_path': 'categories'}, name='category_redirect'),
-    path('categories/', CategoryListView.as_view(), name='category_list'),
+   path('categories/', CategoryListView.as_view(), name='category_list'),
     path('categories/<str:slug>/', CategoryDetailView.as_view(), name='category_detail'),
     path('contact/', views.contact, name='contact'),
     path('actualites/', ActualitesListView.as_view(), name='actualites'),
@@ -55,7 +51,7 @@ urlpatterns = [
     path('logiciels/<str:slug>/alternatives/', alternative_detail, name='alternative_detail'),
     path('sitemap.xml', sitemap_index, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.index'),
     path('sitemap-<section>.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
-    re_path(r'^(?P<old_path>solution|news|article|categorie)/(?P<slug>.*)/r/(?P<any_value>.*)$', views.custom_redirect_view, name='custom_redirect'),
+    re_path(r'^(?P<old_path>solution|news|article|categorie)/(?P<slug>[^/]+)/r/.*$', views.custom_redirect_view, name='custom_redirect'),
     path('robots.txt', views.robots_txt, name='robots_txt'),
     ]
 

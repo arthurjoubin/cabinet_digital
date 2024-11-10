@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+# Charger les variables d'environnement
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,8 +31,8 @@ SECRET_KEY = 'django-insecure-#azpt&8a3so^68v6*@ah7!b++k1w6560^x@iuq(4!9%sh6pcg%
 # Ajoutez votre nom de domaine à ALLOWED_HOSTS
 ALLOWED_HOSTS = ['sansdistraction.eu.pythonanywhere.com', 'www.sansdistraction.eu.pythonanywhere.com', 'cabinetdigital.fr', 'www.cabinetdigital.fr', '127.0.0.1', 'localhost']
 # Configuration de DEBUG
-DEBUG = False  # En production, toujours mettre False
-
+print(os.environ.get('DJANGO_ENV'))
+DEBUG = os.environ.get('DJANGO_ENV') == 'development'
 
 INSTALLED_APPS = [
     'django.contrib.admin',

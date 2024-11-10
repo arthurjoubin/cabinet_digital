@@ -231,24 +231,15 @@ def robots_txt(request):
 def custom_404(request, exception):
     return render(request, '404.html', status=404)
 
-def custom_redirect_view(request, old_path, slug, any_value):
-    # Mapping des anciens chemins vers les nouveaux
+def custom_redirect_view(request, old_path, slug):
     path_mapping = {
         'solution': 'logiciels',
         'news': 'actualites',
         'article': 'articles',
         'categorie': 'categories'
     }
-
-    # Décoder l'URL pour gérer les caractères spéciaux
-    decoded_slug = unquote(slug)
-    # Supprimer les accents et appliquer slugify
-    unaccented_slug = unidecode.unidecode(decoded_slug)
-    new_slug = slugify(unaccented_slug)
-
-    # Obtenir le nouveau chemin
     new_path = path_mapping.get(old_path, old_path)
-
+    print(slug)
     # Construire l'URL de redirection
-    redirect_url = f'/{new_path}/{new_slug}/'
+    redirect_url = f'/{new_path}/{slug}/'
     return redirect(redirect_url, permanent=True)
