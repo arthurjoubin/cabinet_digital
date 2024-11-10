@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Software, SoftwareCategory, Article, Actualites, Tag, Metier
+from django.urls import path
+from . import views
+from .models import Software, SoftwareCategory, Article, Actualites, Tag, Metier, ViewsHistory
 from django.db import models
 from tinymce.widgets import TinyMCE
 from django import forms
@@ -105,9 +107,22 @@ class TagAdmin(admin.ModelAdmin):
 class MetierAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
 
+class CustomAdminSite(admin.AdminSite):
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('analytics/', views.analytics_view, name='analytics'),
+        ]
+        return custom_urls + urls
+
+# Remplacer le site d'administration par défaut
+admin.site = CustomAdminSite()
+
+# Enregistrer les modèles avec le nouveau site d'administration
 admin.site.register(Software, SoftwareAdmin)
 admin.site.register(SoftwareCategory, CategoryAdmin)
 admin.site.register(Article, ArticleAdmin)
 admin.site.register(Actualites, ActualitesAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Metier, MetierAdmin)
+admin.site.register(ViewsHistory)  # Ajout du modèle ViewsHistory

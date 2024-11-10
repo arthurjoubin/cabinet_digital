@@ -36,7 +36,7 @@ def custom_redirect(request, slug, any_value, target_path):
     return redirect(redirect_url, permanent=True)
 
 urlpatterns = [
-
+    path('admin/analytics/', views.analytics_view, name='admin_analytics'),
     path('admin/', admin.site.urls),
     path('logiciels/',  views.SoftwareListView.as_view(), name='software_list'),
     path('', views.home, name='home'),

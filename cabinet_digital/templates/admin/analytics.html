@@ -1,0 +1,165 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Analytics des Solutions | Administration{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">Accueil</a>
+&rsaquo; Analytics
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <div class="analytics-container">
+        <h1>Analytics des Solutions</h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_views }}</div>
+                <div class="stat-label">Vues Totales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ total_solutions }}</div>
+                <div class="stat-label">Solutions Actives</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ avg_views|floatformat:1 }}</div>
+                <div class="stat-label">Moyenne des vues</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="viewsChart"></canvas>
+        </div>
+
+        <div class="chart-container mt-8">
+            <h2>Vues par Solution (Top 5)</h2>
+            <canvas id="softwareChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('viewsChart').getContext('2d');
+    const viewsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ dates|safe }},
+            datasets: [
+                {
+                    label: 'Vues Uniques Totales',
+                    data: {{ views_data|safe }},
+                    borderColor: '#0ea5e9',
+                    backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Évolution des vues uniques'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    const softwareCtx = document.getElementById('softwareChart').getContext('2d');
+    const softwareData = {{ software_data|safe }};
+    
+    const softwareChart = new Chart(softwareCtx, {
+        type: 'line',
+        data: {
+            labels: {{ dates|safe }},
+            datasets: softwareData.map((software, index) => ({
+                label: software.name,
+                data: software.data,
+                borderColor: [
+                    '#0ea5e9',
+                    '#10b981',
+                    '#f59e0b',
+                    '#ef4444',
+                    '#8b5cf6'
+                ][index],
+                fill: false,
+                tension: 0.4
+            }))
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Vues par Solution (30 derniers jours)'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+<style>
+    .analytics-container {
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin: 20px 0;
+    }
+    .chart-container {
+        position: relative;
+        height: 400px;
+        width: 100%;
+        margin-top: 20px;
+    }
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    .stat-card {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 6px;
+        text-align: center;
+        border: 1px solid #e2e8f0;
+    }
+    .stat-number {
+        font-size: 24px;
+        font-weight: bold;
+        color: #0ea5e9;
+    }
+    .stat-label {
+        color: #64748b;
+        margin-top: 5px;
+    }
+    #content-main {
+        float: none;
+        width: auto;
+    }
+</style>
+{% endblock %} 

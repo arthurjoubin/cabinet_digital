@@ -108,4 +108,17 @@ class Metier(models.Model):
     def __str__(self):
         return self.name
 
+class ViewsHistory(models.Model):
+    software = models.ForeignKey(Software, on_delete=models.CASCADE, related_name='views_history')
+    views = models.IntegerField(default=1)
+    date = models.DateField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "Views History"
+        unique_together = ['software', 'date']
+        ordering = ['-date']
+
+    def __str__(self):
+        return f"{self.software.name} - {self.date} - {self.views} vues"
+
 

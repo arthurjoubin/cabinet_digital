@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Software, SoftwareCategory, Article, Actualites
+from .models import Software, SoftwareCategory, Article, Actualites, ViewsHistory
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
@@ -17,6 +17,11 @@ from urllib.parse import unquote
 import os
 from django.utils.html import escape
 from django.db.models.functions import Lower
+from django.db.models import Sum, Avg
+from django.db.models.functions import TruncDate
+from datetime import datetime, timedelta
+import json
+from django.utils import timezone
 
 class ArticleListView(ListView):
     model = Article
@@ -161,6 +166,10 @@ class SoftwareDetailView(DetailView):
     model = Software
     template_name = 'software_detail.html'
     context_object_name = 'software'
+    
+    def get_queryset(self):
+        # Préchargement des catégories pour éviter les requêtes N+1
+        return Software.objects.select_related().prefetch_related('category')
 
     def get_object(self, queryset=None):
         if queryset is None:
@@ -170,48 +179,59 @@ class SoftwareDetailView(DetailView):
         if not slug:
             raise Http404("Aucun slug fourni pour le logiciel.")
         
-        # Décoder et nettoyer le slug
         decoded_slug = unidecode.unidecode(slug)
-        clean_slug = slugify(decoded_slug)[:49]  # Limiter à 49 caractères
+        clean_slug = slugify(decoded_slug)[:49]
         
         try:
             software = queryset.get(slug=clean_slug, is_published=True)
+            
+            # Incrémenter les vues totales
+            Software.objects.filter(id=software.id).update(unique_views=F('unique_views') + 1)
+            
+            # Mettre à jour ou créer l'historique des vues pour aujourd'hui
+            today = timezone.now().date()
+            view_history, created = ViewsHistory.objects.get_or_create(
+                software=software,
+                date=today,
+                defaults={'views': 1}
+            )
+            
+            if not created:
+                # Si l'entrée existe déjà pour aujourd'hui, incrémenter les vues
+                ViewsHistory.objects.filter(
+                    software=software,
+                    date=today
+                ).update(views=F('views') + 1)
+            
+            return software
+            
         except Software.DoesNotExist:
             raise Http404(f"Le logiciel publié avec le slug '{clean_slug}' n'existe pas.")
-        
-        return software
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         software = self.object
 
-        if software.video:
-            if software.video.endswith('.webp'):
-                software.video = mark_safe(f'<img src="{escape(software.video)}" alt="Image de la solution" height="220" loading="lazy">')
-            elif 'youtube.com' in software.video or 'youtu.be' in software.video:
-                video_id = software.video.split('v=')[-1] if 'v=' in software.video else software.video.split('/')[-1]
-                software.video = mark_safe(f'''
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/{escape(video_id)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
-                ''')
-
         categories = software.category.all()
-        all_softwares = Software.objects.filter(is_published=True).exclude(slug=software.slug)
         
-        similar_softwares = [
-            s for s in all_softwares
-            if set(s.category.all()) & set(categories)
-        ]
-        
-        similar_softwares.sort(key=lambda x: len(set(x.category.all()) & set(categories)), reverse=True)
-        similar_softwares = similar_softwares[:3]
-        
-        from datetime import datetime, date
-        start_date = date(2024, 11, 10)
-        days_since = (date.today() - start_date).days
+        # Optimiser la requête des logiciels similaires
+        similar_softwares = (
+            Software.objects.filter(
+                is_published=True,
+                category__in=categories
+            )
+            .exclude(id=software.id)
+            .prefetch_related('category')
+            .distinct()
+            .annotate(
+                common_categories=Count('category', filter=Q(category__in=categories))
+            )
+            .order_by('-common_categories')[:3]
+        )
 
         context.update({
             'similar_softwares': similar_softwares,
-            'days_since': days_since,
+            'days_since': (date.today() - date(2024, 11, 10)).days,
         })
         return context
     
@@ -239,7 +259,61 @@ def custom_redirect_view(request, old_path, slug):
         'categorie': 'categories'
     }
     new_path = path_mapping.get(old_path, old_path)
-    print(slug)
     # Construire l'URL de redirection
     redirect_url = f'/{new_path}/{slug}/'
     return redirect(redirect_url, permanent=True)
+
+@staff_member_required
+def analytics_view(request):
+    # Statistiques globales
+    total_views = Software.objects.aggregate(Sum('unique_views'))['unique_views__sum'] or 0
+    total_solutions = Software.objects.filter(is_published=True).count()
+    avg_views = Software.objects.filter(is_published=True).aggregate(Avg('unique_views'))['unique_views__avg'] or 0
+
+    # Période pour l'historique (30 derniers jours)
+    end_date = timezone.now().date()
+    start_date = end_date - timedelta(days=30)
+    
+    # Récupérer l'historique des vues pour tous les logiciels
+    views_history = ViewsHistory.objects.filter(
+        date__range=[start_date, end_date]
+    ).values('date').annotate(
+        total_views=Sum('views')
+    ).order_by('date')
+
+    # Récupérer les 5 logiciels les plus vus
+    top_software = Software.objects.filter(
+        views_history__date__range=[start_date, end_date]
+    ).annotate(
+        total_period_views=Sum('views_history__views')
+    ).order_by('-total_period_views')[:5]
+
+    # Préparer les données pour le graphique
+    dates = [entry['date'].strftime('%Y-%m-%d') for entry in views_history]
+    views_data = [entry['total_views'] for entry in views_history]
+
+    # Préparer les données pour le graphique par logiciel
+    software_data = []
+    for software in top_software:
+        software_views = ViewsHistory.objects.filter(
+            software=software,
+            date__range=[start_date, end_date]
+        ).values('date').annotate(
+            daily_views=Sum('views')
+        ).order_by('date')
+        
+        software_data.append({
+            'name': software.name,
+            'data': [entry['daily_views'] for entry in software_views]
+        })
+
+    context = {
+        'total_views': total_views,
+        'total_solutions': total_solutions,
+        'avg_views': avg_views,
+        'dates': json.dumps(dates),
+        'views_data': json.dumps(views_data),
+        'software_data': json.dumps(software_data),
+    }
+    
+    return render(request, 'admin/analytics.html', context)
