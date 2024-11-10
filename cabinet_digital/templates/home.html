@@ -13,15 +13,35 @@
 
 {% block content %}
 <main class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-6">
-  <header class="text-center mb-8 p-6 rounded-3xl bg-white border border-gray-200 shadow-sm relative overflow-hidden">
+  <header class="text-center mb-8 p-8 rounded-3xl bg-white border border-gray-200 shadow-sm relative overflow-hidden">
     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-6 px-2">
-      <span class="text-2xl sm:text-3xl lg:text-4xl text-gray-700 font-medium block">
-        La sélection indépendante des meilleurs logiciels
+      <span class="text-3xl lg:text-5xl font-semibold block leading-tight">
+        Découvrir les meilleurs logiciels pour votre entreprise
       </span>
-      <span class="text-xl sm:text-2xl lg:text-3xl text-gray-600 font-normal block mt-2">
+      <span class="text-xl sm:text-2xl lg:text-3xl font-medium block mt-4 text-gray-600">
         +200 solutions pour experts-comptables et PME
       </span>
     </h1>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+      <div class="flex items-center gap-2 text-gray-700">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span>Comparatifs détaillés</span>
+      </div>
+      <div class="flex items-center gap-2 text-gray-700">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span>Sélection indépendante</span>
+      </div>
+      <div class="flex items-center gap-2 text-gray-700">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span>Mise à jour régulière</span>
+      </div>
+    </div>
 
     <div class="flex flex-wrap justify-center gap-2 mb-6 mx-1 sm:mx-2">
       <span class="badge bg-red-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200">production comptable</span>
@@ -29,13 +49,17 @@
       <span class="badge bg-green-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200">facturation</span>
       <span class="badge bg-yellow-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200">gestion financière</span>
       <span class="badge bg-purple-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200">gestion de la paie</span>
-      <span class="badge bg-teal-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200">CRM</span>
-      <span class="badge bg-pink-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200">gestion des notes de frais</span>
-      <span class="badge bg-fuchsia-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200">signature électronique</span>
-      <span class="badge bg-indigo-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200 hidden md:block">audit</span>
-      <span class="badge bg-orange-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200 hidden md:block">gestion de projet</span>
-      <span class="badge bg-cyan-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200 hidden md:block">business intelligence</span>
-      <span class="badge bg-lime-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200 hidden md:block">gestion documentaire</span>
+      <span class="badge bg-gray-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200">coffre fort</span>
+      <span class="badge bg-gray-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200">saisie automatisée</span>
+      <span class="badge bg-indigo-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200">audit</span>
+      <span class="badge bg-gray-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200 hidden md:block">hébergement</span>
+      <span class="badge bg-gray-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200 hidden md:block">ressources humaines</span>
+      <span class="badge bg-teal-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200 hidden md:block">CRM</span>
+      <span class="badge bg-pink-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200 hidden lg:block">gestion des notes de frais</span>
+      <span class="badge bg-fuchsia-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200 hidden lg:block">signature électronique</span>
+      <span class="badge bg-orange-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200 hidden lg:block">gestion de projet</span>
+      <span class="badge bg-cyan-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200 hidden lg:block">business intelligence</span>
+
       <span class="badge bg-gray-100 text-black text-xs font-bold px-2 py-1 rounded border border-gray-200">..et bien d'autres</span>
     </div>
     <div class="text-sm sm:text-base text-gray-600 mb-6 space-y-2 px-2">
@@ -75,6 +99,7 @@
           <p class="text-2xl sm:text-3xl font-extrabold text-black mb-2">+10 000 visiteurs</p>
           <p class="text-md sm:text-xl text-gray-700">ont consulté nos fiches cette année</p>
         </div>
+
       </div>
       <div class="relative">
         <div class="relative w-3/4 mx-auto">
