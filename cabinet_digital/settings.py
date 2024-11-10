@@ -23,20 +23,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-#azpt&8a3so^68v6*@ah7!b++k1w6560^x@iuq(4!9%sh6pcg%'
 
-# Utilisez une variable d'environnement pour contrôler le mode DEBUG
-DEBUG = True
-
-# Forcer DEBUG à False si nous sommes sur PythonAnywhere ou en production
-if 'PYTHONANYWHERE_SITE' in os.environ or os.environ.get('DJANGO_ENV') == 'production':
-    DEBUG = False
-
-# Assurez-vous que DEBUG est toujours False en production
-if not DEBUG:
-    ALLOWED_HOSTS = ['cabinetdigital.fr', 'www.cabinetdigital.fr']
 
 # Ajoutez votre nom de domaine à ALLOWED_HOSTS
 ALLOWED_HOSTS = ['sansdistraction.eu.pythonanywhere.com', 'www.sansdistraction.eu.pythonanywhere.com', 'cabinetdigital.fr', 'www.cabinetdigital.fr', '127.0.0.1', 'localhost']
+# Configuration de DEBUG
+DEBUG = False  # En production, toujours mettre False
 
+# Configuration CSRF et SECURE
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 31536000  # 1 an
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 # Application definition
 
