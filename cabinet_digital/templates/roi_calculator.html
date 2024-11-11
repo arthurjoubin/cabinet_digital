@@ -19,6 +19,7 @@
             <form id="roiForm" method="POST">
                 {% csrf_token %}
                 <button type="submit" 
+                 onclick="if(window.innerWidth < 1024) setTimeout(() => document.getElementById('roiChartContainer').scrollIntoView({ behavior: 'smooth' }), 500)"
                  class="w-full bg-black text-white px-6 py-4 mb-6 rounded-lg hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -158,9 +159,15 @@
             </div>
 
             <!-- Graphique -->
-            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Évolution du ROI sur 24 mois</h3>
+            <div id="roiChartContainer" class="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300">
+                <h3 class="text-xl font-semibold text-gray-900 mb-6 border-b pb-2 text-center">Évolution du ROI sur 24 mois</h3>
                 <div class="relative">
+                    <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                        <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
+                        </svg>
+                        <p class="text-sm">Remplissez le formulaire pour voir le graphique</p>
+                    </div>
                     <canvas id="roiChart" class="w-full" height="300"></canvas>
                     <div class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
                 </div>
@@ -208,6 +215,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Afficher le résumé
             document.getElementById('roiSummary').classList.remove('hidden');
+            
+            // Cacher l'état vide
+            document.getElementById('emptyState').style.display = 'none';
             
             // Mettre à jour les valeurs
             document.getElementById('initialInvestment').textContent = formatCurrency(data.costs[0]);
