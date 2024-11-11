@@ -3,7 +3,7 @@ Cabinet Digital est un site internet qui référence les meilleurs logiciels pou
 Contenu du site :
 - Une liste de logiciels, avec une fiche complète pour chaque logiciel
 - Une liste d'actualités, avec une fiche complète pour chaque actualité
-- Une liste d'articles, avec une fiche complète pour chaque article
+- Une liste de catégories de logiciels avec fiche complète pour chaque catégorie
 
 # Technos
 Site web : cabinetdigital.fr (mais je travaille sur le code pour le moment)

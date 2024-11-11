@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'markdownx',
     'tinymce',
     'django_htmx',
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
 ]
 
 MIDDLEWARE = [
@@ -169,3 +171,9 @@ TINYMCE_DEFAULT_CONFIG = {
     'menubar': True,
     'statusbar': True,
 }
+
+# Ajouter cette configuration
+SITE_ID = 1
+
+# Ajouter cette configuration
+APPEND_SLASH = True

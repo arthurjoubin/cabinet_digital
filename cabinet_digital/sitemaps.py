@@ -1,50 +1,61 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from .models import SoftwareCategory, Software, Article, Actualites
-from django.utils import timezone
+from .models import Software, SoftwareCategory, Actualites
+from django.contrib.sites.shortcuts import get_current_site
 
-class StaticViewSitemap(Sitemap):
+class BaseSitemap(Sitemap):
+    protocol = 'https'
+
+    def get_site(self, site=None):
+        site = super().get_site(site)
+        site.domain = f'www.{site.domain}'
+        return site
+
+class SoftwareSitemap(BaseSitemap):
+    changefreq = "weekly"
+    priority = 0.8
+
     def items(self):
-        return ['home', 'category_list', 'software_list', 'about', 'contact']
-
-    def location(self, item):
-        return reverse(item)
-
-    def lastmod(self, item):
-        return timezone.now()
-
-class CategorySitemap(Sitemap):
-    def items(self):
-        return SoftwareCategory.objects.all()
+        return Software.objects.filter(is_published=True).order_by('name')
 
     def lastmod(self, obj):
         return obj.last_modified
 
-class SoftwareSitemap(Sitemap):
+    def location(self, obj):
+        return reverse('software_detail', kwargs={'slug': obj.slug})
+
+class CategorySitemap(BaseSitemap):
+    changefreq = "monthly"
+    priority = 0.6
+
     def items(self):
-        return Software.objects.all()
+        return SoftwareCategory.objects.filter(is_published=True).order_by('name')
 
     def lastmod(self, obj):
         return obj.last_modified
 
-class ArticleSitemap(Sitemap):
+    def location(self, obj):
+        return reverse('category_detail', kwargs={'slug': obj.slug})
+
+class ActualitesSitemap(BaseSitemap):
+    changefreq = "daily"
+    priority = 0.7
+
     def items(self):
-        return Article.objects.all()
+        return Actualites.objects.filter(is_published=True).order_by('-pub_date')
 
     def lastmod(self, obj):
         return obj.pub_date
 
-class ActualitesSitemap(Sitemap):
+    def location(self, obj):
+        return reverse('actualite_detail', kwargs={'slug': obj.slug})
+
+class StaticViewSitemap(BaseSitemap):
+    priority = 0.5
+    changefreq = "daily"
+
     def items(self):
-        return Actualites.objects.filter(is_published=True)
+        return ['home', 'software_list', 'category_list', 'actualites', 'contact']
 
-    def lastmod(self, obj):
-        return obj.date
-
-sitemaps = {
-    'static': StaticViewSitemap,
-    'categories': CategorySitemap,
-    'softwares': SoftwareSitemap,
-    'articles': ArticleSitemap,
-    'actualites': ActualitesSitemap,
-}
+    def location(self, item):
+        return reverse(item) 

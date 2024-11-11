@@ -17,14 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from cabinet_digital import views
-from cabinet_digital.views import ArticleListView, ArticleDetailView, CategoryListView, CategoryDetailView, ActualitesListView, ActualitesDetailView, alternative_detail, SoftwareDetailView, SoftwareListView, Custom404View
+from cabinet_digital.views import  CategoryListView, CategoryDetailView, ActualitesListView, ActualitesDetailView, alternative_detail, SoftwareDetailView, SoftwareListView, Custom404View
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.sitemaps.views import sitemap, index as sitemap_index
-from .sitemaps import sitemaps
+from django.contrib.sitemaps.views import sitemap
 from django.shortcuts import redirect
 from django.utils.text import slugify
 import unidecode
+from cabinet_digital.sitemaps import SoftwareSitemap, CategorySitemap, ActualitesSitemap, StaticViewSitemap
 
 def custom_redirect(request, slug, any_value, target_path):
     # Supprimer les accents avant d'appliquer slugify
@@ -34,6 +34,14 @@ def custom_redirect(request, slug, any_value, target_path):
     # Construire l'URL de redirection
     redirect_url = f'/{target_path}/{new_slug}/'
     return redirect(redirect_url, permanent=True)
+
+# Ajouter cette configuration des sitemaps
+sitemaps = {
+    'software': SoftwareSitemap,
+    'categories': CategorySitemap,
+    'actualites': ActualitesSitemap,
+    'static': StaticViewSitemap,
+}
 
 urlpatterns = [
 
@@ -49,10 +57,10 @@ urlpatterns = [
     path('markdownx/', include('markdownx.urls')),
     path('tinymce/', include('tinymce.urls')),
     path('logiciels/<str:slug>/alternatives/', alternative_detail, name='alternative_detail'),
-    path('sitemap.xml', sitemap_index, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.index'),
-    path('sitemap-<section>.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     re_path(r'^(?P<old_path>solution|news|article|categorie)/(?P<slug>[^/]+)/r/.*$', views.custom_redirect_view, name='custom_redirect'),
     path('robots.txt', views.robots_txt, name='robots_txt'),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps},
+         name='django.contrib.sitemaps.views.sitemap'),
     ]
 
 urlpatterns += [
