@@ -1,1 +1,348 @@
- 
+{% extends 'base.html' %}
+
+{% block extra_head %}
+<script src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900">Calculateur de ROI d'un logiciel</h1>
+        <p class="mt-4 text-lg text-gray-600">Estimez le retour sur investissement de votre logiciel</p>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Formulaire -->
+        <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+            <form id="roiForm" method="POST">
+                {% csrf_token %}
+                
+                <!-- Section Coûts -->
+                <div class="space-y-6 bg-red-50 p-6 mb-6 rounded-lg">
+                    <div class="flex items-center gap-2">
+                        <div class="p-2 bg-red-50 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-800">Coûts</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Coût mensuel du logiciel</label>
+                            <div class="relative rounded-md">
+                                <input type="range" name="monthly_cost_saas" min="100" max="10000" value="800" step="100"
+                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                       oninput="this.nextElementSibling.value = this.value + ' €'">
+                                <output class="block mt-1 text-sm text-gray-600">800 €</output>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Coût unique du logiciel</label>
+                            <div class="relative rounded-md">
+                                <input type="range" name="one_time_cost_saas" min="0" max="20000" value="3000" step="1000"
+                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                       oninput="this.nextElementSibling.value = this.value + ' €'">
+                                <output class="block mt-1 text-sm text-gray-600">3000 €</output>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Coût intégrateur</label>
+                            <div class="relative rounded-md">
+                                <input type="range" name="integrator_cost_implementation" min="0" max="50000" value="4000" step="1000"
+                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                       oninput="this.nextElementSibling.value = this.value + ' €'">
+                                <output class="block mt-1 text-sm text-gray-600">4000 €</output>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Heures internes d'implémentation</label>
+                            <div class="relative rounded-md">
+                                <input type="range" name="internal_hours_internal_implementation" min="0" max="100" value="30" step="5"
+                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                       oninput="this.nextElementSibling.value = this.value + ' h'">
+                                <output class="block mt-1 text-sm text-gray-600">30 h</output>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Coût par heure interne</label>
+                            <div class="relative rounded-md">
+                                <input type="range" name="cost_per_hour_internal_implementation" min="0" max="200" value="20" step="10"
+                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                       oninput="this.nextElementSibling.value = this.value + ' €'">
+                                <output class="block mt-1 text-sm text-gray-600">20 €</output>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section Gains -->
+                <div class="space-y-6 bg-green-50 mb-6 p-6 rounded-lg">
+                    <div class="flex items-center gap-2">
+                        <div class="p-2 bg-green-50 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-800">Gains</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Heures économisées par semaine</label>
+                            <div class="relative rounded-md">
+                                <input type="range" name="employee_hours_per_week_gained" min="0" max="40" value="10" step="2"
+                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                       oninput="this.nextElementSibling.value = this.value + ' h'">
+                                <output class="block mt-1 text-sm text-gray-600">10 h</output>
+                            </div>
+                        </div>
+                    
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Coût horaire du collaborateur</label>
+                            <div class="relative rounded-md">
+                                <input type="range" name="cost_of_employee_hour" min="0" max="100" value="30" step="10"
+                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                       oninput="this.nextElementSibling.value = this.value + ' €'">
+                                <output class="block mt-1 text-sm text-gray-600">30 €</output>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Autres économies mensuelles</label>
+                            <div class="relative rounded-md">
+                                <input type="range" name="other_savings" min="0" max="2000" value="200" step="100"
+                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                       oninput="this.nextElementSibling.value = this.value + ' €'">
+                                <output class="block mt-1 text-sm text-gray-600">200 €</output>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" 
+                        class="w-full bg-black text-white px-6 py-4 rounded-lg hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Calculer le ROI
+                </button>
+            </form>
+        </div>
+
+        <!-- Résultats -->
+        <div class="space-y-4">
+            <!-- Résumé des résultats -->
+            <div id="roiSummary" class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hidden">
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="p-4 bg-sky-50 rounded-lg">
+                        <h3 class="text-xs font-medium text-gray-500">Investissement</h3>
+                        <p class="text-xl font-bold text-sky-600" id="initialInvestment">-</p>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <h3 class="text-xs font-medium text-gray-500">Économies/mois</h3>
+                        <p class="text-xl font-bold text-green-600" id="monthlySavings">-</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <h3 class="text-xs font-medium text-gray-500">Point d'équilibre</h3>
+                        <p class="text-lg text-gray-900" id="breakEvenText">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graphique -->
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Évolution du ROI sur 24 mois</h3>
+                <div class="relative">
+                    <canvas id="roiChart" class="w-full" height="300"></canvas>
+                    <div class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let chartInstance = null;
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('fr-FR', { 
+            style: 'currency', 
+            currency: 'EUR',
+            maximumFractionDigits: 0
+        }).format(value);
+    }
+
+    document.getElementById('roiForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        fetch('{% url "roi_calculator" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erreur réseau');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Données reçues:', data);
+            
+            // Afficher le résumé
+            document.getElementById('roiSummary').classList.remove('hidden');
+            
+            // Mettre à jour les valeurs
+            document.getElementById('initialInvestment').textContent = formatCurrency(data.costs[0]);
+            document.getElementById('monthlySavings').textContent = formatCurrency(data.monthly_savings);
+            
+            const breakEvenText = data.break_even >= 0 
+                ? `Atteint mois : ${data.break_even}`
+                : 'Non atteint';
+            document.getElementById('breakEvenText').textContent = breakEvenText;
+            
+            // Mettre à jour le graphique
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+            
+            const ctx = document.getElementById('roiChart').getContext('2d');
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels.map(m => `Mois ${m}`),
+                    datasets: [
+                        {
+                            label: 'Coûts',
+                            data: data.costs,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            fill: false,
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Gains',
+                            data: data.savings,
+                            borderColor: '#22c55e',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            fill: false,
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'ROI Net',
+                            data: data.net,
+                            borderColor: '#0ea5e9',
+                            segment: {
+                                backgroundColor: ctx => data.net[ctx.p0DataIndex] < 0 ? 
+                                    'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)',
+                            },
+                            fill: true,
+                            borderWidth: 6,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 6,
+                            pointHoverBorderWidth: 3,
+                            pointHoverBackgroundColor: '#fff',
+                            order: -1 // Pour mettre le ROI au premier plan
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatCurrency(context.raw);
+                                }
+                            },
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        },
+                        legend: {
+                            position: 'top',
+                            align: 'center',
+                            labels: {
+                                boxWidth: 12,
+                                boxHeight: 12,
+                                padding: 20,
+                                borderRadius: 4,
+                                font: {
+                                    size: 14,
+                                    weight: '500'
+                                },
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                filter: function(legendItem, data) {
+                                    if (legendItem.text === 'ROI Net') {
+                                        legendItem.fillStyle = '#0ea5e9';
+                                        legendItem.strokeStyle = '#0ea5e9';
+                                    }
+                                    return true;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: value => formatCurrency(value)
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Erreur détaillée:', error);
+            alert('Une erreur est survenue lors du calcul du ROI');
+        });
+    });
+
+    // Style des sliders
+    document.querySelectorAll('input[type="range"]').forEach(slider => {
+        slider.style.accentColor = '#000000';
+    });
+});
+</script>
+{% endblock %}

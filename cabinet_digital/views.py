@@ -21,6 +21,7 @@ from django.http import HttpResponse
 import json
 from django.http import JsonResponse
 import logging
+from django.template.loader import get_template
 
 logger = logging.getLogger(__name__)
 
@@ -280,6 +281,7 @@ def custom_redirect_view(request, old_path, slug, r_id=None):
         
 
 def roi_calculator(request):
+    logger.info("Accès à la vue roi_calculator")
     if request.method == 'POST':
         logger.info("Méthode POST reçue")
         logger.info(f"Headers: {request.headers}")
@@ -300,7 +302,7 @@ def roi_calculator(request):
             logger.info(f"Données reçues: {data}")
             
             # Calculer le ROI sur 36 mois
-            months = list(range(37))  # 0 à 36 mois
+            months = list(range(25))  # 0 à 36 mois
             cumulative_costs = []
             cumulative_savings = []
             net_roi = []
@@ -353,4 +355,15 @@ def roi_calculator(request):
             logger.error(f"Erreur: {str(e)}")
             return JsonResponse({'error': str(e)}, status=400)
     
-    return render(request, 'roi_calculator.html')
+    try:
+        template = get_template('roi_calculator.html')
+        logger.info(f"Template trouvé : {template.origin.name}")
+        logger.info(f"Template dirs : {settings.TEMPLATES[0]['DIRS']}")
+        logger.info("Tentative de rendu du template roi_calculator.html")
+        response = render(request, 'roi_calculator.html')
+        logger.info(f"Contenu de la réponse : {response.content}")
+        logger.info("Rendu du template réussi")
+        return response
+    except Exception as e:
+        logger.error(f"Erreur lors du rendu : {str(e)}")
+        raise
