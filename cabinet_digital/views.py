@@ -18,6 +18,18 @@ import os
 from django.utils.html import escape
 from django.db.models.functions import Lower
 
+REDIRECTIONS = {
+    ('article', 'meilleur-logiciel-gestion-financière', 'recWaFwovIysDlxQG'): '/categories/gestion_financiere/',
+    ('article', 'guide-facture-electronique', 'recXxEZlXjyGr0lw3'): '/actualites/facture-electronique-guide-complet/',
+    ('article', 'plateforme-signature-electronique-expert-comptable', 'rec6S8akyphoBOQsi'): '/categories/signature_electronique/',
+    ('article', 'marketing-expert-comptable-booster-digital', 'recE2FjMqGeNywEuY'): '/categories/communication/',
+    ('article', 'ged-expert-comptable', 'recSzblWftOMr3gcR'): '/categories/ged_cabinet/',
+    ('article', 'gestion-interne-expert-comptable', 'recB14p8Dmh1dDDWW'): '/categories/ged_cabinet/',
+    ('article', 'portail-client-expert-comptable', 'recnmO8UOKoWDtw6n'): '/categories/portail_client/',
+    ('article', 'liste_candidats_pdp_facture_electronique', 'rec2aRliZkqrBZ8HP'): '/actualites/lliste-des-pdp-accreditees-facture-electronique/',
+    ('article', 'congres-de-l-ordre-experts-comptables-2023-guide-complet', 'rec0TrJ0pZJzkfmxL'): '/actualites/guide-du-congres-de-lordre-des-experts-comptables/',
+}
+
 class ArticleListView(ListView):
     model = Article
     template_name = "article_list.html"
@@ -237,15 +249,16 @@ def robots_txt(request):
 def custom_404(request, exception):
     return render(request, '404.html', status=404)
 
-def custom_redirect_view(request, old_path, slug):
-    path_mapping = {
-        'solution': 'logiciels',
-        'news': 'actualites',
-        'article': 'articles',
-        'categorie': 'categories'
-    }
-    new_path = path_mapping.get(old_path, old_path)
-    print(slug)
-    # Construire l'URL de redirection
-    redirect_url = f'/{new_path}/{slug}/'
-    return redirect(redirect_url, permanent=True)
+def custom_redirect_view(request, old_path, slug, r_id=None):
+    # Décoder l'URL pour gérer les caractères spéciaux
+    decoded_slug = unquote(slug)
+    
+    # Chercher la redirection dans notre dictionnaire
+    redirect_key = (old_path, decoded_slug, r_id) if r_id else (old_path, decoded_slug)
+    new_path = REDIRECTIONS.get(redirect_key)
+    
+    if new_path:
+        return redirect(new_path, permanent=True)
+        
+    # Si aucune redirection n'est trouvée, continuer avec la logique existante
+    # ... (garder le code existant pour les autres cas)

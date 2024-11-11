@@ -174,6 +174,3 @@ TINYMCE_DEFAULT_CONFIG = {
 
 # Ajouter cette configuration
 SITE_ID = 1
-
-# Ajouter cette configuration
-APPEND_SLASH = True
