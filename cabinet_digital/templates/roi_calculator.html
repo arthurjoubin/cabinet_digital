@@ -160,14 +160,8 @@
 
             <!-- Graphique -->
             <div id="roiChartContainer" class="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300">
-                <div class="flex justify-between items-center mb-6 border-b pb-2">
+                <div class="flex justify-center items-center mb-6 border-b pb-2">
                     <h3 class="text-xl font-semibold text-gray-900">Évolution du ROI sur 24 mois</h3>
-                    <button id="downloadChart" class="text-sm px-4 py-2 bg-sky-50 text-gray-700 rounded-lg hover:bg-sky-100 transition-colors flex items-center gap-2" style="display: none;">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        Télécharger
-                    </button>
                 </div>
                 <div class="relative">
                     <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
@@ -178,6 +172,14 @@
                     </div>
                     <canvas id="roiChart" class="w-full" height="300"></canvas>
                     <div class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+                </div>
+                <div class="mt-4 flex justify-center">
+                    <button id="downloadChart" class="text-sm px-4 py-2 bg-sky-50 text-gray-700 rounded-lg hover:bg-sky-100 transition-colors flex items-center gap-2" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Télécharger
+                    </button>
                 </div>
             </div>
         </div>
@@ -365,38 +367,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fonction de téléchargement du graphique
     document.getElementById('downloadChart').addEventListener('click', function() {
-        const canvas = document.getElementById('roiChart');
-        const context = canvas.getContext('2d');
-        
-        // Sauvegarder le canvas actuel
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        
-        // Créer un nouveau canvas avec fond blanc
-        const downloadCanvas = document.createElement('canvas');
-        downloadCanvas.width = canvas.width;
-        downloadCanvas.height = canvas.height;
-        const downloadContext = downloadCanvas.getContext('2d');
-        
-        // Remplir avec un fond blanc
-        downloadContext.fillStyle = 'white';
-        downloadContext.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Copier le graphique original
-        downloadContext.drawImage(canvas, 0, 0);
-        
-        // Ajouter le watermark en bas à droite
-        downloadContext.font = 'bold 12px Arial';
-        downloadContext.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        downloadContext.textAlign = 'right';
-        downloadContext.fillText('Généré sur cabinetdigital.fr', canvas.width - 10, canvas.height - 55);
-        // Créer le lien de téléchargement
+        // Utiliser la méthode native de Chart.js
         const link = document.createElement('a');
         link.download = 'roi-cabinet-digital.png';
-        link.href = downloadCanvas.toDataURL('image/png');
+        link.href = chartInstance.toBase64Image();
         link.click();
-        
-        // Restaurer le canvas original
-        context.putImageData(imageData, 0, 0);
     });
 });
 </script>
