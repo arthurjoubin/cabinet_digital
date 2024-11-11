@@ -14,6 +14,7 @@ class SoftwareCategory(models.Model):
     metier = models.ForeignKey('Metier', on_delete=models.CASCADE, null=True, blank=True)
     is_published = models.BooleanField(default=False)
     icon = models.FileField(upload_to='icons/', null=True, blank=True)
+    last_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -46,6 +47,7 @@ class Software(models.Model):
     is_top_pick = models.BooleanField(default=False)
     unique_views = models.IntegerField(default=0)
     metier = models.ForeignKey('Metier', on_delete=models.CASCADE, null=True, blank=True)
+    last_modified = models.DateTimeField(auto_now=True)
 
     def clean(self):
         super().clean()
