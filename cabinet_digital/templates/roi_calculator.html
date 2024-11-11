@@ -15,10 +15,16 @@
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Formulaire -->
-        <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
             <form id="roiForm" method="POST">
                 {% csrf_token %}
-                
+                <button type="submit" 
+                 class="w-full bg-black text-white px-6 py-4 mb-6 rounded-lg hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Calculer le ROI
+                </button>
                 <!-- Section Coûts -->
                 <div class="space-y-6 bg-red-50 p-6 mb-6 rounded-lg">
                     <div class="flex items-center gap-2">
@@ -84,7 +90,7 @@
                 </div>
 
                 <!-- Section Gains -->
-                <div class="space-y-6 bg-green-50 mb-6 p-6 rounded-lg">
+                <div class="space-y-6 bg-green-50 mb-2 p-6 rounded-lg">
                     <div class="flex items-center gap-2">
                         <div class="p-2 bg-green-50 rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -127,13 +133,7 @@
                     </div>
                 </div>
 
-                <button type="submit" 
-                        class="w-full bg-black text-white px-6 py-4 rounded-lg hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                    </svg>
-                    Calculer le ROI
-                </button>
+
             </form>
         </div>
 
