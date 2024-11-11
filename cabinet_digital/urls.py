@@ -63,6 +63,7 @@ urlpatterns = [
     path('robots.txt', views.robots_txt, name='robots_txt'),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps},
          name='django.contrib.sitemaps.views.sitemap'),
+    path('roi-calculator/', views.roi_calculator, name='roi_calculator'),
     ]
 
 urlpatterns += [

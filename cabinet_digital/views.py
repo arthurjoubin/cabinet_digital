@@ -17,6 +17,12 @@ from urllib.parse import unquote
 import os
 from django.utils.html import escape
 from django.db.models.functions import Lower
+from django.http import HttpResponse
+import json
+from django.http import JsonResponse
+import logging
+
+logger = logging.getLogger(__name__)
 
 REDIRECTIONS = {
     ('article', 'meilleur-logiciel-gestion-financière', 'recWaFwovIysDlxQG'): '/categories/gestion_financiere/',
@@ -248,7 +254,6 @@ def robots_txt(request):
 
 def custom_404(request, exception):
     return render(request, '404.html', status=404)
-
 def custom_redirect_view(request, old_path, slug, r_id=None):
     # Décoder l'URL pour gérer les caractères spéciaux
     decoded_slug = unquote(slug)
@@ -260,5 +265,92 @@ def custom_redirect_view(request, old_path, slug, r_id=None):
     if new_path:
         return redirect(new_path, permanent=True)
         
-    # Si aucune redirection n'est trouvée, continuer avec la logique existante
-    # ... (garder le code existant pour les autres cas)
+    # Si pas de redirection spécifique, utiliser le mapping général
+    path_mapping = {
+        'solution': 'logiciels',
+        'news': 'actualites', 
+        'article': 'articles',
+        'categorie': 'categories'
+    }
+    new_path = path_mapping.get(old_path, old_path)
+    
+    # Construire l'URL de redirection
+    redirect_url = f'/{new_path}/{slug}/'
+    return redirect(redirect_url, permanent=True)
+        
+
+def roi_calculator(request):
+    if request.method == 'POST':
+        logger.info("Méthode POST reçue")
+        logger.info(f"Headers: {request.headers}")
+        
+        try:
+            # Récupérer et convertir les données du formulaire
+            data = {
+                'monthly_cost_saas': float(request.POST.get('monthly_cost_saas', 0)),
+                'one_time_cost_saas': float(request.POST.get('one_time_cost_saas', 0)),
+                'integrator_cost_implementation': float(request.POST.get('integrator_cost_implementation', 0)),
+                'internal_hours_internal_implementation': float(request.POST.get('internal_hours_internal_implementation', 0)),
+                'cost_per_hour_internal_implementation': float(request.POST.get('cost_per_hour_internal_implementation', 0)),
+                'employee_hours_per_week_gained': float(request.POST.get('employee_hours_per_week_gained', 0)),
+                'cost_of_employee_hour': float(request.POST.get('cost_of_employee_hour', 0)),
+                'other_savings': float(request.POST.get('other_savings', 0))
+            }
+            
+            logger.info(f"Données reçues: {data}")
+            
+            # Calculer le ROI sur 36 mois
+            months = list(range(37))  # 0 à 36 mois
+            cumulative_costs = []
+            cumulative_savings = []
+            net_roi = []
+
+            # Coûts fixes initiaux
+            fixed_costs = (data['one_time_cost_saas'] + 
+                         data['integrator_cost_implementation'] + 
+                         (data['internal_hours_internal_implementation'] * 
+                          data['cost_per_hour_internal_implementation']))
+
+            # Heures économisées par mois (conversion depuis les heures hebdomadaires)
+            monthly_hours_saved = data['employee_hours_per_week_gained'] * 52 / 12
+
+            for month in months:
+                # Calcul des coûts mensuels cumulés
+                monthly_costs = fixed_costs + (data['monthly_cost_saas'] * month)
+                
+                # Calcul des gains mensuels cumulés
+                monthly_savings = (
+                    (monthly_hours_saved * data['cost_of_employee_hour'] * month) +
+                    (data['other_savings'] * month)
+                )
+                
+                # Calcul du ROI net
+                net = monthly_savings - monthly_costs
+
+                cumulative_costs.append(round(monthly_costs, 2))
+                cumulative_savings.append(round(monthly_savings, 2))
+                net_roi.append(round(net, 2))
+
+            # Trouver le point d'équilibre
+            break_even = next((i for i, x in enumerate(net_roi) if x > 0), -1)
+
+            # Calculer les économies mensuelles moyennes
+            monthly_savings = (monthly_hours_saved * data['cost_of_employee_hour']) + data['other_savings']
+
+            chart_data = {
+                'labels': months,
+                'costs': cumulative_costs,
+                'savings': cumulative_savings,
+                'net': net_roi,
+                'break_even': break_even,
+                'monthly_savings': monthly_savings
+            }
+            
+            logger.info(f"Données envoyées: {chart_data}")
+            return JsonResponse(chart_data)
+            
+        except Exception as e:
+            logger.error(f"Erreur: {str(e)}")
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    return render(request, 'roi_calculator.html')
