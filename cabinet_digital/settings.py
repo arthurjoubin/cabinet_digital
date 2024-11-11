@@ -196,3 +196,8 @@ LOGGING = {
         },
     },
 }
+
+# Ajoutez ces paramètres
+APPEND_SLASH = True
+PREPEND_WWW = False
+USE_TRAILING_SLASHES = True
