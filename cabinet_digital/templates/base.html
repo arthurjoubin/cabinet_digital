@@ -46,13 +46,19 @@
                     </svg>
                 </button>
             </div>
-            <div class="hidden lg:flex lg:gap-x-10">
-                <a href="{% url 'software_list' %}" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-3 py-2 rounded-md">Logiciels</a>
-                <a href="{% url 'category_list' %}" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-3 py-2 rounded-md">Catégories</a>
-                <a href="{% url 'actualites' %}" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-3 py-2 rounded-md">Actualités</a>
+            <div class="hidden lg:flex gap-x-8 items-center justify-center">
+                <a href="{% url 'software_list' %}" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md">Logiciels</a>
+                <a href="{% url 'category_list' %}" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md">Catégories</a>
+                <a href="{% url 'actualites' %}" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md">Actualités</a>
+                <div class="relative">
+                    <a href="{% url 'roi_calculateur' %}" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md flex items-center gap-2">
+                        Calculateur ROI
+                        <span class="bg-sky-100 text-sky-800 text-xs font-medium px-2 py-1 rounded-lg">New</span>
+                    </a>
+                </div>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                <a href="{% url 'contact' %}" class="bg-black text-white px-6 py-2.5 text-lg font-medium hover:bg-gray-800 transition-all duration-300 rounded-lg shadow-sm flex items-center gap-2">
+                <a href="{% url 'contact' %}" class="bg-sky-50 text-black border border-gray-200 px-6 py-2.5 text-lg font-medium hover:bg-sky-100 hover:border-sky-200 transition-all duration-300 rounded-lg shadow-sm flex items-center gap-3">
                     Contact
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
@@ -66,6 +72,10 @@
                 <a href="{% url 'software_list' %}" class="block rounded-md px-3 py-2 text-base font-medium hover:bg-sky-50 hover:text-sky-600 transition-all duration-300">Logiciels</a>
                 <a href="{% url 'category_list' %}" class="block rounded-md px-3 py-2 text-base font-medium hover:bg-sky-50 hover:text-sky-600 transition-all duration-300">Catégories</a>
                 <a href="{% url 'actualites' %}" class="block rounded-md px-3 py-2 text-base font-medium hover:bg-sky-50 hover:text-sky-600 transition-all duration-300">Actualités</a>
+                <a href="{% url 'roi_calculateur' %}" class="block rounded-md px-3 py-2 text-base font-medium hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 flex items-center gap-2">
+                    Calculateur ROI
+                    <span class="bg-sky-100 text-sky-800 text-xs font-medium px-2 py-0.5 rounded-full">New</span>
+                </a>
                 <a href="{% url 'contact' %}" class="block w-full text-center bg-sky-100 text-black px-4 py-2 text-base font-medium hover:bg-sky-200 transition-colors duration-300 rounded-md mt-2">Contact</a>
             </div>
         </div>

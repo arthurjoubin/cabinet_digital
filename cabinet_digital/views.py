@@ -280,8 +280,8 @@ def custom_redirect_view(request, old_path, slug, r_id=None):
     return redirect(redirect_url, permanent=True)
         
 
-def roi_calculator(request):
-    logger.info("Accès à la vue roi_calculator")
+def roi_calculateur(request):
+    logger.info("Accès à la vue roi_calculateur")
     if request.method == 'POST':
         logger.info("Méthode POST reçue")
         logger.info(f"Headers: {request.headers}")
@@ -356,11 +356,11 @@ def roi_calculator(request):
             return JsonResponse({'error': str(e)}, status=400)
     
     try:
-        template = get_template('roi_calculator.html')
+        template = get_template('roi_calculateur.html')
         logger.info(f"Template trouvé : {template.origin.name}")
         logger.info(f"Template dirs : {settings.TEMPLATES[0]['DIRS']}")
-        logger.info("Tentative de rendu du template roi_calculator.html")
-        response = render(request, 'roi_calculator.html')
+        logger.info("Tentative de rendu du template roi_calculateur.html")
+        response = render(request, 'roi_calculateur.html')
         logger.info(f"Contenu de la réponse : {response.content}")
         logger.info("Rendu du template réussi")
         return response
