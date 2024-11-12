@@ -4,7 +4,7 @@
 <title>{{ software.name }} | Découvrir la fiche de la solution</title>
 <meta name="description" content="Découvrez notre fiche sur {{ software.name }}. {{ software.excerpt }}">
 <meta property="og:title" content="{{ software.name }} - Découvrir la fiche de la solution">
-<meta property="og:description" content="Découvrez notre fiche sur {{ software.name }}. {{ software.excerpt }} | Catégorie {{ software.category.first.name }}">
+<meta property="og:description" content="Découvrez notre fiche sur {{ software.name }}. {{ software.excerpt }} | Catégories : {% for category in software.category.all %}{{ category.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">
 <meta property="og:type" content="website">
 <meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
 <meta property="og:site_name" content="Cabinet Digital">
