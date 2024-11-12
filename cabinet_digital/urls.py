@@ -26,13 +26,30 @@ from django.utils.text import slugify
 import unidecode
 from cabinet_digital.sitemaps import SoftwareSitemap, CategorySitemap, ActualitesSitemap, StaticViewSitemap
 
-def custom_redirect(request, slug, any_value, target_path):
+def custom_redirect(request, old_path, slug, r_id=None):
     # Supprimer les accents avant d'appliquer slugify
     unaccented_slug = unidecode.unidecode(slug)
+    
+    # Si c'est une catégorie et que le slug commence par "logiciel_"
+    if old_path == "categorie" and unaccented_slug.startswith("logiciel_"):
+        # Retirer le préfixe "logiciel_"
+        unaccented_slug = unaccented_slug[9:]  # 9 est la longueur de "logiciel_"
+    
     # Appliquer slugify sur le slug sans accent
     new_slug = slugify(unaccented_slug)
+    
+    # Définir le target_path en fonction du old_path
+    path_mapping = {
+        'solution': 'solutions',
+        'news': 'actualites',
+        'article': 'articles',
+        'categorie': 'categories'
+    }
+    target_path = path_mapping.get(old_path, old_path)
+    
     # Construire l'URL de redirection
     redirect_url = f'/{target_path}/{new_slug}/'
+    
     return redirect(redirect_url, permanent=True)
 
 # Ajouter cette configuration des sitemaps
