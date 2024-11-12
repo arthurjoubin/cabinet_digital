@@ -84,7 +84,7 @@ urlpatterns = [
         views.custom_redirect_view, 
         name='custom_redirect'),
     path('robots.txt', views.robots_txt, name='robots_txt'),
-    re_path(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
+    re_path(r'^sitemap\.xml/$', sitemap, {'sitemaps': sitemaps},
          name='django.contrib.sitemaps.views.sitemap'),
     path('roi_calculateur/', views.roi_calculateur, name='roi_calculateur'),
     ]
