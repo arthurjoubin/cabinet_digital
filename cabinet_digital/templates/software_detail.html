@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block meta_description %}
-<title>{{ software.name }} | Fiche de la solution de la catégorie {{ software.category.first.name }}</title>
+<title>{{ software.name }} | Fiche de la solution | Catégorie {{ software.category.first.name }}</title>
 <meta name="description" content="Découvrez notre fiche sur {{ software.name }}. {{ software.excerpt }}">
 <meta property="og:title" content="{{ software.name }} - Solution de la catégorie : {{ software.category.first.name|lower }}">
 <meta property="og:description" content="Découvrez notre fiche sur {{ software.name }}. {{ software.excerpt }}">
