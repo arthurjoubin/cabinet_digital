@@ -48,7 +48,10 @@ def custom_redirect(request, old_path, slug, r_id=None):
     target_path = path_mapping.get(old_path, old_path)
     
     # Construire l'URL de redirection
-    redirect_url = f'/{target_path}/{new_slug}/'
+    if r_id:
+        redirect_url = f'/{target_path}/{new_slug}/'  # On ne conserve pas le /r/ID
+    else:
+        redirect_url = f'/{target_path}/{new_slug}/'
     
     return redirect(redirect_url, permanent=True)
 
