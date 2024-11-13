@@ -176,6 +176,8 @@ TINYMCE_DEFAULT_CONFIG = {
 # Ajouter cette configuration
 SITE_ID = 1
 
+GOOGLE_ANALYTICS_ID = 'G-291726590'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
