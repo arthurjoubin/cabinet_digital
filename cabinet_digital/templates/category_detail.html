@@ -3,9 +3,9 @@
 
 {% block meta_description %}
 <title>Les {{ softwares|length }} meilleures solutions de la catégorie {{ category.name }} - Cabinet Digital</title>
-<meta name="description" content="Découvrez les {{ softwares|length }} meilleures solutions de la catégorie {{ category.name }}. Découvrir et trouver la solution qui répond à vos besoins parmis la liste.">
-<meta property="og:title" content="Les {{ softwares|length }} meilleures solutions de la catégorie {{ category.name }} - Cabinet Digital">
-<meta property="og:description" content="Découvrez les {{ softwares|length }} meilleures solutions de la catégorie {{ category.name }}. Découvrir et trouver la solution qui répond à vos besoins parmis la liste.">
+<meta name="description" content="Découvrez les {{ softwares|length }} meilleures {{ category.excerpt }} de la catégorie {{ category.name }}. Découvrir et trouver la solution qui répond à vos besoins parmis la liste.">
+<meta property="og:title" content="Les {{ softwares|length }} meilleures {{ category.excerpt }} de la catégorie {{ category.name }} - Cabinet Digital">
+<meta property="og:description" content="Découvrez les {{ softwares|length }} meilleures {{ category.excerpt }} de la catégorie {{ category.name }}. Découvrir et trouver la solution qui répond à vos besoins parmis la liste.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
 <meta property="og:site_name" content="Cabinet Digital">
@@ -19,7 +19,7 @@
         </div>
         <div class="relative flex justify-center">
             <h1 class="px-4 text-2xl sm:text-3xl font-semibold bg-white">
-                Les {{ count }} meilleurs {{ category.excerpt }}
+                Les {{ count }} meilleures {{ category.excerpt }}
                 <span class="inline-block bg-black text-white px-2 py-1 rounded-lg mt-2 sm:mt-0">{{ category.name }}</span>
             </h1>
         </div>
