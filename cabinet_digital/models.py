@@ -15,6 +15,7 @@ class SoftwareCategory(models.Model):
     is_published = models.BooleanField(default=False)
     icon = models.FileField(upload_to='icons/', null=True, blank=True)
     last_modified = models.DateTimeField(auto_now=True)
+    excerpt = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
         return self.name
