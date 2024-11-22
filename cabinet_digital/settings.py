@@ -36,19 +36,29 @@ print(os.environ.get('DJANGO_ENV'))
 DEBUG = os.environ.get('DJANGO_ENV') == 'development'
 
 INSTALLED_APPS = [
+    # Unfold admin (doit être avant django.contrib.admin)
+    'unfold',
+    'unfold.contrib.filters',
+    'unfold.contrib.forms',
+    'unfold.contrib.inlines',
+    'unfold.contrib.import_export',
+    'unfold.contrib.guardian',
+    'unfold.contrib.simple_history',
+    
+    # Django contrib apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cabinet_digital',
-    'compressor',
-    'markdownx',
-    'tinymce',
-    'django_htmx',
     'django.contrib.sites',
     'django.contrib.sitemaps',
+    
+    # Third party apps
+    'cabinet_digital',
+    'compressor',
+    'django_htmx',
 ]
 
 MIDDLEWARE = [
@@ -76,7 +86,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
-            'debug': DEBUG,  # Ajoutez cette ligne
         },
     },
 ]
@@ -203,4 +212,17 @@ LOGGING = {
 APPEND_SLASH = True
 PREPEND_WWW = False
 USE_TRAILING_SLASHES = True
+
+# Ajoutez ces configurations pour Unfold
+UNFOLD = {
+    "SITE_TITLE": "Cabinet Digital",
+    "SITE_HEADER": "Cabinet Digital",
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "navigation": []
+    },
+    "STYLES": [],
+    "SCRIPTS": [],
+}
 

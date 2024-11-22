@@ -63,6 +63,11 @@ sitemaps = {
     'static': StaticViewSitemap,
 }
 
+# Modifiez ces lignes au début du fichier
+admin.site.site_header = "Cabinet Digital"
+admin.site.site_title = "Cabinet Digital Admin Portal"
+admin.site.index_title = "Bienvenue sur Cabinet Digital"
+
 urlpatterns = [
 
     path('admin/', admin.site.urls),
