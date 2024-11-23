@@ -86,13 +86,12 @@ class SoftwareAdmin(ModelAdmin):
 
 @admin.register(SoftwareCategory)
 class CategoryAdmin(ModelAdmin):
-    list_display = ('name', 'software_count', 'is_published', 'metier')
+    list_display = ('name', 'software_count', 'excerpt', 'metier')
     search_fields = ('name',)
-    list_filter = ('is_published', 'metier')
     inlines = [SoftwareInline]
     fieldsets = (
         (None, {
-            'fields': ('name', 'description', 'slug')
+            'fields': ('name', 'excerpt', 'description', 'slug')
         }),
         ('Publication', {
             'fields': ('is_published', 'metier', 'icon'),
