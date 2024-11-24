@@ -1,198 +1,198 @@
 {% extends 'base.html' %}
 
 {% block extra_head %}
-
 <script>
-  window.Alpine = window.Alpine || {};
-  window.Alpine.data('immobilierCalculator', () => ({
-    init() {
-        this.loanType = 'fixed_payment';
-        const urlParams = new URLSearchParams(window.location.search);
-        for (const [key, value] of urlParams.entries()) {
-            if (this.formData.hasOwnProperty(key)) {
-                this.formData[key] = parseFloat(value);
-            }
-        }
-        this.calculateLoan();
-        this.updateDefaultValues();
-    },
-    formData: {
-      property_cost: 450000,
-      notary_fees: 31500,
-      total_loan: 200000,
-      monthly_payment: null,
-      loan_years: 25,
-      interest_rate: 4.1,
-      down_payment: 50000,
-      property_tax: 1500,
-      insurance_rate: 0.3,
-      maintenance_rate: 1,
-      renovation: 0,
-      property_size: 75,
-      condo_fees_per_sqm: 25,
-      rent_saved: 1200,
-      inflation_rate: 2,
-    },
-    alternativeRates: [
-      {rate: 3.5, results: null},
-      {rate: 4.0, results: null},
-      {rate: 4.5, results: null}
-    ],
-    results: null,
-    loanType: 'fixed_payment',
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('immobilierCalculator', () => ({
+      init() {
+          this.loanType = 'fixed_payment';
+          const urlParams = new URLSearchParams(window.location.search);
+          for (const [key, value] of urlParams.entries()) {
+              if (this.formData.hasOwnProperty(key)) {
+                  this.formData[key] = parseFloat(value);
+              }
+          }
+          this.calculateLoan();
+          this.updateDefaultValues();
+      },
+      formData: {
+        property_cost: 450000,
+        notary_fees: 31500,
+        total_loan: 200000,
+        monthly_payment: null,
+        loan_years: 25,
+        interest_rate: 4.1,
+        down_payment: 50000,
+        property_tax: 1500,
+        insurance_rate: 0.3,
+        maintenance_rate: 1,
+        renovation: 0,
+        property_size: 75,
+        condo_fees_per_sqm: 25,
+        rent_saved: 1200,
+        inflation_rate: 2,
+      },
+      alternativeRates: [
+        {rate: 3.5, results: null},
+        {rate: 4.0, results: null},
+        {rate: 4.5, results: null}
+      ],
+      results: null,
+      loanType: 'fixed_payment',
 
-    updateDefaultValues() {
-      this.formData.property_tax = parseFloat(this.formData.rent_saved);
-      this.formData.condo_fees = parseFloat(this.formData.property_size * this.formData.condo_fees_per_sqm / 12);
-      this.formData.maintenance = parseFloat((this.formData.property_cost * this.formData.maintenance_rate / 100) / 12);
-      this.updateInsurance();
-    },
+      updateDefaultValues() {
+        this.formData.property_tax = parseFloat(this.formData.rent_saved);
+        this.formData.condo_fees = parseFloat(this.formData.property_size * this.formData.condo_fees_per_sqm / 12);
+        this.formData.maintenance = parseFloat((this.formData.property_cost * this.formData.maintenance_rate / 100) / 12);
+        this.updateInsurance();
+      },
 
-    updateInsurance() {
-      const annualInsurance = this.formData.total_loan * (this.formData.insurance_rate / 100);
-      this.formData.insurance = Math.round(annualInsurance / 12);
-    },
+      updateInsurance() {
+        const annualInsurance = this.formData.total_loan * (this.formData.insurance_rate / 100);
+        this.formData.insurance = Math.round(annualInsurance / 12);
+      },
 
-    calculateAlternativeScenarios() {
-      const currentRate = this.formData.interest_rate;
-      this.alternativeRates.forEach(scenario => {
-        this.formData.interest_rate = scenario.rate;
-        scenario.results = this.calculateFixedPaymentLoan();
-      });
-      this.formData.interest_rate = currentRate;
-    },
-
-    formatNumber(number) {
-      return new Intl.NumberFormat('fr-FR').format(Math.round(number));
-    },
-
-    handleInput(event, field) {
-      let value = event.target.value.replace(/\s/g, '').replace(',', '.');
-      this.formData[field] = parseFloat(value) || 0;
-      event.target.value = this.formatNumber(this.formData[field]);
-      
-      if (field === 'property_cost') {
-        // Mise à jour automatique des frais de notaire (environ 8%)
-        this.formData.notary_fees = this.formData.property_cost * 0.08;
-      }
-      
-      // Recalculer le montant du prêt
-      if (field === 'property_cost' || field === 'down_payment' || field === 'notary_fees') {
-        this.formData.total_loan = Math.max(0, this.formData.property_cost + this.formData.notary_fees - this.formData.down_payment);
-      }
-      
-      this.calculateLoan();
-    },
-
-    calculateFixedPaymentLoan() {
-      const P = this.formData.total_loan;
-      const r = this.formData.interest_rate / 100 / 12;
-      const n = this.formData.loan_years * 12;
-      
-      const monthlyPayment = P * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-      const totalInterest = (monthlyPayment * n) - P;
-      
-      return {
-        monthlyPayment,
-        totalInterest,
-        monthlyPrincipal: monthlyPayment - (P * r),
-        monthlyInterest: P * r
-      };
-    },
-
-    calculateFixedPrincipalLoan() {
-      const P = this.formData.total_loan;
-      const r = this.formData.interest_rate / 100 / 12;
-      const n = this.formData.loan_years * 12;
-      
-      const monthlyPrincipal = P / n;
-      const initialMonthlyInterest = P * r;
-      const initialMonthlyPayment = monthlyPrincipal + initialMonthlyInterest;
-      const finalMonthlyPayment = monthlyPrincipal + (monthlyPrincipal * r);
-      
-      const totalInterest = ((initialMonthlyInterest + (monthlyPrincipal * r)) * n) / 2;
-      
-      return {
-        initialMonthlyPayment,
-        finalMonthlyPayment,
-        monthlyPrincipal,
-        initialMonthlyInterest,
-        totalInterest
-      };
-    },
-
-    calculateLoan() {
-      // S'assurer que toutes les valeurs sont des nombres
-      const monthlyCharges = 
-        (parseFloat(this.formData.maintenance) || 0) + 
-        (parseFloat(this.formData.condo_fees) || 0) + 
-        (parseFloat(this.formData.property_tax) / 12 || 0);
-
-      // Calcul du total des charges sur la durée du prêt
-      const totalCharges = monthlyCharges * 12 * this.formData.loan_years;
-
-      // Calcul du loyer projeté en fin de prêt
-      const finalRent = this.formData.rent_saved * Math.pow(1 + this.formData.inflation_rate/100, this.formData.loan_years);
-      
-      // Calcul du total des loyers avec inflation
-      let totalRentSaved = 0;
-      for (let year = 0; year < this.formData.loan_years; year++) {
-        const yearlyRent = this.formData.rent_saved * Math.pow(1 + this.formData.inflation_rate/100, year) * 12;
-        totalRentSaved += yearlyRent;
-      }
-
-      if (this.loanType === 'fixed_payment') {
-        const results = this.calculateFixedPaymentLoan();
-        const monthlyInsurance = (this.formData.total_loan * (this.formData.insurance_rate / 100)) / 12;
-        
-        // Calcul du capital total (prix du bien + frais de notaire)
-        const totalCapital = parseFloat(this.formData.property_cost) + parseFloat(this.formData.notary_fees) - parseFloat(this.formData.down_payment);
-        
-        this.results = {
-          monthlyLoanPayment: results.monthlyPayment,
-          totalMonthlyPayment: results.monthlyPayment + monthlyCharges + monthlyInsurance,
-          totalInterest: results.totalInterest,
-          monthlyCharges: monthlyCharges + monthlyInsurance,
-          monthlyInsurance: monthlyInsurance,
-          rentDifference: this.formData.rent_saved - (results.monthlyPayment + monthlyCharges + monthlyInsurance),
-          finalRent: finalRent,
-          finalRentDifference: finalRent - (results.monthlyPayment + monthlyCharges + monthlyInsurance),
-          totalRentSaved: totalRentSaved,
-          totalCapital: totalCapital,
-          totalLoan: this.formData.total_loan,
-          totalCharges: totalCharges + (monthlyInsurance * 12 * this.formData.loan_years)
-        };
-      } else {
-        const results = this.calculateFixedPrincipalLoan();
-        this.results = {
-          initialMonthlyPayment: results.initialMonthlyPayment,
-          finalMonthlyPayment: results.finalMonthlyPayment,
-          totalMonthlyPaymentStart: results.initialMonthlyPayment + monthlyCharges,
-          totalMonthlyPaymentEnd: results.finalMonthlyPayment + monthlyCharges,
-          totalInterest: results.totalInterest,
-          monthlyCharges: monthlyCharges,
-          rentDifference: this.formData.rent_saved - (results.initialMonthlyPayment + monthlyCharges),
-          finalRent: finalRent,
-          finalRentDifference: finalRent - (results.finalMonthlyPayment + monthlyCharges),
-          totalRentSaved: totalRentSaved,
-          totalCharges: totalCharges
-        };
-      }
-    },
-
-    shareCalculation() {
-        const params = new URLSearchParams();
-        for (const [key, value] of Object.entries(this.formData)) {
-            params.append(key, value);
-        }
-        const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-        
-        // Copier l'URL dans le presse-papier
-        navigator.clipboard.writeText(shareUrl).then(() => {
-            alert('URL de partage copiée dans le presse-papier !');
+      calculateAlternativeScenarios() {
+        const currentRate = this.formData.interest_rate;
+        this.alternativeRates.forEach(scenario => {
+          this.formData.interest_rate = scenario.rate;
+          scenario.results = this.calculateFixedPaymentLoan();
         });
-    }
-  }));
+        this.formData.interest_rate = currentRate;
+      },
+
+      formatNumber(number) {
+        return new Intl.NumberFormat('fr-FR').format(Math.round(number));
+      },
+
+      handleInput(event, field) {
+        let value = event.target.value.replace(/\s/g, '').replace(',', '.');
+        this.formData[field] = parseFloat(value) || 0;
+        event.target.value = this.formatNumber(this.formData[field]);
+        
+        if (field === 'property_cost') {
+          // Mise à jour automatique des frais de notaire (environ 8%)
+          this.formData.notary_fees = this.formData.property_cost * 0.08;
+        }
+        
+        // Recalculer le montant du prêt
+        if (field === 'property_cost' || field === 'down_payment' || field === 'notary_fees') {
+          this.formData.total_loan = Math.max(0, this.formData.property_cost + this.formData.notary_fees - this.formData.down_payment);
+        }
+        
+        this.calculateLoan();
+      },
+
+      calculateFixedPaymentLoan() {
+        const P = this.formData.total_loan;
+        const r = this.formData.interest_rate / 100 / 12;
+        const n = this.formData.loan_years * 12;
+        
+        const monthlyPayment = P * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+        const totalInterest = (monthlyPayment * n) - P;
+        
+        return {
+          monthlyPayment,
+          totalInterest,
+          monthlyPrincipal: monthlyPayment - (P * r),
+          monthlyInterest: P * r
+        };
+      },
+
+      calculateFixedPrincipalLoan() {
+        const P = this.formData.total_loan;
+        const r = this.formData.interest_rate / 100 / 12;
+        const n = this.formData.loan_years * 12;
+        
+        const monthlyPrincipal = P / n;
+        const initialMonthlyInterest = P * r;
+        const initialMonthlyPayment = monthlyPrincipal + initialMonthlyInterest;
+        const finalMonthlyPayment = monthlyPrincipal + (monthlyPrincipal * r);
+        
+        const totalInterest = ((initialMonthlyInterest + (monthlyPrincipal * r)) * n) / 2;
+        
+        return {
+          initialMonthlyPayment,
+          finalMonthlyPayment,
+          monthlyPrincipal,
+          initialMonthlyInterest,
+          totalInterest
+        };
+      },
+
+      calculateLoan() {
+        // S'assurer que toutes les valeurs sont des nombres
+        const monthlyCharges = 
+          (parseFloat(this.formData.maintenance) || 0) + 
+          (parseFloat(this.formData.condo_fees) || 0) + 
+          (parseFloat(this.formData.property_tax) / 12 || 0);
+
+        // Calcul du total des charges sur la durée du prêt
+        const totalCharges = monthlyCharges * 12 * this.formData.loan_years;
+
+        // Calcul du loyer projeté en fin de prêt
+        const finalRent = this.formData.rent_saved * Math.pow(1 + this.formData.inflation_rate/100, this.formData.loan_years);
+        
+        // Calcul du total des loyers avec inflation
+        let totalRentSaved = 0;
+        for (let year = 0; year < this.formData.loan_years; year++) {
+          const yearlyRent = this.formData.rent_saved * Math.pow(1 + this.formData.inflation_rate/100, year) * 12;
+          totalRentSaved += yearlyRent;
+        }
+
+        if (this.loanType === 'fixed_payment') {
+          const results = this.calculateFixedPaymentLoan();
+          const monthlyInsurance = (this.formData.total_loan * (this.formData.insurance_rate / 100)) / 12;
+          
+          // Calcul du capital total (prix du bien + frais de notaire)
+          const totalCapital = parseFloat(this.formData.property_cost) + parseFloat(this.formData.notary_fees) - parseFloat(this.formData.down_payment);
+          
+          this.results = {
+            monthlyLoanPayment: results.monthlyPayment,
+            totalMonthlyPayment: results.monthlyPayment + monthlyCharges + monthlyInsurance,
+            totalInterest: results.totalInterest,
+            monthlyCharges: monthlyCharges + monthlyInsurance,
+            monthlyInsurance: monthlyInsurance,
+            rentDifference: this.formData.rent_saved - (results.monthlyPayment + monthlyCharges + monthlyInsurance),
+            finalRent: finalRent,
+            finalRentDifference: finalRent - (results.monthlyPayment + monthlyCharges + monthlyInsurance),
+            totalRentSaved: totalRentSaved,
+            totalCapital: totalCapital,
+            totalLoan: this.formData.total_loan,
+            totalCharges: totalCharges + (monthlyInsurance * 12 * this.formData.loan_years)
+          };
+        } else {
+          const results = this.calculateFixedPrincipalLoan();
+          this.results = {
+            initialMonthlyPayment: results.initialMonthlyPayment,
+            finalMonthlyPayment: results.finalMonthlyPayment,
+            totalMonthlyPaymentStart: results.initialMonthlyPayment + monthlyCharges,
+            totalMonthlyPaymentEnd: results.finalMonthlyPayment + monthlyCharges,
+            totalInterest: results.totalInterest,
+            monthlyCharges: monthlyCharges,
+            rentDifference: this.formData.rent_saved - (results.initialMonthlyPayment + monthlyCharges),
+            finalRent: finalRent,
+            finalRentDifference: finalRent - (results.finalMonthlyPayment + monthlyCharges),
+            totalRentSaved: totalRentSaved,
+            totalCharges: totalCharges
+          };
+        }
+      },
+
+      shareCalculation() {
+          const params = new URLSearchParams();
+          for (const [key, value] of Object.entries(this.formData)) {
+              params.append(key, value);
+          }
+          const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+          
+          // Copier l'URL dans le presse-papier
+          navigator.clipboard.writeText(shareUrl).then(() => {
+              alert('URL de partage copiée dans le presse-papier !');
+          });
+      }
+    }))
+  })
 </script>
 {% endblock %}
 
