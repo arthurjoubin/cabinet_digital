@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}" sizes="any">
     <link rel="robots" href="/robots.txt">
+    
     <!-- GOOGLE ANALYTICS -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-3G3P0RGL9X"></script>
     <script>
@@ -25,6 +26,7 @@
             background-color: #f0f9ff; /* Tailwind sky-50 */
         }
         /* Ajoutez d'autres styles critiques si nécessaire */
+        [x-cloak] { display: none !important; }
     </style>
 
     {% compress css %}
@@ -32,13 +34,10 @@
     <noscript><link rel="stylesheet" href="{% static 'src/output.css' %}"></noscript>
     {% endcompress %}
 
+    <script defer src="{% static 'js/alpine.min.js' %}"></script>
+
     {% block meta_description %}{% endblock %}
     {% block extra_head %}{% endblock %}
-    <script>
-        if (typeof Alpine === 'undefined') {
-            console.error('Alpine.js not loaded');
-        }
-    </script>
 </head>
 
 <body class="flex flex-col min-h-screen text-black">
@@ -62,11 +61,25 @@
                 <a href="{% url 'software_list' %}" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md">Logiciels</a>
                 <a href="{% url 'category_list' %}" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md">Catégories</a>
                 <a href="{% url 'actualites' %}" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md">Actualités</a>
-                <div class="relative">
-                    <a href="{% url 'roi_calculateur' %}" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md flex items-center gap-2">
-                        Calculateur ROI
-                        <span class="bg-sky-100 text-sky-800 text-xs font-medium px-2 py-1 rounded-lg">New</span>
-                    </a>
+                
+                <!-- Nouveau menu déroulant Outils -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" @click.away="open = false" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2">
+                        <span>Outils</span>
+                        <svg class="w-4 h-4" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div x-show="open" x-cloak x-transition class="absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                        <div class="py-1">
+                            <a href="{% url 'roi_calculateur' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600">
+                                Calculer le ROI d'un logiciel
+                            </a>
+                            <a href="{% url 'immobilier_calculateur' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600">
+                                Calculer investissement immobilier
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
@@ -84,10 +97,18 @@
                 <a href="{% url 'software_list' %}" class="block rounded-md px-3 py-2 text-base font-medium hover:bg-sky-50 hover:text-sky-600 transition-all duration-300">Logiciels</a>
                 <a href="{% url 'category_list' %}" class="block rounded-md px-3 py-2 text-base font-medium hover:bg-sky-50 hover:text-sky-600 transition-all duration-300">Catégories</a>
                 <a href="{% url 'actualites' %}" class="block rounded-md px-3 py-2 text-base font-medium hover:bg-sky-50 hover:text-sky-600 transition-all duration-300">Actualités</a>
-                <a href="{% url 'roi_calculateur' %}" class="block rounded-md px-3 py-2 text-base font-medium hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 flex items-center gap-2">
-                    Calculateur ROI
-                    <span class="bg-sky-100 text-sky-800 text-xs font-medium px-2 py-0.5 rounded-full">New</span>
-                </a>
+                
+                <!-- Outils dans le menu mobile -->
+                <div class="px-3 py-2">
+                    <div class="font-medium mb-2">Outils</div>
+                    <a href="{% url 'roi_calculateur' %}" class="block rounded-md px-3 py-2 text-base hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 pl-6">
+                        Calculer le ROI d'un logiciel
+                    </a>
+                    <a href="{% url 'immobilier_calculateur' %}" class="block rounded-md px-3 py-2 text-base hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 pl-6">
+                        Calculer investissement immobilier
+                    </a>
+                </div>
+                
                 <a href="{% url 'contact' %}" class="block w-full text-center bg-sky-100 text-black px-4 py-2 text-base font-medium hover:bg-sky-200 transition-colors duration-300 rounded-md mt-2">Contact</a>
             </div>
         </div>
