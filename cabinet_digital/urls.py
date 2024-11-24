@@ -92,6 +92,7 @@ urlpatterns = [
     re_path(r'^sitemap\.xml/$', sitemap, {'sitemaps': sitemaps},
          name='django.contrib.sitemaps.views.sitemap'),
     path('roi_calculateur/', views.roi_calculateur, name='roi_calculateur'),
+    path('immobilier_calculateur/', views.immobilier_calculateur, name='immobilier_calculateur'),
     ]
 
 urlpatterns += [

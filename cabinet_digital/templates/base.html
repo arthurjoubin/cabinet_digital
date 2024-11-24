@@ -34,6 +34,11 @@
 
     {% block meta_description %}{% endblock %}
     {% block extra_head %}{% endblock %}
+    <script>
+        if (typeof Alpine === 'undefined') {
+            console.error('Alpine.js not loaded');
+        }
+    </script>
 </head>
 
 <body class="flex flex-col min-h-screen text-black">

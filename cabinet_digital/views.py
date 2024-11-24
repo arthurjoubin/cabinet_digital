@@ -371,3 +371,80 @@ def roi_calculateur(request):
     except Exception as e:
         logger.error(f"Erreur lors du rendu : {str(e)}")
         raise
+
+def immobilier_calculateur(request):
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        try:
+            years_projection = int(request.POST.get('years_projection', 25))
+            
+            data = {
+                'property_cost': float(request.POST.get('property_cost', 0)),
+                'notary_fees': float(request.POST.get('notary_fees', 0)),
+                'total_loan': float(request.POST.get('total_loan', 0)),
+                'monthly_payment': float(request.POST.get('monthly_payment', 0)),
+                'interest_rate': float(request.POST.get('interest_rate', 0)),
+                'down_payment': float(request.POST.get('down_payment', 0)),
+                'rent_saved': float(request.POST.get('rent_saved', 0)),
+                'property_tax': float(request.POST.get('property_tax', 0)),
+                'insurance': float(request.POST.get('insurance', 0)),
+                'maintenance': float(request.POST.get('maintenance', 0)),
+                'condo_fees': float(request.POST.get('condo_fees', 0))
+            }
+            
+            yearly_costs = []
+            yearly_savings = []
+            yearly_net = []
+            property_value = []  # Pour suivre l'évolution de la valeur du bien
+            loan_remaining = []  # Pour suivre le capital restant à rembourser
+            
+            # Coûts initiaux
+            initial_costs = data['property_cost'] + data['notary_fees'] - data['down_payment']
+            
+            # Calculs annuels
+            for year in range(years_projection + 1):
+                # Coûts annuels
+                yearly_mortgage = data['monthly_payment'] * 12
+                yearly_expenses = (
+                    data['property_tax'] +
+                    data['insurance'] * 12 +
+                    data['maintenance'] * 12 +
+                    data['condo_fees'] * 12
+                )
+                
+                total_costs = initial_costs if year == 0 else yearly_mortgage + yearly_expenses
+                
+                # Gains annuels
+                yearly_rent_saved = data['rent_saved'] * 12
+                property_appreciation = data['property_cost'] * (1 + 0.02) ** year  # 2% d'appréciation annuelle
+                
+                # Calcul du capital restant (simplifié)
+                remaining_loan = max(0, data['total_loan'] * (1 - year/years_projection)) if year <= years_projection else 0
+                
+                # Cumuls
+                yearly_costs.append(round(total_costs, 2))
+                yearly_savings.append(round(yearly_rent_saved, 2))
+                yearly_net.append(round(yearly_rent_saved - total_costs, 2))
+                property_value.append(round(property_appreciation, 2))
+                loan_remaining.append(round(remaining_loan, 2))
+
+            # Point d'équilibre (en années)
+            break_even = next((i for i, x in enumerate(yearly_net) if x > 0), -1)
+
+            chart_data = {
+                'years': list(range(years_projection + 1)),
+                'costs': yearly_costs,
+                'savings': yearly_savings,
+                'net': yearly_net,
+                'property_value': property_value,
+                'loan_remaining': loan_remaining,
+                'break_even': break_even,
+                'yearly_savings': round(data['rent_saved'] * 12, 2)
+            }
+            
+            return JsonResponse(chart_data)
+            
+        except Exception as e:
+            logger.error(f"Erreur dans le calcul immobilier : {str(e)}")
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    return render(request, 'immobilier_calculateur.html')
