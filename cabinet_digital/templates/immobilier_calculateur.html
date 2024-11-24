@@ -198,19 +198,19 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4" x-data="immobilierCalculator">
+<div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4" x-data="immobilierCalculator">
     <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-gray-900">Simulateur <span class="bg-black text-white px-3 py-1 rounded-lg">investissement immobilier</span></h1>
-        <p class="mt-2 text-lg text-gray-600">Comparez l'achat et la location en prenant en compte tous les paramètres</p>
-        <button @click="shareCalculation()" class="mt-4 inline-flex items-center px-4 py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-50 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Simulateur <span class="bg-black text-white px-3 py-1 rounded-lg">investissement immobilier</span></h1>
+        <p class="mt-2 text-base sm:text-lg text-gray-600">Comparez l'achat et la location en prenant en compte tous les paramètres</p>
+        <button @click="shareCalculation()" class="mt-4 inline-flex items-center px-3 py-2 text-sm sm:px-4 sm:py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-50 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 sm:w-5 sm:h-5 mr-2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
             </svg>
-            Partager votre simulation via un lien !
+            Partager votre simulation
         </button>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
         <!-- Colonne de gauche - Formulaire -->
         <div class="space-y-6">
             <!-- Le bien -->
@@ -366,40 +366,36 @@
             </div>
 
             <!-- Comparaison location -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                <h2 class="text-lg font-semibold mb-4 flex items-center">
+            <div class="bg-white p-4 rounded-lg shadow-sm mb-4">
+                <h3 class="text-lg font-semibold mb-3 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185zM9.75 9h.008v.008H9.75V9zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 4.5h.008v.008h-.008V13.5zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                     </svg>
                     Loyer économisé
-                </h2>
+                </h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="relative">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Loyer équivalent</label>
-                        <div class="text-xs text-gray-500 mb-1">Loyer mensuel d'un bien similaire</div>
-                        <div class="relative">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Loyer équivalent</label>
+                        <div class="text-xs text-gray-500 mb-2">Loyer mensuel d'un bien similaire</div>
+                        <div class="flex items-center">
                             <input type="number"
                                    x-model="formData.rent_saved"
                                    @input="calculateLoan"
-                                   class="block w-full pl-4 pr-16 py-2 rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 sm:text-sm">€/mois</span>
-                            </div>
+                                   class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <span class="ml-2 text-gray-500 text-sm whitespace-nowrap">€/mois</span>
                         </div>
                     </div>
 
-                    <div class="relative">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Inflation annuelle</label>
-                        <div class="text-xs text-gray-500 mb-1">Augmentation annuelle du loyer</div>
-                        <div class="relative">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Inflation annuelle</label>
+                        <div class="text-xs text-gray-500 mb-2">Augmentation annuelle du loyer</div>
+                        <div class="flex items-center">
                             <input type="number"
                                    x-model="formData.inflation_rate"
                                    @input="calculateLoan"
                                    step="0.1"
-                                   class="block w-full pl-4 pr-12 py-2 rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 sm:text-sm">%</span>
-                            </div>
+                                   class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <span class="ml-2 text-gray-500 text-sm whitespace-nowrap">%</span>
                         </div>
                     </div>
                 </div>
@@ -483,17 +479,19 @@
                         </svg>
                         Comparaison location
                     </h3>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="bg-sky-50 p-3 rounded-lg">
                             <div class="text-sm font-medium text-gray-800 mb-2">Aujourd'hui</div>
-                            <div class="flex justify-between items-baseline mt-1">
-                                <span class="text-gray-600">Loyer</span>
-                                <span class="font-medium" x-text="formatNumber(formData.rent_saved) + ' €'"></span>
-                            </div>
-                            <div class="flex justify-between items-baseline mt-1">
-                                <span class="text-gray-600">Différence</span>
-                                <span class="font-medium" :class="results && results.rentDifference > 0 ? 'text-green-600' : 'text-red-600'"
-                                      x-text="results ? (results.rentDifference > 0 ? '+' : '') + formatNumber(results.rentDifference) + ' €' : '-'"></span>
+                            <div class="space-y-1">
+                                <div class="flex justify-between items-baseline">
+                                    <span class="text-gray-600">Loyer</span>
+                                    <span class="font-medium" x-text="formatNumber(formData.rent_saved) + ' €'"></span>
+                                </div>
+                                <div class="flex justify-between items-baseline">
+                                    <span class="text-gray-600">Différence</span>
+                                    <span class="font-medium" :class="results && results.rentDifference > 0 ? 'text-green-600' : 'text-red-600'"
+                                          x-text="results ? (results.rentDifference > 0 ? '+' : '') + formatNumber(results.rentDifference) + ' €' : '-'"></span>
+                                </div>
                             </div>
                         </div>
                         <div class="bg-sky-50/50 p-3 rounded-lg">
