@@ -21,6 +21,7 @@
             monthly_cost_saas: 800,
             one_time_cost_saas: 3000,
             integrator_cost_implementation: 4000,
+            integrator_maintenance: 200,
             internal_hours_internal_implementation: 30,
             cost_per_hour_internal_implementation: 20,
             employee_hours_per_week_gained: 10,
@@ -35,6 +36,12 @@
         chartData: null,
         debounceTimeout: null,
         init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            for (const [key, value] of urlParams.entries()) {
+                if (this.formData.hasOwnProperty(key)) {
+                    this.formData[key] = parseFloat(value);
+                }
+            }
             this.$nextTick(() => {
                 this.updateROIDebounced();
             });
@@ -54,7 +61,7 @@
             }).format(value)
         },
         formatHours(value) {
-            return `${value} h`
+            return `${value}`
         },
         async updateROIDebounced() {
             clearTimeout(this.debounceTimeout);
@@ -67,7 +74,9 @@
         async updateROIData() {
             const formData = new FormData(document.getElementById('roiForm'));
             
-            formData.set('months_projection', this.formData.months_projection);
+            for (const [key, value] of Object.entries(this.formData)) {
+                formData.set(key, value);
+            }
             
             try {
                 const response = await fetch('{% url "roi_calculateur" %}', {
@@ -111,23 +120,13 @@
                 return;
             }
 
-            // Attendre que le DOM soit complètement prêt
-            await this.$nextTick();
-            
-            // Nettoyer proprement l'ancien graphique
-            if (this.chartInstance) {
-                this.chartInstance.destroy();
-                this.chartInstance = null;
-            }
-
-            // Obtenir le wrapper
             const wrapper = document.getElementById('chartWrapper');
             if (!wrapper) {
                 console.error('Chart wrapper not found');
                 return;
             }
 
-            // Vider le wrapper
+            // Nettoyer le wrapper
             wrapper.innerHTML = '';
 
             // Créer un nouveau canvas
@@ -135,168 +134,153 @@
             newCanvas.id = 'roiChart';
             wrapper.appendChild(newCanvas);
 
-            // Attendre que le canvas soit bien inséré
-            await new Promise(resolve => setTimeout(resolve, 100));
-
-            try {
-                const ctx = newCanvas.getContext('2d');
-                if (!ctx) {
-                    throw new Error('Failed to get canvas context');
-                }
-
-                const dataLength = Math.min(data.costs.length, data.savings.length, data.net.length);
-                const labels = Array.from({length: dataLength}, (_, i) => `Mois ${i + 1}`);
-
-                // Vérifier que toutes les données sont des nombres valides
-                const validData = {
-                    costs: data.costs.slice(0, dataLength).map(v => Number(v) || 0),
-                    savings: data.savings.slice(0, dataLength).map(v => Number(v) || 0),
-                    net: data.net.slice(0, dataLength).map(v => Number(v) || 0)
-                };
-
-                const chartConfig = {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: 'Coûts',
-                                data: validData.costs,
-                                borderColor: '#ef4444',
-                                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                                fill: false,
-                                borderWidth: 1.5,
-                                borderDash: [4, 4],
-                                pointRadius: 0,
-                                order: 2
-                            },
-                            {
-                                label: 'Gains',
-                                data: validData.savings,
-                                borderColor: '#22c55e',
-                                backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                                fill: false,
-                                borderWidth: 1.5,
-                                borderDash: [4, 4],
-                                pointRadius: 0,
-                                order: 1
-                            },
-                            {
-                                label: 'ROI Net',
-                                data: validData.net,
-                                borderColor: '#0ea5e9',
-                                backgroundColor: 'rgba(14, 165, 233, 0.1)',
-                                fill: true,
-                                borderWidth: 2,
-                                tension: 0.4,
-                                pointRadius: 0,
-                                pointHoverRadius: 6,
-                                order: 0
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            tooltip: {
-                                callbacks: {
-                                    label: (context) => {
-                                        return `${context.dataset.label}: ${this.formatCurrency(context.raw)}`;
-                                    }
-                                },
-                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                                padding: 12,
-                                titleFont: {
-                                    size: 14,
-                                    weight: 'bold'
-                                }
-                            },
-                            legend: {
-                                position: 'top',
-                                align: 'center',
-                                labels: {
-                                    boxWidth: 30,
-                                    boxHeight: 2,
-                                    padding: 20,
-                                    font: {
-                                        size: 13,
-                                        weight: '500'
-                                    },
-                                    usePointStyle: false
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                ticks: {
-                                    callback: value => this.formatCurrency(value),
-                                    font: {
-                                        size: 11
-                                    }
-                                },
-                                grid: {
-                                    color: 'rgba(0,0,0,0.03)',
-                                    drawBorder: false
-                                },
-                                border: {
-                                    dash: [4, 4]
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
-                                },
-                                ticks: {
-                                    font: {
-                                        size: 11
-                                    }
-                                },
-                                border: {
-                                    dash: [4, 4]
-                                }
-                            }
-                        },
-                        interaction: {
-                            intersect: false,
-                            mode: 'index'
-                        },
-                        animation: false // Désactiver les animations pour éviter les problèmes
-                    }
-                };
-
-                // Créer le nouveau graphique
-                this.chartInstance = new Chart(ctx, chartConfig);
-
-            } catch (error) {
-                console.error('Error creating chart:', error);
-                console.error('Data:', data);
+            const ctx = newCanvas.getContext('2d');
+            if (!ctx) {
+                throw new Error('Failed to get canvas context');
             }
+
+            const dataLength = Math.min(data.costs.length, data.savings.length, data.net.length);
+            const labels = Array.from({length: dataLength}, (_, i) => `Mois ${i + 1}`);
+
+            // Vérifier que toutes les données sont des nombres valides
+            const validData = {
+                costs: data.costs.slice(0, dataLength).map(v => Number(v) || 0),
+                savings: data.savings.slice(0, dataLength).map(v => Number(v) || 0),
+                net: data.net.slice(0, dataLength).map(v => Number(v) || 0)
+            };
+
+            if (this.chartInstance) {
+                this.chartInstance.destroy();
+            }
+
+            this.chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Coûts',
+                            data: validData.costs,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            fill: false,
+                            borderWidth: 1.5,
+                            borderDash: [4, 4],
+                            pointRadius: 0,
+                            order: 2
+                        },
+                        {
+                            label: 'Gains',
+                            data: validData.savings,
+                            borderColor: '#22c55e',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            fill: false,
+                            borderWidth: 1.5,
+                            borderDash: [4, 4],
+                            pointRadius: 0,
+                            order: 1
+                        },
+                        {
+                            label: 'ROI Net',
+                            data: validData.net,
+                            borderColor: '#0ea5e9',
+                            backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                            fill: true,
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            order: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    return `${context.dataset.label}: ${this.formatCurrency(context.raw)}`;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: value => this.formatCurrency(value)
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
         },
         updateSummary(data) {
-            document.getElementById('initialInvestment').textContent = this.formatCurrency(data.costs[0]);
-            document.getElementById('monthlySavings').textContent = this.formatCurrency(data.monthly_savings);
-            document.getElementById('breakEvenText').textContent = 
-                data.break_even >= 0 ? `mois ${data.break_even}` : 'Non atteint';
+            const monthlyCost = this.formData.monthly_cost_saas + this.formData.integrator_maintenance;
+            const elements = {
+                'initialInvestment': data.costs[0],
+                'monthlyCost': monthlyCost,
+                'monthlySavings': data.monthly_savings,
+                'breakEvenText': data.break_even >= 0 ? `mois ${data.break_even}` : 'Non atteint'
+            };
+            
+            for (const [id, value] of Object.entries(elements)) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = typeof value === 'number' ? this.formatCurrency(value) : value;
+                }
+            }
+        },
+        shareCalculation() {
+            const params = new URLSearchParams();
+            for (const [key, value] of Object.entries(this.formData)) {
+                params.append(key, value);
+            }
+            const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+            
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert('URL de partage copiée dans le presse-papier !');
+            });
+        },
+        handleInput(event, field) {
+            let value = event.target.value;
+            // Remove non-numeric characters except decimal point
+            value = value.replace(/[^\d.-]/g, '');
+            // Convert to number
+            value = parseFloat(value) || 0;
+            this.formData[field] = value;
         }
      }">
     <div class="text-center mb-6">
         <h1 class="text-4xl font-bold text-gray-900">Calculateur de <span class="bg-black text-white px-3 py-1 rounded-lg">ROI</span> d'un logiciel</h1>
         <p class="mt-2 text-lg text-gray-600">Estimez le retour sur investissement de votre logiciel</p>
-
+        <button @click="shareCalculation()" class="mt-4 inline-flex items-center px-3 py-2 text-sm sm:px-4 sm:py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-50 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 sm:w-5 sm:h-5 mr-2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+            </svg>
+            Partager votre simulation
+        </button>
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
         <!-- Formulaire -->
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+        <div>
             <form id="roiForm" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="months_projection" :value="formData.months_projection">
                 <!-- Section Coûts -->
-                <div class="space-y-4 bg-red-50/50 p-6 mb-6 rounded-xl border border-red-100">
+                <div class="space-y-4 bg-red-50 p-6 mb-6 rounded-xl border-4 border-red-200">
                     <div class="flex items-center justify-center gap-2 mb-2">
                         <div class="bg-red-100 p-2 rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />
                             </svg>
                         </div>
                         <h2 class="text-lg font-semibold text-gray-800">Coûts</h2>
@@ -304,70 +288,118 @@
                     
                     <div class="grid grid-cols-1 gap-2">
                         <!-- Encadré Logiciel -->
-                        <div class="bg-white/50 rounded-lg border border-red-100">
+                        <div class="bg-red-100 rounded-lg border border-red-100">
                             <h3 class="text-sm font-bold text-center text-gray-900 py-1">Logiciel</h3>
                             <div class="grid grid-cols-2 gap-1 p-1">
-                                <div class="bg-white/80 p-1.5 rounded-lg border border-red-50 shadow-sm">
+                                <div class="p-1.5 rounded-lg shadow-sm">
                                     <label class="block text-xs font-medium text-gray-700">Coût mensuel</label>
-                                    <div class="flex items-center gap-2">
-                                        <input type="range" x-model="formData.monthly_cost_saas" name="monthly_cost_saas" min="100" max="10000" step="100"
-                                               class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                                        <output class="text-xs font-medium text-gray-600 text-right" x-text="formatCurrency(formData.monthly_cost_saas)"></output>
+                                    <div class="relative">
+                                        <input type="text"
+                                               x-on:input="handleInput($event, 'monthly_cost_saas')"
+                                               :value="formData.monthly_cost_saas"
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">€</span>
+                                        </div>
                                     </div>
                                 </div>
                                 
-                                <div class="bg-white/80 p-1.5 rounded-lg border border-red-50 shadow-sm">
+                                <div class="p-1.5 rounded-lg shadow-sm">
                                     <label class="block text-xs font-medium text-gray-700">Frais de setup</label>
-                                    <div class="flex items-center gap-2">
-                                        <input type="range" x-model="formData.one_time_cost_saas" name="one_time_cost_saas" min="0" max="20000" step="1000"
-                                               class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                                        <output class="text-xs font-medium text-gray-600 text-right" x-text="formatCurrency(formData.one_time_cost_saas)"></output>
+                                    <div class="relative">
+                                        <input type="text"
+                                               x-on:input="handleInput($event, 'one_time_cost_saas')"
+                                               :value="formData.one_time_cost_saas"
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">€</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Encadré Intégrateur -->
-                        <div class="bg-white/50 rounded-lg border border-red-100">
+                        <div class="bg-red-100 rounded-lg border border-red-100">
                             <h3 class="text-sm font-bold text-center text-gray-900 py-1">Intégrateur</h3>
-                            <div class="bg-white/80 p-1.5 rounded-lg border border-red-50 shadow-sm">
-                                <label class="block text-xs font-medium text-gray-700">Coût intégrateur</label>
-                                <div class="flex items-center gap-2">
-                                    <input type="range" x-model="formData.integrator_cost_implementation" name="integrator_cost_implementation" min="0" max="50000" step="1000"
-                                           class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                                    <output class="text-xs font-medium text-gray-600 text-right" x-text="formatCurrency(formData.integrator_cost_implementation)"></output>
+                            <div class="grid grid-cols-2 gap-1 p-1">
+                                <div class="p-1.5 rounded-lg shadow-sm">
+                                    <label class="block text-xs font-medium text-gray-700">Coût intégrateur</label>
+                                    <div class="relative">
+                                        <input type="text"
+                                               x-on:input="handleInput($event, 'integrator_cost_implementation')"
+                                               :value="formData.integrator_cost_implementation"
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">€</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-1.5 rounded-lg shadow-sm">
+                                    <label class="block text-xs font-medium text-gray-700">Maintenance mensuelle</label>
+                                    <div class="relative">
+                                        <input type="text"
+                                               x-on:input="handleInput($event, 'integrator_maintenance')"
+                                               :value="formData.integrator_maintenance"
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">€</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Encadré Internes -->
-                        <div class="bg-white/50 rounded-lg border border-red-100">
+                        <div class="bg-red-100 rounded-lg border border-red-100">
                             <h3 class="text-sm font-bold text-center text-gray-900 py-1">Internes</h3>
                             <div class="grid grid-cols-2 gap-1 p-1">
-                                <div class="bg-white/80 p-1.5 rounded-lg border border-red-50 shadow-sm">
+                                <div class="p-1.5 rounded-lg shadow-sm">
                                     <label class="block text-xs font-medium text-gray-700">Heures collaborateurs</label>
-                                    <div class="flex items-center gap-2">
-                                        <input type="range" x-model="formData.internal_hours_internal_implementation" name="internal_hours_internal_implementation" min="0" max="100" step="5"
-                                               class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                                        <output class="text-xs font-medium text-gray-600 text-right whitespace-nowrap" x-text="formatHours(formData.internal_hours_internal_implementation)"></output>
+                                    <div class="relative">
+                                        <input type="text"
+                                               x-on:input="handleInput($event, 'internal_hours_internal_implementation')"
+                                               :value="formatHours(formData.internal_hours_internal_implementation)"
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">h</span>
+                                        </div>
                                     </div>
                                 </div>
                                 
-                                <div class="bg-white/80 p-1.5 rounded-lg border border-red-50 shadow-sm">
+                                <div class="p-1.5 rounded-lg shadow-sm">
                                     <label class="block text-xs font-medium text-gray-700">Coût horaire</label>
-                                    <div class="flex items-center gap-2">
-                                        <input type="range" x-model="formData.cost_per_hour_internal_implementation" name="cost_per_hour_internal_implementation" min="0" max="200" step="10"
-                                               class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                                        <output class="text-xs font-medium text-gray-600 text-right" x-text="formatCurrency(formData.cost_per_hour_internal_implementation)"></output>
+                                    <div class="relative">
+                                        <input type="text"
+                                               x-on:input="handleInput($event, 'cost_per_hour_internal_implementation')"
+                                               :value="formData.cost_per_hour_internal_implementation"
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">€</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Ajout du récapitulatif des coûts -->
+                    <div class="mt-4 bg-white p-4 rounded-lg border border-red-100 shadow-sm">
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-gray-700 font-medium flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />
+                                </svg>
+                                Investissement initial
+                            </span>
+                            <span class="text-lg font-bold text-red-600" x-text="formatCurrency(formData.one_time_cost_saas + formData.integrator_cost_implementation + (formData.internal_hours_internal_implementation * formData.cost_per_hour_internal_implementation))"></span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Section Gains -->
-                <div class="space-y-4 bg-green-50/50 p-6 rounded-xl border border-green-100">
+                <div class="space-y-4 bg-green-50 p-6 rounded-xl border-4 border-green-100">
                     <div class="flex items-center justify-center gap-2 mb-2">
                         <div class="bg-green-100 p-2 rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -378,41 +410,66 @@
                     </div>
                     
                     <div class="grid grid-cols-1 gap-2">
-                        <!-- Encadré Internes -->
-                        <div class="bg-white/50 rounded-lg border border-green-100">
-                            <h3 class="text-sm font-bold text-center text-gray-900 py-1">Internes</h3>
+                        <!-- Encadré Gains -->
+                        <div class="bg-green-100 rounded-lg border border-green-100">
+                            <h3 class="text-sm font-bold text-center text-gray-900 py-1">Gains mensuels</h3>
                             <div class="grid grid-cols-2 gap-1 p-1">
-                                <div class="bg-white/80 p-1.5 rounded-lg border border-green-50 shadow-sm">
-                                    <label class="block text-xs font-medium text-gray-700">Heures/semaine</label>
-                                    <div class="flex items-center gap-2">
-                                        <input type="range" x-model="formData.employee_hours_per_week_gained" name="employee_hours_per_week_gained" min="0" max="40" step="2"
-                                               class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                                        <output class="text-xs font-medium text-gray-600 text-right whitespace-nowrap" x-text="formatHours(formData.employee_hours_per_week_gained)"></output>
+                                <div class="p-1.5 rounded-lg shadow-sm">
+                                    <label class="block text-xs font-medium text-gray-700">Heures gagnées/semaine</label>
+                                    <div class="relative">
+                                        <input type="text"
+                                               x-on:input="handleInput($event, 'employee_hours_per_week_gained')"
+                                               :value="formatHours(formData.employee_hours_per_week_gained)"
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">h</span>
+                                        </div>
                                     </div>
                                 </div>
                                 
-                                <div class="bg-white/80 p-1.5 rounded-lg border border-green-50 shadow-sm">
+                                <div class="p-1.5 rounded-lg shadow-sm">
                                     <label class="block text-xs font-medium text-gray-700">Coût horaire</label>
-                                    <div class="flex items-center gap-2">
-                                        <input type="range" x-model="formData.cost_of_employee_hour" name="cost_of_employee_hour" min="0" max="100" step="10"
-                                               class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                                        <output class="text-xs font-medium text-gray-600 text-right" x-text="formatCurrency(formData.cost_of_employee_hour)"></output>
+                                    <div class="relative">
+                                        <input type="text"
+                                               x-on:input="handleInput($event, 'cost_of_employee_hour')"
+                                               :value="formData.cost_of_employee_hour"
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">€</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Encadré Autres -->
-                        <div class="bg-white/50 rounded-lg border border-green-100">
-                            <h3 class="text-sm font-bold text-center text-gray-900 py-1">Autres</h3>
-                            <div class="bg-white/80 p-1.5 rounded-lg border border-green-50 shadow-sm">
-                                <label class="block text-xs font-medium text-gray-700">Économies/mois</label>
-                                <div class="flex items-center gap-2">
-                                    <input type="range" x-model="formData.other_savings" name="other_savings" min="0" max="2000" step="100"
-                                           class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                                    <output class="text-xs font-medium text-gray-600 text-right" x-text="formatCurrency(formData.other_savings)"></output>
+                        <!-- Encadré Autres gains -->
+                        <div class="bg-green-100 rounded-lg border border-green-100">
+                            <h3 class="text-sm font-bold text-center text-gray-900 py-1">Autres gains</h3>
+                            <div class="p-1.5 rounded-lg shadow-sm">
+                                <label class="block text-xs font-medium text-gray-700">Économies mensuelles</label>
+                                <div class="relative">
+                                    <input type="text"
+                                           x-on:input="handleInput($event, 'other_savings')"
+                                           :value="formData.other_savings"
+                                           class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">€</span>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Ajout du récapitulatif des gains -->
+                    <div class="mt-4 bg-white p-4 rounded-lg border border-green-100 shadow-sm">
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-gray-700 font-medium flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                </svg>
+                                Gains mensuels estimés
+                            </span>
+                            <span class="text-lg font-bold text-green-600" x-text="formatCurrency((formData.employee_hours_per_week_gained * 4 * formData.cost_of_employee_hour) + formData.other_savings)"></span>
                         </div>
                     </div>
                 </div>
@@ -422,39 +479,38 @@
         </div>
         <!-- Résultats -->
         <div class="space-y-6">
-            <div class="bg-sky-50 p-4 rounded-xl shadow-sm border-4 border-white">
-                <h2 class="text-2xl font-bold text-center mb-6"><span>Projection du retour sur investissement</span></h2>
-                
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-900 text-center mb-6">Projection du retour sur investissement</h2>
                 <!-- Résumé des résultats -->
                 <div id="roiSummary" 
-                     class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-4"
+                     class="bg-sky-50 p-6 rounded-xl shadow-sm border border-gray-200 mb-4"
                      x-show="!isLoading">
                     <div class="space-y-6">
                         <div class="grid grid-cols-3 gap-6">
                             <div class="p-4 bg-gradient-to-br from-sky-50 to-white rounded-xl border border-sky-100">
                                 <h3 class="text-sm font-semibold text-gray-600 mb-2">Investissement</h3>
-                                <p class="text-2xl font-bold text-sky-700" id="initialInvestment">-</p>
+                                <p id="initialInvestment" class="text-2xl font-bold text-sky-700">-</p>
                             </div>
                             <div class="p-4 bg-gradient-to-br from-red-50 to-white rounded-xl border border-red-100">
                                 <h3 class="text-sm font-semibold text-gray-600 mb-2">Coût/mois</h3>
-                                <p class="text-2xl font-bold text-red-600" x-text="formatCurrency(formData.monthly_cost_saas)">-</p>
+                                <p id="monthlyCost" class="text-2xl font-bold text-red-600">-</p>
                             </div>
                             <div class="p-4 bg-gradient-to-br from-green-50 to-white rounded-xl border border-green-100">
                                 <h3 class="text-sm font-semibold text-gray-600 mb-2">Économies/mois</h3>
-                                <p class="text-2xl font-bold text-green-700" id="monthlySavings">-</p>
+                                <p id="monthlySavings" class="text-2xl font-bold text-green-700">-</p>
                             </div>
                         </div>
                         <div class="p-3 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200">
                             <div class="flex items-center justify-center gap-2">
                                 <span class="text-sm font-semibold text-gray-600">Point d'équilibre au</span>
-                                <span class="text-lg font-bold text-gray-700" id="breakEvenText">-</span>
+                                <span id="breakEvenText" class="text-lg font-bold text-gray-700">-</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Graphique avec le sélecteur de période -->
-                <div id="roiChartContainer" class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                <div id="roiChartContainer" class="bg-sky-50 p-4 rounded-xl shadow-sm border border-gray-200">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-semibold text-gray-900">Évolution du ROI</h3>
                         <div class="flex items-center gap-3">

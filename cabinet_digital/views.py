@@ -283,15 +283,13 @@ def custom_redirect_view(request, old_path, slug, r_id=None):
 def roi_calculateur(request):
     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         try:
-            # Récupérer et valider months_projection
             months_projection = int(request.POST.get('months_projection', 24))
-            logger.info(f"Projection sur {months_projection} mois")
             
-            # Récupérer les données du formulaire
             data = {
                 'monthly_cost_saas': float(request.POST.get('monthly_cost_saas', 0)),
                 'one_time_cost_saas': float(request.POST.get('one_time_cost_saas', 0)),
                 'integrator_cost_implementation': float(request.POST.get('integrator_cost_implementation', 0)),
+                'integrator_maintenance': float(request.POST.get('integrator_maintenance', 0)),
                 'internal_hours_internal_implementation': float(request.POST.get('internal_hours_internal_implementation', 0)),
                 'cost_per_hour_internal_implementation': float(request.POST.get('cost_per_hour_internal_implementation', 0)),
                 'employee_hours_per_week_gained': float(request.POST.get('employee_hours_per_week_gained', 0)),
@@ -317,8 +315,8 @@ def roi_calculateur(request):
 
             # Calcul mois par mois sur la période demandée
             for month in range(months_projection + 1):  # Utiliser months_projection au lieu de 24
-                # Coûts cumulés
-                monthly_costs = fixed_costs + (data['monthly_cost_saas'] * month)
+                # Coûts cumulés avec maintenance
+                monthly_costs = fixed_costs + (data['monthly_cost_saas'] * month) + (data['integrator_maintenance'] * month)
                 
                 # Gains cumulés
                 monthly_savings = (
