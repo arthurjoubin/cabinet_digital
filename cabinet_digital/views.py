@@ -227,7 +227,7 @@ class SoftwareDetailView(DetailView):
                     filter=Q(category__in=categories)
                 )
             )
-            .order_by('-common_categories')[:3]
+            .order_by('-common_categories')[:]
         )
 
         from datetime import date
@@ -313,7 +313,7 @@ def roi_calculateur(request):
             )
 
             # Calcul des heures économisées par mois
-            monthly_hours_saved = data['employee_hours_per_week_gained'] * 52 / 12
+            monthly_hours_saved = data['employee_hours_per_week_gained'] * 4
 
             # Calcul mois par mois sur la période demandée
             for month in range(months_projection + 1):  # Utiliser months_projection au lieu de 24

@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-12">
+<div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-12"">
   <div class="p-4 sm:p-6 border-b border-gray-200">
     <div class="flex flex-col space-y-4">
       <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4">
@@ -27,6 +27,7 @@
           <span class="font-bold">{{ software.unique_views }}&nbsp;</span>visites 
           <span class="text-xs text-sky-600 ml-1">(Depuis {{ days_since }} jours)</span>
         </div>
+    
         <a href="{{ software.site }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center">
           Visiter leur site
           <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -62,11 +63,28 @@
 
     <hr class="my-6 sm:my-8 border-t border-gray-200">
 
-    <div class="prose max-w-none text-gray-700 leading-relaxed">
+    <div class="prose max-w-none text-gray-700 leading-relaxed" 
+         x-data="{ 
+           expanded: false,
+           isOverflowing: false,
+           init() {
+             this.isOverflowing = this.$refs.content.scrollHeight > 600;
+           }
+         }">
       <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 text-center md:text-left">Présentation de <span class="bg-black text-white rounded px-2"> {{ software.name }} </span></h2>
-      <div class="text-left">
+      <div x-ref="content"
+           :class="{ 'max-h-[600px] overflow-hidden': !expanded && isOverflowing }"
+           class="text-left relative">
         {{ software.description|safe }}
+        <div x-show="!expanded && isOverflowing" 
+             class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent">
+        </div>
       </div>
+      <button x-show="isOverflowing"
+              @click="expanded = !expanded"
+              class="mt-4 text-sky-700 hover:text-sky-800 font-medium"
+              x-text="expanded ? 'Voir moins' : 'Lire la suite'">
+      </button>
     </div>
   </div>
 

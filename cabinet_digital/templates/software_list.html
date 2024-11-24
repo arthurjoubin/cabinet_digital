@@ -12,18 +12,35 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+<div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200" x-data="{
+    searchQuery: '{{ search_query }}',
+    selectedCategory: '{{ selected_category }}',
+    isLoading: false,
+    
+    submitForm() {
+        this.isLoading = true;
+        window.location.href = `{% url 'software_list' %}?categorie=${this.selectedCategory}&search=${this.searchQuery}`;
+    },
+
+    goToPage(page) {
+        this.isLoading = true;
+        window.location.href = `{% url 'software_list' %}?page=${page}&categorie=${this.selectedCategory}&search=${this.searchQuery}`;
+    }
+}">
     <h1 class="custom-header">Liste des logiciels</h1>
     <div class="flex flex-col space-y-4 md:space-y-0 md:flex-row md:justify-between md:items-start mb-8">
-        <form action="{% url 'software_list' %}" method="get" class="w-full md:w-[40%]">
-            <input type="hidden" name="search" value="{{ search_query }}">
+        <div class="w-full md:w-[40%]">
             <div class="relative">
                 <label for="category-filter" class="sr-only">Filtrer par catégorie</label>
-                <select id="category-filter" name="categorie" onchange="this.form.submit()" class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-100 appearance-none transition-all duration-300 hover:border-sky-100">
+                <select 
+                    id="category-filter" 
+                    x-model="selectedCategory"
+                    @change="submitForm()"
+                    class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-100 appearance-none transition-all duration-300 hover:border-sky-100">
                     <option value="">Toutes les catégories</option>
                     {% for category in categories %}
                         {% if category.software_count > 0 %}
-                            <option value="{{ category.slug }}" {% if category.slug == selected_category %}selected{% endif %}>
+                            <option value="{{ category.slug }}">
                                 {{ category.name }} ({{ category.software_count }})
                             </option>
                         {% endif %}
@@ -35,33 +52,45 @@
                     </svg>
                 </div>
             </div>
-        </form>
+        </div>
 
-        <form action="{% url 'software_list' %}" method="get" class="w-full md:w-[30%]">
-            <input type="hidden" name="categorie" value="{{ selected_category }}">
+        <div class="w-full md:w-[30%]">
             <div class="flex flex-col sm:flex-row">
                 <label for="search-input" class="sr-only">Rechercher un logiciel</label>
-                <input type="text" id="search-input" name="search" placeholder="Rechercher un logiciel" class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg sm:rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-100" value="{{ search_query }}">
-                <button type="submit" class="w-full sm:w-auto mt-2 sm:mt-0 px-6 py-3 bg-black text-white rounded-lg sm:rounded-l-none hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 transition duration-300">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    x-model="searchQuery"
+                    @keyup.enter="submitForm()"
+                    placeholder="Rechercher un logiciel" 
+                    class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg sm:rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-100">
+                <button 
+                    @click="submitForm()"
+                    type="button" 
+                    class="w-full sm:w-auto mt-2 sm:mt-0 px-6 py-3 bg-black text-white rounded-lg sm:rounded-l-none hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 transition duration-300">
                     Rechercher
                 </button>
             </div>
-        </form>
+        </div>
     </div>
 
     <div id="software-list-content" class="w-full">
-        <div id="software-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div id="software-grid" 
+             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+             :class="{ 'opacity-50': isLoading }">
             {% for software in softwares %}
             {% include 'template_card_software.html' with software=software %}
             {% endfor %}
         </div>
+
         <div class="flex justify-center mt-12">
             <div class="inline-flex rounded-md shadow-sm">
                 {% if page_obj.has_previous %}
-                    <a href="?page={{ page_obj.previous_page_number }}&categorie={{ selected_category|default:'' }}&search={{ search_query }}"
-                       class="px-4 py-2 text-sm font-semibold text-black bg-white border border-black rounded-l-md hover:bg-black hover:text-white transition duration-300">
+                    <button @click="goToPage({{ page_obj.previous_page_number }})"
+                       :disabled="isLoading"
+                       class="px-4 py-2 text-sm font-semibold text-black bg-white border border-black rounded-l-md hover:bg-black hover:text-white transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                         Précédent
-                    </a>
+                    </button>
                 {% else %}
                     <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-300 rounded-l-md cursor-not-allowed">Précédent</span>
                 {% endif %}
@@ -71,10 +100,11 @@
                 </span>
                 
                 {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}&categorie={{ selected_category|default:'' }}&search={{ search_query }}"
-                       class="px-4 py-2 text-sm font-semibold text-black bg-white border border-black rounded-r-md hover:bg-black hover:text-white transition duration-300">
+                    <button @click="goToPage({{ page_obj.next_page_number }})"
+                       :disabled="isLoading"
+                       class="px-4 py-2 text-sm font-semibold text-black bg-white border border-black rounded-r-md hover:bg-black hover:text-white transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                         Suivant
-                    </a>
+                    </button>
                 {% else %}
                     <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-300 rounded-r-md cursor-not-allowed">Suivant</span>
                 {% endif %}

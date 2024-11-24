@@ -1,4 +1,8 @@
-<div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 relative flex flex-col">
+<div x-data="{ hover: false }" 
+     @mouseenter="hover = true" 
+     @mouseleave="hover = false"
+     :class="{ 'shadow-lg': hover, 'shadow-md': !hover }"
+     class="bg-white rounded-lg overflow-hidden border border-gray-200 relative flex flex-col transition-all duration-300">
     <div class="absolute top-0 left-0 flex flex-wrap gap-1">
         {% for tag in article.tags.all %}
         <span class="px-2 py-1 text-xs font-semibold text-white truncate" style="background-color: {{ tag.color }};">
@@ -15,8 +19,11 @@
         </p>
     </div>
     <div class="px-4 flex-grow mb-2 flex flex-col justify-center">
-        <a href="{% url article_detail article.slug %}" class="block mb-1 group">
-            <h2 class="text-base font-medium tracking-tight text-gray-800 group-hover:text-sky-600 transition-colors duration-200">{{ article.title }}</h2>
+        <a href="{% url article_detail article.slug %}" class="block mb-1">
+            <h2 x-bind:class="{ 'text-sky-600': hover }" 
+                class="text-base font-medium tracking-tight text-gray-800 transition-colors duration-200">
+                {{ article.title }}
+            </h2>
         </a>
         <p class="text-sm text-gray-500 italic"></p>
     </div>

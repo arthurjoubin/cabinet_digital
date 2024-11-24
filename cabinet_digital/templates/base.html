@@ -41,7 +41,14 @@
 </head>
 
 <body class="flex flex-col min-h-screen text-black">
-    <header class="border-b border-gray-200 bg-white shadow-sm">
+    <header x-data="{ 
+        scrolled: false,
+        currentPath: window.location.pathname,
+        mobileMenuOpen: false
+    }" 
+    @scroll.window="scrolled = (window.pageYOffset > 0)"
+    :class="{ 'shadow-md': scrolled }"
+    class="sticky top-0 z-50 border-b border-gray-200 bg-white transition-shadow duration-300">
         <nav class="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8" aria-label="Global">
             <div class="flex lg:flex-1 items-center">
                 <a href="{% url 'home' %}" class="flex items-center">
@@ -50,7 +57,10 @@
                 </a>
             </div>
             <div class="flex lg:hidden">
-                <button type="button" class="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 transition-colors duration-300" aria-expanded="false" aria-controls="mobile-menu" onclick="toggleMobileMenu()">
+                <button type="button" 
+                        @click="mobileMenuOpen = !mobileMenuOpen" 
+                        class="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 transition-colors duration-300" 
+                        :aria-expanded="mobileMenuOpen">
                     <span class="sr-only">Ouvrir le menu principal</span>
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
@@ -58,25 +68,48 @@
                 </button>
             </div>
             <div class="hidden lg:flex gap-x-8 items-center justify-center">
-                <a href="{% url 'software_list' %}" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md">Logiciels</a>
-                <a href="{% url 'category_list' %}" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md">Catégories</a>
-                <a href="{% url 'actualites' %}" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md">Actualités</a>
+                <a href="{% url 'software_list' %}" 
+                   :class="{ 'bg-sky-50 text-sky-600': currentPath === '{% url 'software_list' %}' }"
+                   class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md">Logiciels</a>
+                <a href="{% url 'category_list' %}" 
+                   :class="{ 'bg-sky-50 text-sky-600': currentPath === '{% url 'category_list' %}' }"
+                   class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md">Catégories</a>
+                <a href="{% url 'actualites' %}" 
+                   :class="{ 'bg-sky-50 text-sky-600': currentPath === '{% url 'actualites' %}' }"
+                   class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md">Actualités</a>
                 
                 <!-- Nouveau menu déroulant Outils -->
-                <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" @click.away="open = false" class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2">
+                <div class="relative" x-data="{ 
+                    open: false,
+                    toggle() { this.open = !this.open },
+                    close() { this.open = false }
+                }">
+                    <button @click="toggle()" 
+                            @click.away="close()"
+                            type="button"
+                            class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2">
                         <span>Outils</span>
+                        <span class="bg-sky-100 text-sky-600 px-2 py-0.5 rounded text-xs font-medium">New</span>
                         <svg class="w-4 h-4" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
-                    <div x-show="open" x-cloak x-transition class="absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                        <div class="py-1">
-                            <a href="{% url 'roi_calculateur' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600">
-                                Calculer le ROI d'un logiciel
+                    <div x-show="open" 
+                         x-cloak 
+                         @keydown.escape.window="close()"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform scale-95"
+                         x-transition:enter-end="opacity-100 transform scale-100"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 transform scale-100"
+                         x-transition:leave-end="opacity-0 transform scale-95"
+                         class="absolute left-0 mt-2 w-72 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 divide-y divide-gray-100">
+                        <div class="p-2 space-y-1">
+                            <a href="{% url 'roi_calculateur' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
+                                <span>Calculer le ROI d'un logiciel</span>
                             </a>
-                            <a href="{% url 'immobilier_calculateur' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600">
-                                Calculer investissement immobilier
+                            <a href="{% url 'immobilier_calculateur' %}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
+                                <span>Calculer investissement immobilier</span>
                             </a>
                         </div>
                     </div>
@@ -92,7 +125,17 @@
             </div>
         </nav>
         <!-- Menu mobile -->
-        <div class="lg:hidden hidden" id="mobile-menu">
+        <div x-show="mobileMenuOpen" 
+             x-cloak
+             @click.away="mobileMenuOpen = false"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 transform -translate-y-2"
+             x-transition:enter-end="opacity-100 transform translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 transform translate-y-0"
+             x-transition:leave-end="opacity-0 transform -translate-y-2"
+             class="lg:hidden" 
+             id="mobile-menu">
             <div class="space-y-1 px-2 pb-3 pt-2">
                 <a href="{% url 'software_list' %}" class="block rounded-md px-3 py-2 text-base font-medium hover:bg-sky-50 hover:text-sky-600 transition-all duration-300">Logiciels</a>
                 <a href="{% url 'category_list' %}" class="block rounded-md px-3 py-2 text-base font-medium hover:bg-sky-50 hover:text-sky-600 transition-all duration-300">Catégories</a>
@@ -100,11 +143,14 @@
                 
                 <!-- Outils dans le menu mobile -->
                 <div class="px-3 py-2">
-                    <div class="font-medium mb-2">Outils</div>
+                    <div class="font-medium mb-2 flex items-center gap-2">
+                        Outils
+                        <span class="bg-sky-100 text-sky-600 px-2 py-0.5 rounded text-xs font-medium">New</span>
+                    </div>
                     <a href="{% url 'roi_calculateur' %}" class="block rounded-md px-3 py-2 text-base hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 pl-6">
                         Calculer le ROI d'un logiciel
                     </a>
-                    <a href="{% url 'immobilier_calculateur' %}" class="block rounded-md px-3 py-2 text-base hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 pl-6">
+                    <a href="{% url 'immobilier_calculateur' %}" class="flex items-center gap-2 rounded-md px-3 py-2 text-base hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 pl-6">
                         Calculer investissement immobilier
                     </a>
                 </div>
@@ -126,14 +172,5 @@
             </nav>
         </div>
     </footer>
-    <script>
-        function toggleMobileMenu() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenu.classList.toggle('hidden');
-            const button = document.querySelector('button[aria-controls="mobile-menu"]');
-            const expanded = mobileMenu.classList.contains('hidden') ? 'false' : 'true';
-            button.setAttribute('aria-expanded', expanded);
-        }
-    </script>
 </body>
 </html>
