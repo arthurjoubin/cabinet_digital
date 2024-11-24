@@ -373,29 +373,33 @@
                     </svg>
                     Loyer économisé
                 </h2>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="relative">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Loyer équivalent</label>
                         <div class="text-xs text-gray-500 mb-1">Loyer mensuel d'un bien similaire</div>
-                        <input type="number"
-                               x-model="formData.rent_saved"
-                               @input="calculateLoan"
-                               class="block w-full pl-4 pr-16 py-2 rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                        <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 sm:text-sm">€/mois</span>
+                        <div class="relative">
+                            <input type="number"
+                                   x-model="formData.rent_saved"
+                                   @input="calculateLoan"
+                                   class="block w-full pl-4 pr-16 py-2 rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">€/mois</span>
+                            </div>
                         </div>
                     </div>
 
                     <div class="relative">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Inflation annuelle</label>
                         <div class="text-xs text-gray-500 mb-1">Augmentation annuelle du loyer</div>
-                        <input type="number"
-                               x-model="formData.inflation_rate"
-                               @input="calculateLoan"
-                               step="0.1"
-                               class="block w-full pl-4 pr-12 py-2 rounded-lg border-gray-300">
-                        <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 sm:text-sm">%</span>
+                        <div class="relative">
+                            <input type="number"
+                                   x-model="formData.inflation_rate"
+                                   @input="calculateLoan"
+                                   step="0.1"
+                                   class="block w-full pl-4 pr-12 py-2 rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">%</span>
+                            </div>
                         </div>
                     </div>
                 </div>
