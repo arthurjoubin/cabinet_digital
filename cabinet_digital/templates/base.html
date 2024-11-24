@@ -32,9 +32,10 @@
     {% compress css %}
     <link rel="preload" href="{% static 'src/output.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="{% static 'src/output.css' %}"></noscript>
+    <script defer src="{% static 'js/alpine.min.js' %}"></script>
+
     {% endcompress %}
 
-    <script defer src="{% static 'js/alpine.min.js' %}"></script>
 
     {% block meta_description %}{% endblock %}
     {% block extra_head %}{% endblock %}
