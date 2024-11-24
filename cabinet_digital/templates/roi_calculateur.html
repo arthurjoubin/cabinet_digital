@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block extra_head %}
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq" crossorigin="anonymous" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 
@@ -16,119 +17,421 @@
 
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2" 
+     x-data="{
+        formData: {
+            monthly_cost_saas: 800,
+            one_time_cost_saas: 3000,
+            integrator_cost_implementation: 4000,
+            internal_hours_internal_implementation: 30,
+            cost_per_hour_internal_implementation: 20,
+            employee_hours_per_week_gained: 10,
+            cost_of_employee_hour: 30,
+            other_savings: 200,
+            months_projection: 24
+        },
+        chartInstance: null,
+        isLoading: false,
+        hasError: false,
+        errorMessage: '',
+        chartData: null,
+        debounceTimeout: null,
+        init() {
+            this.$nextTick(() => {
+                this.updateROIDebounced();
+            });
+            this.$watch('formData', (value, oldValue) => {
+                if (value.months_projection !== oldValue.months_projection) {
+                    this.updateROIData();
+                } else {
+                    this.updateROIDebounced();
+                }
+            }, { deep: true });
+        },
+        formatCurrency(value) {
+            return new Intl.NumberFormat('fr-FR', {
+                style: 'currency',
+                currency: 'EUR',
+                maximumFractionDigits: 0
+            }).format(value)
+        },
+        formatHours(value) {
+            return `${value} h`
+        },
+        async updateROIDebounced() {
+            clearTimeout(this.debounceTimeout);
+            this.debounceTimeout = setTimeout(() => {
+                this.isLoading = true;
+                this.hasError = false;
+                this.updateROIData();
+            }, 300);
+        },
+        async updateROIData() {
+            const formData = new FormData(document.getElementById('roiForm'));
+            
+            formData.set('months_projection', this.formData.months_projection);
+            
+            try {
+                const response = await fetch('{% url "roi_calculateur" %}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Erreur serveur');
+                }
+                
+                const data = await response.json();
+                console.log('Données reçues:', data);
+                this.chartData = data;
+                
+                const downloadChart = document.getElementById('downloadChart');
+                const emptyState = document.getElementById('emptyState');
+                
+                if (downloadChart) downloadChart.style.display = 'flex';
+                if (emptyState) emptyState.style.display = 'none';
+                
+                this.updateChart(data);
+                this.updateSummary(data);
+            } catch (error) {
+                this.hasError = true;
+                this.errorMessage = 'Une erreur est survenue lors du calcul du ROI';
+                console.error('Erreur détaillée:', error);
+            } finally {
+                this.isLoading = false;
+            }
+        },
+        async updateChart(data) {
+            await this.$nextTick();
+            
+            if (this.chartInstance) {
+                this.chartInstance.destroy();
+                this.chartInstance = null;
+            }
+            
+            const canvas = document.getElementById('roiChart');
+            if (!canvas) {
+                console.error('Canvas element not found');
+                return;
+            }
+            
+            const newCanvas = document.createElement('canvas');
+            newCanvas.id = 'roiChart';
+            canvas.parentNode.replaceChild(newCanvas, canvas);
+            
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
+            const ctx = newCanvas.getContext('2d');
+            if (!ctx) {
+                console.error('Could not get 2d context');
+                return;
+            }
+            
+            try {
+                const dataLength = Math.min(data.costs.length, data.savings.length, data.net.length);
+                const labels = Array.from({length: dataLength}, (_, i) => `Mois ${i + 1}`);
+                
+                const chartData = {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Coûts',
+                            data: data.costs.slice(0, dataLength),
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            fill: false,
+                            borderWidth: 1.5,
+                            borderDash: [4, 4],
+                            pointRadius: 0,
+                            order: 2
+                        },
+                        {
+                            label: 'Gains',
+                            data: data.savings.slice(0, dataLength),
+                            borderColor: '#22c55e',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            fill: false,
+                            borderWidth: 1.5,
+                            borderDash: [4, 4],
+                            pointRadius: 0,
+                            order: 1
+                        },
+                        {
+                            label: 'ROI Net',
+                            data: data.net.slice(0, dataLength),
+                            borderColor: '#0ea5e9',
+                            backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                            fill: true,
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            order: 0
+                        }
+                    ]
+                };
+
+                this.chartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + self.formatCurrency(context.raw);
+                                    }
+                                },
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                titleFont: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            legend: {
+                                position: 'top',
+                                align: 'center',
+                                labels: {
+                                    boxWidth: 30,
+                                    boxHeight: 2,
+                                    padding: 20,
+                                    font: {
+                                        size: 13,
+                                        weight: '500'
+                                    },
+                                    usePointStyle: false,
+                                    generateLabels: function(chart) {
+                                        const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                                        labels.forEach(label => {
+                                            if (label.text === 'ROI Net') {
+                                                label.lineWidth = 3;
+                                            } else {
+                                                label.lineDash = [4, 4];
+                                                label.lineWidth = 1.5;
+                                            }
+                                        });
+                                        return labels;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                ticks: {
+                                    callback: value => this.formatCurrency(value),
+                                    font: {
+                                        size: 11
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(0,0,0,0.03)',
+                                    drawBorder: false
+                                },
+                                border: {
+                                    dash: [4, 4]
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 11
+                                    }
+                                },
+                                border: {
+                                    dash: [4, 4]
+                                }
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
+                        animation: {
+                            duration: 1000,
+                            easing: 'easeInOutQuart'
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error creating chart:', error);
+                console.error('Data received:', data);
+            }
+        },
+        updateSummary(data) {
+            document.getElementById('initialInvestment').textContent = this.formatCurrency(data.costs[0]);
+            document.getElementById('monthlySavings').textContent = this.formatCurrency(data.monthly_savings);
+            document.getElementById('breakEvenText').textContent = 
+                data.break_even >= 0 ? `Mois : ${data.break_even}` : 'Non atteint';
+        }
+     }">
     <div class="text-center mb-12">
         <h1 class="text-4xl font-bold text-gray-900">Calculateur de <span class="bg-black text-white px-3 py-1 rounded-lg">ROI</span> d'un logiciel</h1>
         <p class="mt-4 text-lg text-gray-600">Estimez le retour sur investissement de votre logiciel</p>
+
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Formulaire -->
         <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
             <form id="roiForm" method="POST">
                 {% csrf_token %}
+                <input type="hidden" name="months_projection" :value="formData.months_projection">
                 <!-- Section Coûts -->
-                <div class="space-y-6 bg-red-50 p-6 mb-6 rounded-lg">
-                    <div class="flex items-center gap-2">
-                        <div class="p-2 bg-red-50 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="space-y-4 bg-red-50 p-4 mb-4 rounded-lg">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="p-1.5 bg-red-50 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <h2 class="text-xl font-semibold text-gray-800">Coûts</h2>
+                        <h2 class="text-lg font-semibold text-gray-800">Coûts</h2>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-2">
-                            <label class="block text-sm font-medium text-gray-700">Coût mensuel du logiciel</label>
-                            <div class="relative rounded-md">
-                                <input type="range" name="monthly_cost_saas" min="100" max="10000" value="800" step="100"
-                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                                       oninput="this.nextElementSibling.value = this.value + ' €'">
-                                <output class="block mt-1 text-sm text-gray-600">800 €</output>
+                    <div class="grid grid-cols-1 gap-3">
+                        <!-- Encadré Logiciel -->
+                        <div class="bg-white/50 p-3 rounded-lg border border-red-100">
+                            <h3 class="text-sm font-semibold text-gray-700 mb-2">Logiciel</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Coût mensuel</label>
+                                    <div class="relative">
+                                        <input type="range" 
+                                               x-model="formData.monthly_cost_saas"
+                                               name="monthly_cost_saas" 
+                                               min="100" max="10000" step="100"
+                                               class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                        <output class="block mt-1 text-sm text-gray-600" x-text="formatCurrency(formData.monthly_cost_saas)"></output>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Frais de setup</label>
+                                    <div class="relative">
+                                        <input type="range" 
+                                               x-model="formData.one_time_cost_saas"
+                                               name="one_time_cost_saas" 
+                                               min="0" max="20000" step="1000"
+                                               class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                        <output class="block mt-1 text-sm text-gray-600" x-text="formatCurrency(formData.one_time_cost_saas)"></output>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        
-                        <div class="space-y-2">
-                            <label class="block text-sm font-medium text-gray-700">Coût unique du logiciel</label>
-                            <div class="relative rounded-md">
-                                <input type="range" name="one_time_cost_saas" min="0" max="20000" value="3000" step="1000"
-                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                                       oninput="this.nextElementSibling.value = this.value + ' €'">
-                                <output class="block mt-1 text-sm text-gray-600">3000 €</output>
+
+                        <!-- Encadré Intégrateur -->
+                        <div class="bg-white/50 p-3 rounded-lg border border-red-100">
+                            <h3 class="text-sm font-semibold text-gray-700 mb-2">Intégrateur</h3>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Coût intégrateur</label>
+                                <div class="relative">
+                                    <input type="range" 
+                                           x-model="formData.integrator_cost_implementation"
+                                           name="integrator_cost_implementation" 
+                                           min="0" max="50000" step="1000"
+                                           class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                    <output class="block mt-1 text-sm text-gray-600" x-text="formatCurrency(formData.integrator_cost_implementation)"></output>
+                                </div>
                             </div>
                         </div>
-                        
-                        <div class="space-y-2">
-                            <label class="block text-sm font-medium text-gray-700">Coût intégrateur</label>
-                            <div class="relative rounded-md">
-                                <input type="range" name="integrator_cost_implementation" min="0" max="50000" value="4000" step="1000"
-                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                                       oninput="this.nextElementSibling.value = this.value + ' €'">
-                                <output class="block mt-1 text-sm text-gray-600">4000 €</output>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-2">
-                            <label class="block text-sm font-medium text-gray-700">Heures internes d'implémentation</label>
-                            <div class="relative rounded-md">
-                                <input type="range" name="internal_hours_internal_implementation" min="0" max="100" value="30" step="5"
-                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                                       oninput="this.nextElementSibling.value = this.value + ' h'">
-                                <output class="block mt-1 text-sm text-gray-600">30 h</output>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-2">
-                            <label class="block text-sm font-medium text-gray-700">Coût par heure interne</label>
-                            <div class="relative rounded-md">
-                                <input type="range" name="cost_per_hour_internal_implementation" min="0" max="200" value="20" step="10"
-                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                                       oninput="this.nextElementSibling.value = this.value + ' €'">
-                                <output class="block mt-1 text-sm text-gray-600">20 €</output>
+
+                        <!-- Encadré Internes -->
+                        <div class="bg-white/50 p-3 rounded-lg border border-red-100">
+                            <h3 class="text-sm font-semibold text-gray-700 mb-2">Internes</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Heures collaborateurs</label>
+                                    <div class="relative">
+                                        <input type="range" 
+                                               x-model="formData.internal_hours_internal_implementation"
+                                               name="internal_hours_internal_implementation" 
+                                               min="0" max="100" step="5"
+                                               class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                        <output class="block mt-1 text-sm text-gray-600" x-text="formatHours(formData.internal_hours_internal_implementation)"></output>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Coût horaire</label>
+                                    <div class="relative">
+                                        <input type="range" 
+                                               x-model="formData.cost_per_hour_internal_implementation"
+                                               name="cost_per_hour_internal_implementation" 
+                                               min="0" max="200" step="10"
+                                               class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                        <output class="block mt-1 text-sm text-gray-600" x-text="formatCurrency(formData.cost_per_hour_internal_implementation)"></output>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Section Gains -->
-                <div class="space-y-6 bg-green-50 mb-2 p-6 rounded-lg">
-                    <div class="flex items-center gap-2">
-                        <div class="p-2 bg-green-50 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="space-y-4 bg-green-50 p-4 rounded-lg">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="p-1.5 bg-green-50 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                             </svg>
                         </div>
-                        <h2 class="text-xl font-semibold text-gray-800">Gains</h2>
+                        <h2 class="text-lg font-semibold text-gray-800">Gains</h2>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-2">
-                            <label class="block text-sm font-medium text-gray-700">Heures économisées par semaine</label>
-                            <div class="relative rounded-md">
-                                <input type="range" name="employee_hours_per_week_gained" min="0" max="40" value="10" step="2"
-                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                                       oninput="this.nextElementSibling.value = this.value + ' h'">
-                                <output class="block mt-1 text-sm text-gray-600">10 h</output>
-                            </div>
-                        </div>
-                    
-                        <div class="space-y-2">
-                            <label class="block text-sm font-medium text-gray-700">Coût horaire du collaborateur</label>
-                            <div class="relative rounded-md">
-                                <input type="range" name="cost_of_employee_hour" min="0" max="100" value="30" step="10"
-                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                                       oninput="this.nextElementSibling.value = this.value + ' €'">
-                                <output class="block mt-1 text-sm text-gray-600">30 €</output>
+                    <div class="grid grid-cols-1 gap-3">
+                        <!-- Encadré Internes -->
+                        <div class="bg-white/50 p-3 rounded-lg border border-green-100">
+                            <h3 class="text-sm font-semibold text-gray-700 mb-2">Internes</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Heures/semaine</label>
+                                    <div class="relative">
+                                        <input type="range" 
+                                               x-model="formData.employee_hours_per_week_gained"
+                                               name="employee_hours_per_week_gained" 
+                                               min="0" max="40" step="2"
+                                               class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                        <output class="block mt-1 text-sm text-gray-600" x-text="formatHours(formData.employee_hours_per_week_gained)"></output>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Coût horaire</label>
+                                    <div class="relative">
+                                        <input type="range" 
+                                               x-model="formData.cost_of_employee_hour"
+                                               name="cost_of_employee_hour" 
+                                               min="0" max="100" step="10"
+                                               class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                        <output class="block mt-1 text-sm text-gray-600" x-text="formatCurrency(formData.cost_of_employee_hour)"></output>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="space-y-2">
-                            <label class="block text-sm font-medium text-gray-700">Autres économies mensuelles</label>
-                            <div class="relative rounded-md">
-                                <input type="range" name="other_savings" min="0" max="2000" value="200" step="100"
-                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                                       oninput="this.nextElementSibling.value = this.value + ' €'">
-                                <output class="block mt-1 text-sm text-gray-600">200 €</output>
+                        <!-- Encadré Autres -->
+                        <div class="bg-white/50 p-3 rounded-lg border border-green-100">
+                            <h3 class="text-sm font-semibold text-gray-700 mb-2">Autres</h3>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Économies/mois</label>
+                                <div class="relative">
+                                    <input type="range" 
+                                           x-model="formData.other_savings"
+                                           name="other_savings" 
+                                           min="0" max="2000" step="100"
+                                           class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                    <output class="block mt-1 text-sm text-gray-600" x-text="formatCurrency(formData.other_savings)"></output>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -140,277 +443,189 @@
         <!-- Résultats -->
         <div class="space-y-4">
             <!-- Résumé des résultats -->
-            <div id="roiSummary" class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200 hidden">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-                    <div class="p-4 bg-sky-50 rounded-lg flex flex-col items-center md:items-start">
-                        <h3 class="text-xs font-medium text-gray-500 text-center md:text-left">Investissement</h3>
-                        <p class="text-lg md:text-xl font-bold text-sky-600 mt-1" id="initialInvestment">-</p>
+            <div id="roiSummary" 
+                 class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200 mb-6"
+                 x-show="!isLoading"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 transform translate-y-0"
+                 x-transition:leave-end="opacity-0 transform -translate-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-5 bg-gradient-to-br from-sky-50 to-white rounded-lg border border-sky-100 flex flex-col items-center md:items-start">
+                        <h3 class="text-sm font-medium text-gray-600 text-center md:text-left">Investissement</h3>
+                        <p class="text-xl font-bold text-sky-700 mt-2" id="initialInvestment">-</p>
                     </div>
-                    <div class="p-4 bg-green-50 rounded-lg flex flex-col items-center md:items-start">
-                        <h3 class="text-xs font-medium text-gray-500 text-center md:text-left">Économies/mois</h3>
-                        <p class="text-lg md:text-xl font-bold text-green-600 mt-1" id="monthlySavings">-</p>
+                    <div class="p-5 bg-gradient-to-br from-green-50 to-white rounded-lg border border-green-100 flex flex-col items-center md:items-start">
+                        <h3 class="text-sm font-medium text-gray-600 text-center md:text-left">Économies/mois</h3>
+                        <p class="text-xl font-bold text-green-700 mt-2" id="monthlySavings">-</p>
                     </div>
-                    <div class="p-4 bg-gray-50 rounded-lg flex flex-col items-center md:items-start">
-                        <h3 class="text-xs font-medium text-gray-500 text-center md:text-left">Point d'équilibre</h3>
-                        <p class="text-base md:text-lg text-gray-900 mt-1" id="breakEvenText">-</p>
+                    <div class="p-5 bg-gradient-to-br from-gray-50 to-white rounded-lg border border-gray-200 flex flex-col items-center md:items-start">
+                        <h3 class="text-sm font-medium text-gray-600 text-center md:text-left">Point d'équilibre</h3>
+                        <p class="text-xl font-bold text-gray-700 mt-2" id="breakEvenText">-</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Graphique -->
-            <div id="roiChartContainer" class="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300">
-                <div class="flex justify-center items-center mb-6 border-b pb-2">
-                    <h3 class="text-xl font-semibold text-gray-900">Évolution du ROI sur 24 mois</h3>
-                </div>
-                <div class="relative">
-                    <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
-                        <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
-                        </svg>
-                        <p class="text-sm">Remplissez le formulaire pour voir le graphique</p>
+            <!-- Graphique avec le sélecteur de période -->
+            <div id="roiChartContainer" class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold text-gray-900">Évolution du ROI</h3>
+                    <div class="flex items-center gap-3">
+                        <!-- Bouton pour ouvrir le modal -->
+                        <button 
+                            @click="$store.modal.open()"
+                            x-show="chartData"
+                            class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Voir le détail
+                        </button>
+                        
+                        <div class="inline-flex items-center gap-3 bg-sky-50 px-4 py-2 rounded-full border border-sky-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-sky-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <select x-model.number="formData.months_projection" 
+                                    name="months_projection" 
+                                    @change="updateROIDebounced()"
+                                    class="bg-transparent text-sky-700 font-medium text-sm focus:outline-none focus:ring-0 border-0 cursor-pointer pr-8 appearance-none">
+                                <option value="12">12 mois</option>
+                                <option value="24">24 mois</option>
+                                <option value="36">36 mois</option>
+                                <option value="48">48 mois</option>
+                                <option value="60">60 mois</option>
+                            </select>
+                            <svg class="h-4 w-4 text-sky-600 -ml-6 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
                     </div>
-                    <canvas id="roiChart" class="w-full" height="300"></canvas>
-                    <div class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
                 </div>
-                <div class="mt-4 flex justify-center">
-                    <button id="downloadChart" class="text-sm px-4 py-2 bg-sky-50 text-gray-700 rounded-lg hover:bg-sky-100 transition-colors flex items-center gap-2" style="display: none;">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        Télécharger
-                    </button>
+                <div class="h-[400px]">
+                    <canvas id="roiChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal (déplacé ici, à l'intérieur du composant principal) -->
+    <template x-teleport="body">
+        <div x-show="$store.modal.isOpen"
+             @keydown.escape.window="$store.modal.close()"
+             class="fixed inset-0 z-50 overflow-y-auto"
+             style="display: none;">
+            <!-- Overlay -->
+            <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+                 x-show="$store.modal.isOpen"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 @click="$store.modal.close()">
+            </div>
+
+            <!-- Modal Content -->
+            <div class="relative min-h-screen flex items-center justify-center p-4">
+                <div class="relative bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden"
+                     x-show="$store.modal.isOpen"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 transform translate-y-4"
+                     x-transition:enter-end="opacity-100 transform translate-y-0"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 transform translate-y-0"
+                     x-transition:leave-end="opacity-0 transform translate-y-4"
+                     @click.stop>
+                    
+                    <!-- Modal Header -->
+                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-xl font-semibold text-gray-900">Tableau d'amortissement détaillé</h3>
+                        <button @click="$store.modal.close()" class="text-gray-400 hover:text-gray-500">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="overflow-auto max-h-[calc(80vh-8rem)]">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50 sticky top-0">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mois</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Coûts</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gains</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ROI Net</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <template x-if="chartData">
+                                    <template x-for="(_, index) in chartData.costs" :key="index">
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" x-text="`Mois ${index + 1}`"></td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600" 
+                                                x-text="formatCurrency(chartData.costs[index])"></td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600" 
+                                                x-text="formatCurrency(chartData.savings[index])"></td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm" 
+                                                :class="chartData.net[index] >= 0 ? 'text-green-600' : 'text-red-600'"
+                                                x-text="formatCurrency(chartData.net[index])"></td>
+                                        </tr>
+                                    </template>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
 </div>
 
 <!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    let chartInstance = null;
-    function formatCurrency(value) {
+
+    
+    // Définir formatCurrency dans le scope global
+    window.formatCurrency = function(value) {
         return new Intl.NumberFormat('fr-FR', { 
             style: 'currency', 
             currency: 'EUR',
             maximumFractionDigits: 0
         }).format(value);
-    }
+    };
 
-    function updateROI() {
-        const formData = new FormData(document.getElementById('roiForm'));
-        
-        fetch('{% url "roi_calculateur" %}', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            },
-            credentials: 'same-origin'
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Données reçues:', data);
-            
-            // Afficher le résumé et le bouton de téléchargement
-            document.getElementById('roiSummary').classList.remove('hidden');
-            document.getElementById('downloadChart').style.display = 'flex';
-            
-            // Cacher l'état vide
-            document.getElementById('emptyState').style.display = 'none';
-            
-            // Mettre à jour les valeurs
-            document.getElementById('initialInvestment').textContent = formatCurrency(data.costs[0]);
-            document.getElementById('monthlySavings').textContent = formatCurrency(data.monthly_savings);
-            
-            const breakEvenText = data.break_even >= 0 
-                ? `Atteint au mois : ${data.break_even}`
-                : 'Non atteint';
-            document.getElementById('breakEvenText').textContent = breakEvenText;
-            
-            // Mettre à jour le graphique
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-            
-            const ctx = document.getElementById('roiChart').getContext('2d');
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data.labels.map(m => `Mois ${m}`),
-                    datasets: [
-                        {
-                            label: 'Coûts',
-                            data: data.costs,
-                            borderColor: '#ef4444',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            fill: false,
-                            borderWidth: 1.5,
-                            borderDash: [4, 4],
-                            pointRadius: 0,
-                            order: 2
-                        },
-                        {
-                            label: 'Gains',
-                            data: data.savings,
-                            borderColor: '#22c55e',
-                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                            fill: false,
-                            borderWidth: 1.5,
-                            borderDash: [4, 4],
-                            pointRadius: 0,
-                            order: 1
-                        },
-                        {
-                            label: 'ROI Net',
-                            data: data.net,
-                            borderColor: ctx => {
-                                const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 400);
-                                gradient.addColorStop(0, '#0ea5e9');
-                                gradient.addColorStop(1, '#38bdf8');
-                                return gradient;
-                            },
-                            segment: {
-                                backgroundColor: ctx => {
-                                    const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 400);
-                                    if (data.net[ctx.p0DataIndex] < 0) {
-                                        gradient.addColorStop(0, 'rgba(239, 68, 68, 0.2)');
-                                        gradient.addColorStop(1, 'rgba(239, 68, 68, 0.05)');
-                                    } else {
-                                        gradient.addColorStop(0, 'rgba(34, 197, 94, 0.2)');
-                                        gradient.addColorStop(1, 'rgba(34, 197, 94, 0.05)');
-                                    }
-                                    return gradient;
-                                },
-                            },
-                            fill: true,
-                            borderWidth: 3,
-                            tension: 0.4,
-                            pointRadius: 0,
-                            pointHoverRadius: 8,
-                            pointBackgroundColor: '#fff',
-                            pointHoverBackgroundColor: '#fff',
-                            pointBorderColor: '#0ea5e9',
-                            pointBorderWidth: 3,
-                            pointHoverBorderWidth: 4,
-                            order: 0
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.dataset.label + ': ' + formatCurrency(context.raw);
-                                }
-                            },
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            padding: 12,
-                            titleFont: {
-                                size: 14,
-                                weight: 'bold'
-                            }
-                        },
-                        legend: {
-                            position: 'top',
-                            align: 'center',
-                            labels: {
-                                boxWidth: 30,
-                                boxHeight: 2,
-                                padding: 20,
-                                font: {
-                                    size: 13,
-                                    weight: '500'
-                                },
-                                usePointStyle: false,
-                                generateLabels: function(chart) {
-                                    const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
-                                    labels.forEach(label => {
-                                        if (label.text === 'ROI Net') {
-                                            label.lineWidth = 3;
-                                        } else {
-                                            label.lineDash = [4, 4];
-                                            label.lineWidth = 1.5;
-                                        }
-                                    });
-                                    return labels;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            ticks: {
-                                callback: value => formatCurrency(value),
-                                font: {
-                                    size: 11
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(0,0,0,0.03)',
-                                drawBorder: false
-                            },
-                            border: {
-                                dash: [4, 4]
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                font: {
-                                    size: 11
-                                }
-                            },
-                            border: {
-                                dash: [4, 4]
-                            }
-                        }
-                    },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeInOutQuart'
-                    }
-                }
-            });
-        })
-        .catch(error => {
-            console.error('Erreur détaillée:', error);
-            alert('Une erreur est survenue lors du calcul du ROI');
-        });
-    }
+    // Supprimer la fonction updateROI car elle est déjà gérée par Alpine.js
+    // window.updateROI = function() { ... }
 
-    // Ajouter des listeners sur tous les sliders
-    document.querySelectorAll('input[type="range"]').forEach(slider => {
-        slider.addEventListener('input', updateROI);
-    });
-
-    // Faire un premier appel au chargement
-    updateROI();
-
-    // Style des sliders
+    // Conserver uniquement ces parties
     document.querySelectorAll('input[type="range"]').forEach(slider => {
         slider.style.accentColor = '#000000';
     });
 
-    // Fonction de téléchargement du graphique
-    document.getElementById('downloadChart').addEventListener('click', function() {
-        // Utiliser la méthode native de Chart.js
-        const link = document.createElement('a');
-        link.download = 'roi-cabinet-digital.png';
-        link.href = chartInstance.toBase64Image();
-        link.click();
+    // Le bouton de téléchargement est déjà géré par Alpine.js, donc on peut supprimer
+    // document.getElementById('downloadChart').addEventListener('click', function() { ... });
+});
+</script>
+
+<!-- Ajouter le store Alpine.js pour gérer l'état du modal -->
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.store('modal', {
+        isOpen: false,
+        open() {
+            this.isOpen = true;
+            document.body.style.overflow = 'hidden';
+        },
+        close() {
+            this.isOpen = false;
+            document.body.style.overflow = 'auto';
+        }
     });
 });
 </script>

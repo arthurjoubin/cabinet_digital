@@ -281,13 +281,13 @@ def custom_redirect_view(request, old_path, slug, r_id=None):
         
 
 def roi_calculateur(request):
-    logger.info("Accès à la vue roi_calculateur")
-    if request.method == 'POST':
-        logger.info("Méthode POST reçue")
-        logger.info(f"Headers: {request.headers}")
-        
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         try:
-            # Récupérer et convertir les données du formulaire
+            # Récupérer et valider months_projection
+            months_projection = int(request.POST.get('months_projection', 24))
+            logger.info(f"Projection sur {months_projection} mois")
+            
+            # Récupérer les données du formulaire
             data = {
                 'monthly_cost_saas': float(request.POST.get('monthly_cost_saas', 0)),
                 'one_time_cost_saas': float(request.POST.get('one_time_cost_saas', 0)),
@@ -299,45 +299,50 @@ def roi_calculateur(request):
                 'other_savings': float(request.POST.get('other_savings', 0))
             }
             
-            logger.info(f"Données reçues: {data}")
-            
-            # Calculer le ROI sur 36 mois
-            months = list(range(25))  # 0 à 36 mois
+            # Initialisation des listes
+            months = list(range(months_projection + 1))  # +1 pour inclure le mois 0
             cumulative_costs = []
             cumulative_savings = []
             net_roi = []
 
-            # Coûts fixes initiaux
-            fixed_costs = (data['one_time_cost_saas'] + 
-                         data['integrator_cost_implementation'] + 
-                         (data['internal_hours_internal_implementation'] * 
-                          data['cost_per_hour_internal_implementation']))
+            # Calcul des coûts fixes initiaux
+            fixed_costs = (
+                data['one_time_cost_saas'] +
+                data['integrator_cost_implementation'] +
+                (data['internal_hours_internal_implementation'] * data['cost_per_hour_internal_implementation'])
+            )
 
-            # Heures économisées par mois (conversion depuis les heures hebdomadaires)
+            # Calcul des heures économisées par mois
             monthly_hours_saved = data['employee_hours_per_week_gained'] * 52 / 12
 
-            for month in months:
-                # Calcul des coûts mensuels cumulés
+            # Calcul mois par mois sur la période demandée
+            for month in range(months_projection + 1):  # Utiliser months_projection au lieu de 24
+                # Coûts cumulés
                 monthly_costs = fixed_costs + (data['monthly_cost_saas'] * month)
                 
-                # Calcul des gains mensuels cumulés
+                # Gains cumulés
                 monthly_savings = (
                     (monthly_hours_saved * data['cost_of_employee_hour'] * month) +
                     (data['other_savings'] * month)
                 )
                 
-                # Calcul du ROI net
+                # ROI net
                 net = monthly_savings - monthly_costs
 
                 cumulative_costs.append(round(monthly_costs, 2))
                 cumulative_savings.append(round(monthly_savings, 2))
                 net_roi.append(round(net, 2))
 
-            # Trouver le point d'équilibre
+            # Point d'équilibre
             break_even = next((i for i, x in enumerate(net_roi) if x > 0), -1)
 
-            # Calculer les économies mensuelles moyennes
+            # Économies mensuelles moyennes
             monthly_savings = (monthly_hours_saved * data['cost_of_employee_hour']) + data['other_savings']
+
+            # S'assurer que toutes les listes ont la bonne longueur
+            assert len(cumulative_costs) == months_projection + 1
+            assert len(cumulative_savings) == months_projection + 1
+            assert len(net_roi) == months_projection + 1
 
             chart_data = {
                 'labels': months,
@@ -345,14 +350,13 @@ def roi_calculateur(request):
                 'savings': cumulative_savings,
                 'net': net_roi,
                 'break_even': break_even,
-                'monthly_savings': monthly_savings
+                'monthly_savings': round(monthly_savings, 2)
             }
             
-            logger.info(f"Données envoyées: {chart_data}")
             return JsonResponse(chart_data)
             
         except Exception as e:
-            logger.error(f"Erreur: {str(e)}")
+            logger.error(f"Erreur dans le calcul ROI : {str(e)}")
             return JsonResponse({'error': str(e)}, status=400)
     
     try:
