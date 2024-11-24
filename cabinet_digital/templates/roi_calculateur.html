@@ -108,86 +108,103 @@
             }
         },
         async updateChart(data) {
+            if (!data || !data.costs || !data.savings || !data.net) {
+                console.error('Invalid data received:', data);
+                return;
+            }
+
+            // Attendre que le DOM soit complètement prêt
             await this.$nextTick();
             
+            // Nettoyer proprement l'ancien graphique
             if (this.chartInstance) {
                 this.chartInstance.destroy();
                 this.chartInstance = null;
             }
-            
-            const canvas = document.getElementById('roiChart');
-            if (!canvas) {
-                console.error('Canvas element not found');
+
+            // Obtenir le wrapper
+            const wrapper = document.getElementById('chartWrapper');
+            if (!wrapper) {
+                console.error('Chart wrapper not found');
                 return;
             }
-            
+
+            // Vider le wrapper
+            wrapper.innerHTML = '';
+
+            // Créer un nouveau canvas
             const newCanvas = document.createElement('canvas');
             newCanvas.id = 'roiChart';
-            canvas.parentNode.replaceChild(newCanvas, canvas);
-            
-            await new Promise(resolve => setTimeout(resolve, 50));
-            
-            const ctx = newCanvas.getContext('2d');
-            if (!ctx) {
-                console.error('Could not get 2d context');
-                return;
-            }
-            
+            wrapper.appendChild(newCanvas);
+
+            // Attendre que le canvas soit bien inséré
+            await new Promise(resolve => setTimeout(resolve, 100));
+
             try {
+                const ctx = newCanvas.getContext('2d');
+                if (!ctx) {
+                    throw new Error('Failed to get canvas context');
+                }
+
                 const dataLength = Math.min(data.costs.length, data.savings.length, data.net.length);
                 const labels = Array.from({length: dataLength}, (_, i) => `Mois ${i + 1}`);
-                
-                const chartData = {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Coûts',
-                            data: data.costs.slice(0, dataLength),
-                            borderColor: '#ef4444',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            fill: false,
-                            borderWidth: 1.5,
-                            borderDash: [4, 4],
-                            pointRadius: 0,
-                            order: 2
-                        },
-                        {
-                            label: 'Gains',
-                            data: data.savings.slice(0, dataLength),
-                            borderColor: '#22c55e',
-                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                            fill: false,
-                            borderWidth: 1.5,
-                            borderDash: [4, 4],
-                            pointRadius: 0,
-                            order: 1
-                        },
-                        {
-                            label: 'ROI Net',
-                            data: data.net.slice(0, dataLength),
-                            borderColor: '#0ea5e9',
-                            backgroundColor: 'rgba(14, 165, 233, 0.1)',
-                            fill: true,
-                            borderWidth: 2,
-                            tension: 0.4,
-                            pointRadius: 0,
-                            pointHoverRadius: 6,
-                            order: 0
-                        }
-                    ]
+
+                // Vérifier que toutes les données sont des nombres valides
+                const validData = {
+                    costs: data.costs.slice(0, dataLength).map(v => Number(v) || 0),
+                    savings: data.savings.slice(0, dataLength).map(v => Number(v) || 0),
+                    net: data.net.slice(0, dataLength).map(v => Number(v) || 0)
                 };
 
-                this.chartInstance = new Chart(ctx, {
+                const chartConfig = {
                     type: 'line',
-                    data: chartData,
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Coûts',
+                                data: validData.costs,
+                                borderColor: '#ef4444',
+                                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                fill: false,
+                                borderWidth: 1.5,
+                                borderDash: [4, 4],
+                                pointRadius: 0,
+                                order: 2
+                            },
+                            {
+                                label: 'Gains',
+                                data: validData.savings,
+                                borderColor: '#22c55e',
+                                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                                fill: false,
+                                borderWidth: 1.5,
+                                borderDash: [4, 4],
+                                pointRadius: 0,
+                                order: 1
+                            },
+                            {
+                                label: 'ROI Net',
+                                data: validData.net,
+                                borderColor: '#0ea5e9',
+                                backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                                fill: true,
+                                borderWidth: 2,
+                                tension: 0.4,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                order: 0
+                            }
+                        ]
+                    },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
                             tooltip: {
                                 callbacks: {
-                                    label: function(context) {
-                                        return context.dataset.label + ': ' + self.formatCurrency(context.raw);
+                                    label: (context) => {
+                                        return `${context.dataset.label}: ${this.formatCurrency(context.raw)}`;
                                     }
                                 },
                                 backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -208,19 +225,7 @@
                                         size: 13,
                                         weight: '500'
                                     },
-                                    usePointStyle: false,
-                                    generateLabels: function(chart) {
-                                        const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
-                                        labels.forEach(label => {
-                                            if (label.text === 'ROI Net') {
-                                                label.lineWidth = 3;
-                                            } else {
-                                                label.lineDash = [4, 4];
-                                                label.lineWidth = 1.5;
-                                            }
-                                        });
-                                        return labels;
-                                    }
+                                    usePointStyle: false
                                 }
                             }
                         },
@@ -258,15 +263,16 @@
                             intersect: false,
                             mode: 'index'
                         },
-                        animation: {
-                            duration: 1000,
-                            easing: 'easeInOutQuart'
-                        }
+                        animation: false // Désactiver les animations pour éviter les problèmes
                     }
-                });
+                };
+
+                // Créer le nouveau graphique
+                this.chartInstance = new Chart(ctx, chartConfig);
+
             } catch (error) {
                 console.error('Error creating chart:', error);
-                console.error('Data received:', data);
+                console.error('Data:', data);
             }
         },
         updateSummary(data) {
@@ -504,8 +510,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="h-[400px]">
-                    <canvas id="roiChart"></canvas>
+                <div id="chartContainer" class="h-[400px]">
+                    <div id="chartWrapper" class="w-full h-full"></div>
                 </div>
             </div>
         </div>
