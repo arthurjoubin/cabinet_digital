@@ -12,13 +12,12 @@
                   this.formData[key] = parseFloat(value);
               }
           }
-          this.calculateLoan();
           this.updateDefaultValues();
+          this.calculateLoan();
       },
       formData: {
         property_cost: 450000,
         notary_fees: 31500,
-        total_loan: 200000,
         monthly_payment: null,
         loan_years: 25,
         interest_rate: 4.1,
@@ -32,11 +31,6 @@
         rent_saved: 1200,
         inflation_rate: 2,
       },
-      alternativeRates: [
-        {rate: 3.5, results: null},
-        {rate: 4.0, results: null},
-        {rate: 4.5, results: null}
-      ],
       results: null,
       loanType: 'fixed_payment',
 
@@ -50,15 +44,6 @@
       updateInsurance() {
         const annualInsurance = this.formData.total_loan * (this.formData.insurance_rate / 100);
         this.formData.insurance = Math.round(annualInsurance / 12);
-      },
-
-      calculateAlternativeScenarios() {
-        const currentRate = this.formData.interest_rate;
-        this.alternativeRates.forEach(scenario => {
-          this.formData.interest_rate = scenario.rate;
-          scenario.results = this.calculateFixedPaymentLoan();
-        });
-        this.formData.interest_rate = currentRate;
       },
 
       formatNumber(number) {
@@ -75,108 +60,53 @@
           this.formData.notary_fees = this.formData.property_cost * 0.08;
         }
         
-        // Recalculer le montant du prêt
-        if (field === 'property_cost' || field === 'down_payment' || field === 'notary_fees') {
-          this.formData.total_loan = Math.max(0, this.formData.property_cost + this.formData.notary_fees - this.formData.down_payment);
-        }
         
         this.calculateLoan();
       },
 
-      calculateFixedPaymentLoan() {
+      calculateLoan() {
+        this.formData.total_loan = this.formData.property_cost + this.formData.notary_fees - this.formData.down_payment;
         const P = this.formData.total_loan;
         const r = this.formData.interest_rate / 100 / 12;
         const n = this.formData.loan_years * 12;
         
+        // Calcul des mensualités constantes
         const monthlyPayment = P * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
         const totalInterest = (monthlyPayment * n) - P;
-        
-        return {
-          monthlyPayment,
-          totalInterest,
-          monthlyPrincipal: monthlyPayment - (P * r),
-          monthlyInterest: P * r
-        };
-      },
 
-      calculateFixedPrincipalLoan() {
-        const P = this.formData.total_loan;
-        const r = this.formData.interest_rate / 100 / 12;
-        const n = this.formData.loan_years * 12;
-        
-        const monthlyPrincipal = P / n;
-        const initialMonthlyInterest = P * r;
-        const initialMonthlyPayment = monthlyPrincipal + initialMonthlyInterest;
-        const finalMonthlyPayment = monthlyPrincipal + (monthlyPrincipal * r);
-        
-        const totalInterest = ((initialMonthlyInterest + (monthlyPrincipal * r)) * n) / 2;
-        
-        return {
-          initialMonthlyPayment,
-          finalMonthlyPayment,
-          monthlyPrincipal,
-          initialMonthlyInterest,
-          totalInterest
-        };
-      },
-
-      calculateLoan() {
-        // S'assurer que toutes les valeurs sont des nombres
+        // Calcul des charges mensuelles
         const monthlyCharges = 
           (parseFloat(this.formData.maintenance) || 0) + 
           (parseFloat(this.formData.condo_fees) || 0) + 
           (parseFloat(this.formData.property_tax) / 12 || 0);
 
-        // Calcul du total des charges sur la durée du prêt
-        const totalCharges = monthlyCharges * 12 * this.formData.loan_years;
+        const monthlyInsurance = (this.formData.total_loan * (this.formData.insurance_rate / 100)) / 12;
+        const totalCharges = (monthlyCharges + monthlyInsurance) * 12 * this.formData.loan_years;
 
-        // Calcul du loyer projeté en fin de prêt
+        // Calcul des loyers
         const finalRent = this.formData.rent_saved * Math.pow(1 + this.formData.inflation_rate/100, this.formData.loan_years);
-        
-        // Calcul du total des loyers avec inflation
         let totalRentSaved = 0;
         for (let year = 0; year < this.formData.loan_years; year++) {
           const yearlyRent = this.formData.rent_saved * Math.pow(1 + this.formData.inflation_rate/100, year) * 12;
           totalRentSaved += yearlyRent;
         }
 
-        if (this.loanType === 'fixed_payment') {
-          const results = this.calculateFixedPaymentLoan();
-          const monthlyInsurance = (this.formData.total_loan * (this.formData.insurance_rate / 100)) / 12;
-          
-          // Calcul du capital total (prix du bien + frais de notaire)
-          const totalCapital = parseFloat(this.formData.property_cost) + parseFloat(this.formData.notary_fees) - parseFloat(this.formData.down_payment);
-          
-          this.results = {
-            monthlyLoanPayment: results.monthlyPayment,
-            totalMonthlyPayment: results.monthlyPayment + monthlyCharges + monthlyInsurance,
-            totalInterest: results.totalInterest,
-            monthlyCharges: monthlyCharges + monthlyInsurance,
-            monthlyInsurance: monthlyInsurance,
-            rentDifference: this.formData.rent_saved - (results.monthlyPayment + monthlyCharges + monthlyInsurance),
-            finalRent: finalRent,
-            finalRentDifference: finalRent - (results.monthlyPayment + monthlyCharges + monthlyInsurance),
-            totalRentSaved: totalRentSaved,
-            totalCapital: totalCapital,
-            totalLoan: this.formData.total_loan,
-            totalCharges: totalCharges + (monthlyInsurance * 12 * this.formData.loan_years)
-          };
-        } else {
-          const results = this.calculateFixedPrincipalLoan();
-          this.results = {
-            initialMonthlyPayment: results.initialMonthlyPayment,
-            finalMonthlyPayment: results.finalMonthlyPayment,
-            totalMonthlyPaymentStart: results.initialMonthlyPayment + monthlyCharges,
-            totalMonthlyPaymentEnd: results.finalMonthlyPayment + monthlyCharges,
-            totalInterest: results.totalInterest,
-            monthlyCharges: monthlyCharges,
-            rentDifference: this.formData.rent_saved - (results.initialMonthlyPayment + monthlyCharges),
-            finalRent: finalRent,
-            finalRentDifference: finalRent - (results.finalMonthlyPayment + monthlyCharges),
-            totalRentSaved: totalRentSaved,
-            totalCharges: totalCharges
-          };
-        }
+        const totalCapital = parseFloat(this.formData.property_cost) + parseFloat(this.formData.notary_fees) - parseFloat(this.formData.down_payment);
+        
+        this.results = {
+          monthlyLoanPayment: monthlyPayment,
+          totalMonthlyPayment: monthlyPayment + monthlyCharges + monthlyInsurance,
+          totalInterest: totalInterest,
+          monthlyCharges: monthlyCharges + monthlyInsurance,
+          monthlyInsurance: monthlyInsurance,
+          rentDifference: this.formData.rent_saved - (monthlyPayment + monthlyCharges + monthlyInsurance),
+          finalRent: finalRent,
+          finalRentDifference: finalRent - (monthlyPayment + monthlyCharges + monthlyInsurance),
+          totalRentSaved: totalRentSaved,
+          totalCapital: totalCapital,
+          totalLoan: this.formData.total_loan,
+          totalCharges: totalCharges
+        };
       },
 
       shareCalculation() {
@@ -227,9 +157,9 @@
                         <input type="text"
                                x-on:input="handleInput($event, 'property_cost')"
                                :value="formatNumber(formData.property_cost)"
-                               class="block w-full pl-4 pr-12 py-2 rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors">
-                        <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 sm:text-sm">€</span>
+                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                               <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">€</span>
                         </div>
                     </div>
 
@@ -239,9 +169,9 @@
                         <input type="text"
                                x-on:input="handleInput($event, 'notary_fees')"
                                :value="formatNumber(formData.notary_fees)"
-                               class="block w-full pl-4 pr-12 py-2 rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
-                        <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 sm:text-sm">€</span>
+                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                               <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">€</span>
                         </div>
                     </div>
                 </div>
@@ -273,7 +203,7 @@
                         <input type="text"
                                x-on:input="handleInput($event, 'down_payment')"
                                :value="formatNumber(formData.down_payment)"
-                               class="block w-full pl-4 pr-12 py-2 rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
                         <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
                             <span class="text-gray-500 sm:text-sm">€</span>
                         </div>
@@ -285,7 +215,7 @@
                                x-model="formData.interest_rate"
                                @input="calculateLoan"
                                step="0.1"
-                               class="block w-full pl-4 pr-12 py-2 rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <span class="text-gray-500 sm:text-sm">%</span>
                         </div>
@@ -296,10 +226,17 @@
                         <input type="number"
                                x-model="formData.loan_years"
                                @input="calculateLoan"
-                               class="block w-full pl-4 pr-12 py-2 rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <span class="text-gray-500 sm:text-sm">ans</span>
                         </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 bg-sky-50 p-3 rounded-lg">
+                    <div class="flex justify-between items-baseline">
+                        <span class="text-gray-700 font-medium">Montant à emprunter</span>
+                        <span class="text-lg font-bold text-sky-600" x-text="formatNumber(formData.total_loan) + ' €'"></span>
                     </div>
                 </div>
             </div>
@@ -320,7 +257,7 @@
                                x-model="formData.insurance_rate"
                                @input="calculateLoan"
                                step="0.1"
-                               class="block w-full pl-4 pr-12 py-2 rounded-lg border-gray-300">
+                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
                         <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
                             <span class="text-gray-500 sm:text-sm">%</span>
                         </div>
@@ -332,7 +269,7 @@
                         <input type="number"
                                x-model="formData.condo_fees"
                                @input="calculateLoan"
-                               class="block w-full pl-4 pr-16 py-2 rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                               class="block w-full pl-4 pr-16 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
                         <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
                             <span class="text-gray-500 sm:text-sm">€/mois</span>
                         </div>
@@ -344,7 +281,7 @@
                         <input type="number"
                                x-model="formData.property_tax"
                                @input="calculateLoan"
-                               class="block w-full pl-4 pr-16 py-2 rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                               class="block w-full pl-4 pr-16 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
                         <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
                             <span class="text-gray-500 sm:text-sm">€/an</span>
                         </div>
@@ -356,11 +293,16 @@
                         <input type="number"
                                x-model="formData.maintenance"
                                @input="calculateLoan"
-                               class="block w-full pl-4 pr-16 py-2 rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                               class="block w-full pl-4 pr-16 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
                         <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
                             <span class="text-gray-500 sm:text-sm">€/mois</span>
                         </div>
                     </div>
+                </div>
+                <!-- Ajout du récapitulatif des charges -->
+                <div class="mt-4 bg-sky-50 p-3 rounded-lg flex justify-between items-baseline">
+                    <span class="text-gray-700 font-medium">Total des charges mensuelles</span>
+                    <span class="text-lg font-bold text-sky-600" x-text="results ? formatNumber(results.monthlyCharges) + ' €' : '-'"></span>
                 </div>
             </div>
 
@@ -373,28 +315,28 @@
                     Loyer économisé
                 </h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
+                    <div class="relative">
                         <label class="block text-sm font-medium text-gray-700">Loyer équivalent</label>
                         <div class="text-xs text-gray-500 mb-2">Loyer mensuel d'un bien similaire</div>
-                        <div class="flex items-center">
-                            <input type="number"
-                                   x-model="formData.rent_saved"
-                                   @input="calculateLoan"
-                                   class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            <span class="ml-2 text-gray-500 text-sm whitespace-nowrap">€/mois</span>
+                        <input type="number"
+                               x-model="formData.rent_saved"
+                               @input="calculateLoan"
+                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                        <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm">€/mois</span>
                         </div>
                     </div>
 
-                    <div>
+                    <div class="relative">
                         <label class="block text-sm font-medium text-gray-700">Inflation annuelle</label>
                         <div class="text-xs text-gray-500 mb-2">Augmentation annuelle du loyer</div>
-                        <div class="flex items-center">
-                            <input type="number"
-                                   x-model="formData.inflation_rate"
-                                   @input="calculateLoan"
-                                   step="0.1"
-                                   class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500">
-                            <span class="ml-2 text-gray-500 text-sm whitespace-nowrap">%</span>
+                        <input type="number"
+                               x-model="formData.inflation_rate"
+                               @input="calculateLoan"
+                               step="0.1"
+                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                        <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 sm:text-sm">%</span>
                         </div>
                     </div>
                 </div>
