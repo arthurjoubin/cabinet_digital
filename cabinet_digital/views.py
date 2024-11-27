@@ -22,6 +22,8 @@ import json
 from django.http import JsonResponse
 import logging
 from django.template.loader import get_template
+from logging.handlers import RotatingFileHandler
+import shutil
 
 logger = logging.getLogger(__name__)
 
@@ -447,16 +449,131 @@ def immobilier_calculateur(request):
     
     return render(request, 'immobilier_calculateur.html')
 
-def generate_schedule_command(data):
-    # Utiliser des raw strings pour les chemins Windows
-    script_path = r"C:\path\to\script.py"  # Utiliser un raw string
-    schedule_time = data['schedule_time']
+def generate_python_script(data):
+    script = """import paramiko
+import os
+import logging
+from logging.handlers import RotatingFileHandler
+
+def setup_logging():
+    log_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    log_file = 'sftp_transfer.log'
     
-    if data['schedule_type'] == 'daily':
-        return f'schtasks /create /tn "SFTP Transfer" /tr "python {script_path}" /sc daily /st {schedule_time}'
-    elif data['schedule_type'] == 'weekly':
-        return f'schtasks /create /tn "SFTP Transfer" /tr "python {script_path}" /sc weekly /d MON /st {schedule_time}'
-    return ''
+    handler = RotatingFileHandler(log_file, maxBytes=5*1024*1024, backupCount=5)
+    handler.setFormatter(log_formatter)
+    
+    logger = logging.getLogger('sftp_transfer')
+    logger.setLevel(logging.INFO)
+    logger.addHandler(handler)
+    
+    return logger
+
+logger = setup_logging()
+
+def safe_transfer(func, src, dst, description):
+    try:
+        func(src, dst)
+        logger.info(f"{description} réussi: {os.path.basename(src)}")
+        return True
+    except Exception as e:
+        logger.error(f"{description} échoué: {os.path.basename(src)} - {str(e)}")
+        return False
+
+def sftp_transfer():
+    ssh = None
+    sftp = None
+    success_count = 0
+    error_count = 0
+    
+    try:
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+"""
+
+    # Authentification
+    if data["auth_type"] == "password":
+        script += f"""
+        ssh.connect("{data['host']}", {data['port']}, "{data['username']}", password="{data['password']}")"""
+    else:
+        script += f"""
+        key = paramiko.RSAKey.from_private_key_file("{data['key_path'].replace('\\', '/')}")
+        ssh.connect("{data['host']}", {data['port']}, "{data['username']}", pkey=key{', password="' + data["key_passphrase"] + '"' if data["has_passphrase"] else ''})"""
+
+    script += """
+        sftp = ssh.open_sftp()
+        """
+
+    # Action de transfert
+    if data["action"] == "download":
+        local_path = data["local_path"].replace('\\', '/')
+        remote_path = data["remote_path"].replace('\\', '/')
+        archive_path = data["archive_path"].replace('\\', '/') if data["delete_after"] else ""
+        
+        script += f"""
+        os.makedirs("{local_path}", exist_ok=True)
+        """
+        
+        if data["delete_after"] and archive_path:
+            script += f"""
+        os.makedirs("{archive_path}", exist_ok=True)
+        """
+            
+        script += f"""
+        try:
+            remote_files = sftp.listdir("{remote_path}")
+            total_files = len(remote_files)
+            logger.info(f"{{total_files}} fichiers trouvés pour le transfert")
+
+            for file in remote_files:
+                remote_file_path = os.path.join("{remote_path}", file)
+                local_file_path = os.path.join("{local_path}", file)
+                
+                try:
+                    if safe_transfer(sftp.get, remote_file_path, local_file_path, "téléchargement"):
+                        success_count += 1
+                        
+                        if {str(data["delete_after"]).lower()}:"""
+        
+        if data["delete_after"] and archive_path:
+            script += f"""
+                            remote_archive_path = os.path.join("{archive_path}", file)
+                            if safe_transfer(sftp.rename, remote_file_path, remote_archive_path, "archivage"):
+                                logger.info(f"Fichier archivé avec succès: {{file}}")"""
+        else:
+            script += """
+                            try:
+                                sftp.remove(remote_file_path)
+                                logger.info(f"Fichier supprimé avec succès: {file}")
+                            except Exception as e:
+                                logger.error(f"Erreur lors de la suppression: {file} - {str(e)}")"""
+                                
+        script += """
+                except Exception as e:
+                    error_count += 1
+                    logger.error(f"Erreur lors du traitement du fichier {file}: {str(e)}")
+                    continue
+
+        except Exception as e:
+            logger.error(f"Erreur lors de la lecture du répertoire distant: {str(e)}")
+            raise
+
+    except Exception as e:
+        logger.error(f"Erreur critique lors du transfert SFTP: {str(e)}")
+        raise
+    finally:
+        if sftp:
+            sftp.close()
+        if ssh:
+            ssh.close()
+        
+        logger.info(f"Transfert terminé: {success_count} succès, {error_count} erreurs")
+        if error_count > 0:
+            logger.warning("Certains fichiers n'ont pas pu être transférés. Consultez les logs pour plus de détails.")
+
+if __name__ == '__main__':
+    sftp_transfer()
+"""
+    return script
 
 def sftp_generator(request):
     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -507,158 +624,3 @@ def sftp_generator(request):
             return JsonResponse({'error': str(e)}, status=400)
     
     return render(request, 'sftp_generator.html')
-
-def generate_python_script(data):
-    # Utiliser des chaînes normales pour les chemins
-    script = """import paramiko
-import os
-from datetime import datetime
-import logging
-
-# Configuration du logging
-logging.basicConfig(
-    filename='sftp_transfer.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-
-def sftp_transfer():
-    try:
-        # Création du client SSH
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        
-        # Connexion"""
-
-    # Ajouter la partie connexion en fonction du type d'authentification
-    if data["auth_type"] == "password":
-        script += f"""
-        ssh.connect("{data['host']}", {data['port']}, "{data['username']}", password="{data['password']}")"""
-    else:
-        key_path = data['key_path'].replace('\\', '/')
-        key = paramiko.RSAKey.from_private_key_file(key_path)
-        if data["has_passphrase"]:
-            script += f', password="{data["key_passphrase"]}"'
-        script += f"""
-        ssh.connect("{data['host']}", {data['port']}, "{data['username']}", pkey=key)"""
-
-    script += """
-        
-        # Création du client SFTP
-        sftp = ssh.open_sftp()
-        
-        # Action principale"""
-
-    # Ajouter la fonction appropriée
-    if data["action"] == "download":
-        script += """
-        download_files(sftp)"""
-    else:
-        script += """
-        upload_files(sftp)"""
-
-    script += """
-        
-        sftp.close()
-        ssh.close()
-        logging.info("Transfert SFTP terminé avec succès")
-        
-    except Exception as e:
-        logging.error(f"Erreur lors du transfert SFTP : {str(e)}")
-        raise
-
-"""
-
-    # Ajouter la fonction de transfert appropriée
-    if data["action"] == "download":
-        local_path = data["local_path"].replace('\\', '/')
-        remote_path = data["remote_path"].replace('\\', '/')
-        archive_path = data["archive_path"].replace('\\', '/') if data["delete_after"] else ""
-        
-        script += f"""def download_files(sftp):
-    try:
-        # Création du répertoire local s'il n'existe pas
-        os.makedirs("{local_path}", exist_ok=True)
-"""
-        if data["delete_after"] and archive_path:
-            script += f"""        os.makedirs("{archive_path}", exist_ok=True)
-"""
-            
-        script += f"""        remote_files = sftp.listdir("{remote_path}")
-        for file in remote_files:
-            try:
-                remote_path = os.path.join("{remote_path}", file)
-                local_path = os.path.join("{local_path}", file)
-                
-                # Téléchargement du fichier
-                sftp.get(remote_path, local_path)
-                logging.info(f"Fichier téléchargé : {{file}}")
-"""
-                
-        if data["delete_after"]:
-            if archive_path:
-                script += f"""                remote_archive_path = os.path.join("{archive_path}", file)
-                sftp.rename(remote_path, remote_archive_path)
-                logging.info(f"Fichier archivé sur le SFTP : {{file}}")"""
-            else:
-                script += """                sftp.remove(remote_path)
-                logging.info(f"Fichier distant supprimé : {file}")"""
-        
-        script += """
-            except Exception as e:
-                logging.error(f"Erreur lors du traitement du fichier {file}: {str(e)}")
-                raise
-    except Exception as e:
-        logging.error(f"Erreur lors du téléchargement : {str(e)}")
-        raise"""
-    else:
-        local_path = data["local_path"].replace('\\', '/')
-        remote_path = data["remote_path"].replace('\\', '/')
-        archive_path = data["archive_path"].replace('\\', '/') if data["delete_after"] else ""
-        
-        script += f"""def upload_files(sftp):
-    try:
-        # Création du répertoire distant s'il n'existe pas
-        try:
-            sftp.stat("{remote_path}")
-        except FileNotFoundError:
-            sftp.mkdir("{remote_path}")
-"""
-        if data["delete_after"] and archive_path:
-            script += f"""        os.makedirs("{archive_path}", exist_ok=True)
-"""
-            
-        script += f"""        local_files = os.listdir("{local_path}")
-        for file in local_files:
-            try:
-                local_path = os.path.join("{local_path}", file)
-                remote_path = os.path.join("{remote_path}", file)
-                
-                # Envoi du fichier
-                sftp.put(local_path, remote_path)
-                logging.info(f"Fichier envoyé : {{file}}")
-"""
-                
-        if data["delete_after"]:
-            if archive_path:
-                script += f"""                local_archive_path = os.path.join("{archive_path}", file)
-                os.rename(local_path, local_archive_path)
-                logging.info(f"Fichier archivé localement : {{file}}")"""
-            else:
-                script += """                os.remove(local_path)
-                logging.info(f"Fichier local supprimé : {file}")"""
-        
-        script += """
-            except Exception as e:
-                logging.error(f"Erreur lors du traitement du fichier {file}: {str(e)}")
-                raise
-    except Exception as e:
-        logging.error(f"Erreur lors de l'envoi : {str(e)}")
-        raise"""
-
-    script += """
-
-if __name__ == '__main__':
-    sftp_transfer()
-"""
-    return script
