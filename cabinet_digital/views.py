@@ -535,8 +535,8 @@ def sftp_transfer():
         script += f"""
         ssh.connect("{data['host']}", {data['port']}, "{data['username']}", password="{data['password']}")"""
     else:
-        script += f"""
-        key = paramiko.RSAKey.from_private_key_file("{data['key_path'].replace('\\', '/')}")"""
+        key_path = data['key_path'].replace('\\', '/')
+        key = paramiko.RSAKey.from_private_key_file(key_path)
         if data["has_passphrase"]:
             script += f', password="{data["key_passphrase"]}"'
         script += f"""
