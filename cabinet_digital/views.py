@@ -448,8 +448,9 @@ def immobilier_calculateur(request):
     return render(request, 'immobilier_calculateur.html')
 
 def generate_schedule_command(data):
-    script_path = "C:\\path\\to\\script.py"  # À adapter
-    schedule_time = data['schedule_time']  # Utiliser le temps depuis data au lieu de request
+    # Utiliser des raw strings pour les chemins Windows
+    script_path = r"C:\path\to\script.py"  # Utiliser un raw string
+    schedule_time = data['schedule_time']
     
     if data['schedule_type'] == 'daily':
         return f'schtasks /create /tn "SFTP Transfer" /tr "python {script_path}" /sc daily /st {schedule_time}'
