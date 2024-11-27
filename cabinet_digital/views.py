@@ -216,7 +216,7 @@ class SoftwareDetailView(DetailView):
         similar_softwares = (
             Software.objects.filter(
                 is_published=True,
-                category__in=categories
+                category__in=categories,
             )
             .exclude(id=software.id)
             .prefetch_related('category')
@@ -227,7 +227,7 @@ class SoftwareDetailView(DetailView):
                     filter=Q(category__in=categories)
                 )
             )
-            .order_by('-common_categories')[:]
+            .order_by('-common_categories').order_by('-is_top_pick')[:4]
         )
 
         from datetime import date
@@ -446,3 +446,152 @@ def immobilier_calculateur(request):
             return JsonResponse({'error': str(e)}, status=400)
     
     return render(request, 'immobilier_calculateur.html')
+
+def generate_schedule_command(data):
+    script_path = "C:\\path\\to\\script.py"  # À adapter
+    schedule_time = data['schedule_time']  # Utiliser le temps depuis data au lieu de request
+    
+    if data['schedule_type'] == 'daily':
+        return f'schtasks /create /tn "SFTP Transfer" /tr "python {script_path}" /sc daily /st {schedule_time}'
+    elif data['schedule_type'] == 'weekly':
+        return f'schtasks /create /tn "SFTP Transfer" /tr "python {script_path}" /sc weekly /d MON /st {schedule_time}'
+    return ''
+
+def sftp_generator(request):
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        try:
+            # Logs de débogage
+            logger.info(f"Form data: {request.POST}")
+            
+            data = {
+                'host': request.POST.get('host', ''),
+                'port': int(request.POST.get('port', 22)),
+                'username': request.POST.get('username', ''),
+                'auth_type': request.POST.get('auth_type', 'password'),
+                'password': request.POST.get('password', ''),
+                'key_path': request.POST.get('key_path', ''),
+                'local_path': request.POST.get('local_path', ''),
+                'remote_path': request.POST.get('remote_path', ''),
+                'action': request.POST.get('action', 'download'),
+                'delete_after': request.POST.get('archiveAfter') == 'on',
+                'archive_path': request.POST.get('archive_path', ''),
+                'schedule_type': request.POST.get('schedule_type', 'none'),
+                'schedule_time': request.POST.get('schedule_time', '00:00'),
+                'has_passphrase': request.POST.get('has_passphrase') == 'on',
+                'key_passphrase': request.POST.get('key_passphrase', ''),
+            }
+            
+            # Logs de débogage
+            logger.info(f"delete_after: {data['delete_after']}")
+            logger.info(f"archive_path: {data['archive_path']}")
+            logger.info(f"raw archiveAfter: {request.POST.get('archiveAfter')}")
+            
+            # Générer le script Python
+            script_content = generate_python_script(data)
+            
+            # Générer la commande de planification si nécessaire
+            schedule_command = ''
+            if data['schedule_type'] != 'none':
+                schedule_command = generate_schedule_command(data)  # data est maintenant passé correctement
+            
+            response_data = {
+                'script': script_content,
+                'schedule_command': schedule_command
+            }
+            
+            return JsonResponse(response_data)
+            
+        except Exception as e:
+            logger.error(f"Erreur dans la génération du script SFTP : {str(e)}")
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    return render(request, 'sftp_generator.html')
+
+def generate_python_script(data):
+    script = f"""import paramiko
+import os
+from datetime import datetime
+import logging
+
+# Configuration du logging
+logging.basicConfig(
+    filename='sftp_transfer.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+def sftp_transfer():
+    try:
+        # Création du client SSH
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        
+        # Connexion
+        {'ssh.connect("' + data["host"] + '", ' + str(data["port"]) + ', "' + data["username"] + '", password="' + data["password"] + '")' if data["auth_type"] == "password" else '''
+        key = paramiko.RSAKey.from_private_key_file("''' + data["key_path"] + '''"''' + (', password="' + data["key_passphrase"] + '"' if data["has_passphrase"] else '') + ''')
+        ssh.connect("''' + data["host"] + '''", ''' + str(data["port"]) + ''', "''' + data["username"] + '''", pkey=key)'''}
+        
+        # Création du client SFTP
+        sftp = ssh.open_sftp()
+        
+        # Action principale
+        {'download_files(sftp)' if data["action"] == "download" else 'upload_files(sftp)'}
+        
+        sftp.close()
+        ssh.close()
+        logging.info("Transfert SFTP terminé avec succès")
+        
+    except Exception as e:
+        logging.error(f"Erreur lors du transfert SFTP : {{str(e)}}")
+        raise
+
+{'def download_files(sftp):\n    try:\n        # Création du répertoire local s\'il n\'existe pas\n        os.makedirs("' + data["local_path"] + '", exist_ok=True)\n        ' + ('os.makedirs("' + data["archive_path"] + '", exist_ok=True)\n        ' if data["delete_after"] else '') + '''
+        remote_files = sftp.listdir("''' + data["remote_path"] + '''")
+        for file in remote_files:
+            try:
+                remote_path = os.path.join("''' + data["remote_path"] + '''", file)
+                local_path = os.path.join("''' + data["local_path"] + '''", file)
+                
+                # Téléchargement du fichier
+                sftp.get(remote_path, local_path)
+                logging.info(f"Fichier téléchargé : {file}")
+                
+                # Archivage ou suppression du fichier distant
+                ''' + ('''remote_archive_path = os.path.join("''' + data["archive_path"] + '''", file)
+                sftp.rename(remote_path, remote_archive_path)
+                logging.info(f"Fichier archivé sur le SFTP : {file}")''' if data["delete_after"] and data["archive_path"] else '''sftp.remove(remote_path)
+                logging.info(f"Fichier distant supprimé : {file}")''' if data["delete_after"] else '# Archivage désactivé') + '''
+            except Exception as e:
+                logging.error(f"Erreur lors du traitement du fichier {file}: {str(e)}")
+                raise
+    except Exception as e:
+        logging.error(f"Erreur lors du téléchargement : {str(e)}")
+        raise''' if data["action"] == "download" else '''def upload_files(sftp):\n    try:\n        # Création du répertoire distant s\'il n\'existe pas\n        try:\n            sftp.stat("''' + data["remote_path"] + '''")
+        except FileNotFoundError:\n            sftp.mkdir("''' + data["remote_path"] + '''")
+        ''' + ('os.makedirs("' + data["archive_path"] + '", exist_ok=True)\n        ' if data["delete_after"] else '') + '''
+        local_files = os.listdir("''' + data["local_path"] + '''")
+        for file in local_files:
+            try:
+                local_path = os.path.join("''' + data["local_path"] + '''", file)
+                remote_path = os.path.join("''' + data["remote_path"] + '''", file)
+                
+                # Envoi du fichier
+                sftp.put(local_path, remote_path)
+                logging.info(f"Fichier envoyé : {file}")
+                
+                # Archivage ou suppression du fichier local
+                ''' + ('''local_archive_path = os.path.join("''' + data["archive_path"] + '''", file)
+                os.rename(local_path, local_archive_path)
+                logging.info(f"Fichier archivé localement : {file}")''' if data["delete_after"] and data["archive_path"] else '''os.remove(local_path)
+                logging.info(f"Fichier local supprimé : {file}")''' if data["delete_after"] else '# Archivage désactivé') + '''
+            except Exception as e:
+                logging.error(f"Erreur lors du traitement du fichier {file}: {str(e)}")
+                raise
+    except Exception as e:
+        logging.error(f"Erreur lors de l\'envoi : {str(e)}")
+        raise'''}
+
+if __name__ == '__main__':
+    sftp_transfer()
+"""
+    return script

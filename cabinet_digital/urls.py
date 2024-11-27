@@ -93,6 +93,7 @@ urlpatterns = [
          name='django.contrib.sitemaps.views.sitemap'),
     path('roi_calculateur/', views.roi_calculateur, name='roi_calculateur'),
     path('immobilier_calculateur/', views.immobilier_calculateur, name='immobilier_calculateur'),
+    path('sftp_generator/', views.sftp_generator, name='sftp_generator'),
     ]
 
 urlpatterns += [

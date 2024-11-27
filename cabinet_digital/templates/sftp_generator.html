@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Générateur de Scripts SFTP{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Générateur de <span class="bg-black text-white px-3 py-1 rounded-lg">Scripts SFTP</span></h1>
+        <p class="mt-2 text-base sm:text-lg text-gray-600">Générez des scripts Python pour automatiser vos transferts de fichiers</p>
+    </div>
+
+    <!-- Bandeau moderne -->
+    <div class="max-w-xl mx-auto bg-gradient-to-r from-sky-50 to-white border border-sky-100 rounded-xl p-2 text-sm shadow-sm hover:shadow-md transition-all mb-8">
+        <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <div class="bg-sky-100 rounded-lg p-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-sky-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z" />
+                        </svg>
+                    </div>
+                    <p class="text-xs">Besoin d'automatiser vos tâches ? Je peux vous aider à développer des scripts et process sur mesure.</p>
+                </div>
+                <a href="{% url 'contact' %}" class="flex items-center bg-white px-3 py-1.5 rounded-lg text-sky-600 hover:text-sky-800 font-medium text-xs whitespace-nowrap border border-sky-100 hover:shadow-sm transition-all">
+                    Parlons-en
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 ml-1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </a>
+            </div>
+    </div>
+
+    <form id="sftpForm" class="space-y-6" x-data="{
+        authType: 'password',
+        action: 'download',
+        archiveAfter: false,
+        hasPassphrase: false,
+        scheduleType: 'none',
+        showScript: false,
+        scriptContent: '',
+        scheduleCommand: '',
+        error: ''
+    }">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <!-- Connexion SFTP -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                <h2 class="text-lg font-semibold mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+                    </svg>
+                    Connexion SFTP
+                </h2>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Hôte SFTP</label>
+                        <input type="text" name="host" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Port</label>
+                        <input type="number" name="port" value="22" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nom d'utilisateur</label>
+                    <input type="text" name="username" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm" required>
+                </div>
+
+                <div class="mt-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Type d'authentification</label>
+                    <select x-model="authType" name="auth_type" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                        <option value="password">Mot de passe</option>
+                        <option value="key">Clé SSH</option>
+                    </select>
+                </div>
+
+                <div x-show="authType === 'password'" class="mt-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                    <input type="password" name="password" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                </div>
+
+                <div x-show="authType === 'key'" class="mt-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Chemin de la clé SSH</label>
+                    <input type="text" name="key_path" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                </div>
+
+                <div x-show="authType === 'key'" class="mt-3">
+                    <label class="flex items-center">
+                        <input type="checkbox" x-model="hasPassphrase" name="has_passphrase" class="rounded border-gray-300 text-sky-600">
+                        <span class="ml-2 text-sm text-gray-700">Ma clé privée a une passphrase</span>
+                    </label>
+                </div>
+
+                <div x-show="authType === 'key' && hasPassphrase" class="mt-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Passphrase</label>
+                    <input type="password" name="key_passphrase" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                </div>
+            </div>
+
+            <!-- Configuration du transfert -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                <h2 class="text-lg font-semibold mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
+                    </svg>
+                    Configuration
+                </h2>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Action</label>
+                    <select x-model="action" name="action" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                        <option value="download">Télécharger depuis le serveur</option>
+                        <option value="upload">Envoyer vers le serveur</option>
+                    </select>
+                </div>
+
+                <div class="mt-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Chemin local</label>
+                    <input type="text" name="local_path" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm" required>
+                </div>
+
+                <div class="mt-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Chemin distant</label>
+                    <input type="text" name="remote_path" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm" required>
+                </div>
+
+                <div class="mt-3">
+                    <label class="flex items-center">
+                        <input type="checkbox" x-model="archiveAfter" name="archiveAfter" class="rounded border-gray-300 text-sky-600" x-init="archiveAfter = true">
+                        <span class="ml-2 text-sm text-gray-700">Archiver après transfert</span>
+                    </label>
+                </div>
+
+                <div x-show="archiveAfter" class="mt-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <span x-text="action === 'download' ? 'Chemin d\'archive SFTP' : 'Chemin d\'archive local'"></span>
+                    </label>
+                    <input type="text" name="archive_path" 
+                           x-bind:placeholder="action === 'download' ? '/path/to/sftp/archive' : '/path/to/local/archive'"
+                           class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                </div>
+            </div>
+
+            <!-- Planification et Génération -->
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                    <h2 class="text-lg font-semibold mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Planification
+                    </h2>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Type de planification</label>
+                        <select x-model="scheduleType" name="schedule_type" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                            <option value="none">Pas de planification</option>
+                            <option value="daily">Quotidien</option>
+                            <option value="weekly">Hebdomadaire</option>
+                        </select>
+                    </div>
+
+                    <div x-show="scheduleType !== 'none'" class="mt-3">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Heure d'exécution</label>
+                        <input type="time" name="schedule_time" value="00:00" 
+                               class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <button type="submit" class="w-full bg-sky-600 text-white px-6 py-3 rounded-lg hover:bg-sky-700 transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+                        </svg>
+                        Générer le script
+                    </button>
+
+                    <button x-show="scriptContent" 
+                            @click="downloadScript" 
+                            type="button"
+                            class="w-full bg-sky-100 text-sky-700 px-6 py-3 rounded-lg hover:bg-sky-50 transition-colors flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        Télécharger le script
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Résultats -->
+        <div x-show="showScript" class="mt-6">
+            <div class="bg-sky-50 p-4 rounded-xl shadow-sm border-4 border-white">
+                <h2 class="text-xl font-bold text-center mb-4">Script généré</h2>
+                
+                <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" x-text="error"></div>
+                
+                <div x-show="scriptContent" class="space-y-4">
+                    <div class="bg-white p-4 rounded-lg shadow-sm">
+                        <h3 class="text-lg font-semibold mb-2 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+                            </svg>
+                            Script Python
+                        </h3>
+                        <pre class="bg-gray-100 p-3 rounded-md overflow-x-auto text-sm"><code x-text="scriptContent"></code></pre>
+                    </div>
+
+                    <div x-show="scheduleCommand" class="bg-white p-4 rounded-lg shadow-sm">
+                        <h3 class="text-lg font-semibold mb-2 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Commande de planification
+                        </h3>
+                        <pre class="bg-gray-100 p-3 rounded-md overflow-x-auto text-sm"><code x-text="scheduleCommand"></code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('sftpForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+
+    try {
+        const response = await fetch('{% url "sftp_generator" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            form._x_dataStack[0].showScript = true;
+            form._x_dataStack[0].error = '';
+            form._x_dataStack[0].scriptContent = data.script;
+            form._x_dataStack[0].scheduleCommand = data.schedule_command;
+        } else {
+            form._x_dataStack[0].showScript = true;
+            form._x_dataStack[0].error = data.error || 'Une erreur est survenue';
+        }
+    } catch (error) {
+        form._x_dataStack[0].showScript = true;
+        form._x_dataStack[0].error = 'Erreur de connexion au serveur';
+    }
+});
+
+function downloadScript() {
+    const script = this.scriptContent;
+    const blob = new Blob([script], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sftp_transfer.py';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+}
+</script>
+{% endblock %} 
