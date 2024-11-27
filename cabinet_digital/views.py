@@ -450,6 +450,12 @@ def immobilier_calculateur(request):
     return render(request, 'immobilier_calculateur.html')
 
 def generate_python_script(data):
+    # Normaliser les chemins en remplaçant les backslashes par des forward slashes
+    local_path = data["local_path"].replace('\\', '/')
+    remote_path = data["remote_path"].replace('\\', '/')
+    archive_path = data["archive_path"].replace('\\', '/') if data.get("archive_path") else ""
+    key_path = data["key_path"].replace('\\', '/') if data.get("key_path") else ""
+
     script = """import paramiko
 import os
 import logging
@@ -495,9 +501,14 @@ def sftp_transfer():
         script += f"""
         ssh.connect("{data['host']}", {data['port']}, "{data['username']}", password="{data['password']}")"""
     else:
+        if data["has_passphrase"]:
+            script += f"""
+        key = paramiko.RSAKey.from_private_key_file("{key_path}", password="{data['key_passphrase']}")"""
+        else:
+            script += f"""
+        key = paramiko.RSAKey.from_private_key_file("{key_path}")"""
         script += f"""
-        key = paramiko.RSAKey.from_private_key_file("{data['key_path'].replace('\\', '/')}")
-        ssh.connect("{data['host']}", {data['port']}, "{data['username']}", pkey=key{', password="' + data["key_passphrase"] + '"' if data["has_passphrase"] else ''})"""
+        ssh.connect("{data['host']}", {data['port']}, "{data['username']}", pkey=key)"""
 
     script += """
         sftp = ssh.open_sftp()
@@ -505,10 +516,6 @@ def sftp_transfer():
 
     # Action de transfert
     if data["action"] == "download":
-        local_path = data["local_path"].replace('\\', '/')
-        remote_path = data["remote_path"].replace('\\', '/')
-        archive_path = data["archive_path"].replace('\\', '/') if data["delete_after"] else ""
-        
         script += f"""
         os.makedirs("{local_path}", exist_ok=True)
         """
