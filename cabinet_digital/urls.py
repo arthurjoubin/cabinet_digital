@@ -92,10 +92,10 @@ urlpatterns = [
     path('robots.txt', views.robots_txt, name='robots_txt'),
     re_path(r'^sitemap\.xml/$', sitemap, {'sitemaps': sitemaps},
          name='django.contrib.sitemaps.views.sitemap'),
-    path('outils/roi_calculateur/', views.roi_calculateur, name='roi_calculateur'),
-    path('outils/immobilier_calculateur/', views.immobilier_calculateur, name='immobilier_calculateur'),
-    path('outils/sftp_generator/', views.sftp_generator, name='sftp_generator'),
-    path('outils/tableau-amortissement/', views.amortissement_calculateur, name='amortissement_calculateur'),
+    path('outils/simulateur-roi-logiciel/', views.roi_calculateur, name='roi_calculateur'),
+    path('outils/investissement-immobilier-simulateur/', views.immobilier_calculateur, name='immobilier_calculateur'),
+    path('outils/sftp-script-generateur/', views.sftp_generator, name='sftp_generator'),
+    path('outils/tableau-amortissement-generateur/', views.amortissement_calculateur, name='amortissement_calculateur'),
     path('outils/', views.outils, name='outils'),
     ]
 
