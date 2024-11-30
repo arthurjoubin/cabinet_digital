@@ -360,11 +360,11 @@ def roi_calculateur(request):
             return JsonResponse({'error': str(e)}, status=400)
     
     try:
-        template = get_template('roi_calculateur.html')
+        template = get_template('outils/roi_calculateur.html')
         logger.info(f"Template trouvé : {template.origin.name}")
         logger.info(f"Template dirs : {settings.TEMPLATES[0]['DIRS']}")
         logger.info("Tentative de rendu du template roi_calculateur.html")
-        response = render(request, 'roi_calculateur.html')
+        response = render(request, 'outils/roi_calculateur.html')
         logger.info(f"Contenu de la réponse : {response.content}")
         logger.info("Rendu du template réussi")
         return response
@@ -447,7 +447,7 @@ def immobilier_calculateur(request):
             logger.error(f"Erreur dans le calcul immobilier : {str(e)}")
             return JsonResponse({'error': str(e)}, status=400)
     
-    return render(request, 'immobilier_calculateur.html')
+    return render(request, 'outils/immobilier_calculateur.html')
 
 def generate_python_script(data):
     # Normaliser les chemins en remplaçant les backslashes par des forward slashes
@@ -630,4 +630,10 @@ def sftp_generator(request):
             logger.error(f"Erreur dans la génération du script SFTP : {str(e)}")
             return JsonResponse({'error': str(e)}, status=400)
     
-    return render(request, 'sftp_generator.html')
+    return render(request, 'outils/sftp_generator.html')
+
+def amortissement_calculateur(request):
+    return render(request, 'outils/amortissement_calculateur.html')
+
+def outils(request):
+    return render(request, 'outils/outils.html')

@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'cabinet_digital',
     'compressor',
     'django_htmx',
+
 ]
 
 MIDDLEWARE = [
@@ -77,7 +78,10 @@ ROOT_URLCONF = 'cabinet_digital.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [
+            BASE_DIR / 'templates',
+            BASE_DIR / 'templates' / 'outils',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -88,6 +92,7 @@ TEMPLATES = [
             ],
         },
     },
+    
 ]
 
 WSGI_APPLICATION = 'cabinet_digital.wsgi.application'

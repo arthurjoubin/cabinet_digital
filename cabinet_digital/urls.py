@@ -25,6 +25,7 @@ from django.shortcuts import redirect
 from django.utils.text import slugify
 import unidecode
 from cabinet_digital.sitemaps import SoftwareSitemap, CategorySitemap, ActualitesSitemap, StaticViewSitemap
+from django.views.generic import TemplateView
 
 def custom_redirect(request, old_path, slug, r_id=None):
     # Supprimer les accents avant d'appliquer slugify
@@ -91,9 +92,11 @@ urlpatterns = [
     path('robots.txt', views.robots_txt, name='robots_txt'),
     re_path(r'^sitemap\.xml/$', sitemap, {'sitemaps': sitemaps},
          name='django.contrib.sitemaps.views.sitemap'),
-    path('roi_calculateur/', views.roi_calculateur, name='roi_calculateur'),
-    path('immobilier_calculateur/', views.immobilier_calculateur, name='immobilier_calculateur'),
-    path('sftp_generator/', views.sftp_generator, name='sftp_generator'),
+    path('outils/roi_calculateur/', views.roi_calculateur, name='roi_calculateur'),
+    path('outils/immobilier_calculateur/', views.immobilier_calculateur, name='immobilier_calculateur'),
+    path('outils/sftp_generator/', views.sftp_generator, name='sftp_generator'),
+    path('outils/tableau-amortissement/', views.amortissement_calculateur, name='amortissement_calculateur'),
+    path('outils/', views.outils, name='outils'),
     ]
 
 urlpatterns += [

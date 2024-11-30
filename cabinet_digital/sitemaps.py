@@ -52,10 +52,10 @@ class ActualitesSitemap(BaseSitemap):
 
 class StaticViewSitemap(BaseSitemap):
     priority = 0.5
-    changefreq = "daily"
+    changefreq = 'monthly'
 
     def items(self):
-        return ['home', 'software_list', 'category_list', 'actualites', 'contact']
+        return ['home', 'contact', 'outils']
 
     def location(self, item):
         return reverse(item) 
