@@ -1267,6 +1267,10 @@ video {
   top: 1.5rem;
 }
 
+.left-4 {
+  left: 1rem;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -3877,6 +3881,14 @@ video {
 }
 
 @media (min-width: 768px) {
+  .md\:left-0 {
+    left: 0px;
+  }
+
+  .md\:right-auto {
+    right: auto;
+  }
+
   .md\:col-span-3 {
     grid-column: span 3 / span 3;
   }
@@ -3903,6 +3915,14 @@ video {
 
   .md\:w-\[40\%\] {
     width: 40%;
+  }
+
+  .md\:w-64 {
+    width: 16rem;
+  }
+
+  .md\:w-auto {
+    width: auto;
   }
 
   .md\:grid-cols-12 {
