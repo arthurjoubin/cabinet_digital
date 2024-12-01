@@ -13,14 +13,44 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-    <h1 class="custom-header">Actualités</h1>
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+<div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200"
+    x-data="{ 
+        selectedTag: null,
+        setTag(tagId) {
+            this.selectedTag = this.selectedTag === tagId ? null : tagId;
+        },
+        isVisible(actualiteTags) {
+            if (!this.selectedTag) return true;
+            return actualiteTags.split(',').includes(this.selectedTag);
+        }
+    }">
+    <h1 class="custom-header mb-12">Actualités</h1>
+    
+    <!-- Filtres -->
+    <div class="flex flex-wrap gap-3 mb-8 justify-center px-4">
+        {% for tag in tags %}
+            <button 
+                @click="setTag('{{ tag.id }}')"
+                :class="{ 'scale-105 shadow-lg ring-2 ring-offset-2 ring-opacity-50': selectedTag === '{{ tag.id }}' }"
+                class="px-4 py-1.5 text-sm font-medium text-white rounded-full transition-all duration-200 ease-in-out hover:shadow-md hover:brightness-110"
+                style="background-color: {{ tag.color }}; ring-color: {{ tag.color }}">
+                {{ tag.name }}
+            </button>
+        {% endfor %}
+    </div>
+    
+    <div class="grid gap-6 md:gap-8 md:grid-cols-2 lg:grid-cols-3">
         {% for actualite in actualites %}
+        <div 
+            x-show="isVisible('{% for tag in actualite.tags.all %}{{ tag.id }}{% if not forloop.last %},{% endif %}{% endfor %}')"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 transform scale-95"
+            x-transition:enter-end="opacity-100 transform scale-100">
             {% include "template_card_article.html" with article=actualite articles='actualites' article_detail='actualite_detail' %}
+        </div>
         {% empty %}
-        <div class="col-span-full text-center text-gray-600 py-16">
-            <p class="text-xl">Aucune actualité disponible pour le moment.</p>
+        <div class="col-span-full flex items-center justify-center min-h-[300px] bg-sky-50/50 rounded-xl border border-sky-100">
+            <p class="text-xl text-gray-600">Aucune actualité disponible pour le moment.</p>
         </div>
         {% endfor %}
     </div>

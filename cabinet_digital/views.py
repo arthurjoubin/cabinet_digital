@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Software, SoftwareCategory, Article, Actualites
+from .models import Software, SoftwareCategory, Article, Actualites, Tag
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
@@ -24,6 +24,7 @@ import logging
 from django.template.loader import get_template
 from logging.handlers import RotatingFileHandler
 import shutil
+from django.core import serializers
 
 logger = logging.getLogger(__name__)
 
@@ -140,10 +141,7 @@ class ActualitesListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        actualites = self.get_queryset()
-        # Supprimez cette ligne qui cause l'erreur
-        # categories = SoftwareCategory.objects.filter(news__in=news_list).distinct()
-        # context['categories'] = categories
+        context['tags'] = Tag.objects.all()
         return context
 
 class ActualitesDetailView(DetailView):
