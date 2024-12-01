@@ -78,8 +78,8 @@ urlpatterns = [
    path('categories/', CategoryListView.as_view(), name='category_list'),
     path('categories/<str:slug>/', CategoryDetailView.as_view(), name='category_detail'),
     path('contact/', views.contact, name='contact'),
-    path('actualites/', ActualitesListView.as_view(), name='actualites'),
-    path('actualites/<slug:slug>/', ActualitesDetailView.as_view(), name='actualite_detail'),
+    path('actualites/', ActualitesListView.as_view(), name='actualites_list'),
+    path('actualites/<str:slug>/', ActualitesDetailView.as_view(), name='actualites_detail'),
     path('markdownx/', include('markdownx.urls')),
     path('tinymce/', include('tinymce.urls')),
     path('logiciels/<str:slug>/alternatives/', alternative_detail, name='alternative_detail'),
@@ -99,10 +99,10 @@ urlpatterns = [
     path('outils/', views.outils, name='outils'),
     ]
 
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
 urlpatterns += [
     path('404/', views.Custom404View.as_view(), name='404'),
 ]
 handler404 = 'cabinet_digital.views.custom_404_view'
-
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
