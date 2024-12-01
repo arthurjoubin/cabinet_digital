@@ -1,6 +1,6 @@
 <article class="max-w mx-auto bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-    <header class="mb-8 border-b border-gray-200 pb-6">
-        <nav class="mb-6">
+    <header class="mb-8 bg-gray-50/50 border border-gray-100 rounded-xl p-8">
+        <nav class="mb-8">
             <a href="{% url 'actualites' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-sky-700 bg-sky-50 rounded-lg hover:bg-sky-100 transition-colors duration-300">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 {% if custom_plural %}
@@ -10,15 +10,28 @@
                 {% endif %}
             </a>
         </nav>
-        <h1 class="text-3xl font-bold mb-4 text-gray-800">{{ variable.title }}</h1>
-        {% if variable.excerpt %}
-            <p class="text-lg text-gray-600 mb-4">{{ variable.excerpt }}</p>
-        {% endif %}
-        <p class="text-gray-600 text-sm mb-4">Publié le {{ variable.pub_date|date:"d F Y"|lower }}</p>
-        <div class="flex flex-wrap gap-2">
-            {% for tag in variable.tags.all %}
-                <span class="px-2 py-1 text-xs font-semibold rounded-full" style="background-color: {{ tag.color }}; color: {% if tag.color == '#FFFFFF' %}#000000{% else %}#FFFFFF{% endif %};">{{ tag.name }}</span>
-            {% endfor %}
+
+        <div class="space-y-4">
+            <h1 class="text-4xl font-bold text-gray-900">{{ variable.title }}</h1>
+            
+            {% if variable.excerpt %}
+                <p class="text-xl text-gray-600">{{ variable.excerpt |safe }}</p>
+            {% endif %}
+
+            <div class="flex items-center justify-between pt-4">
+                <div class="flex flex-wrap gap-2">
+                    {% for tag in variable.tags.all %}
+                        <span class="px-3 py-1 text-xs font-medium rounded-full bg-sky-50 text-sky-700">{{ tag.name }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="flex items-center text-gray-500 text-sm">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <time>Publié le {{ variable.pub_date|date:"d F Y"|lower }}</time>
+                </div>
+            </div>
         </div>
     </header>
     <content>
