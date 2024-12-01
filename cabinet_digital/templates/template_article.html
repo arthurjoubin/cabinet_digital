@@ -11,6 +11,9 @@
             </a>
         </nav>
         <h1 class="text-3xl font-bold mb-4 text-gray-800">{{ variable.title }}</h1>
+        {% if variable.excerpt %}
+            <p class="text-lg text-gray-600 mb-4">{{ variable.excerpt }}</p>
+        {% endif %}
         <p class="text-gray-600 text-sm mb-4">Publié le {{ variable.pub_date|date:"d F Y"|lower }}</p>
         <div class="flex flex-wrap gap-2">
             {% for tag in variable.tags.all %}
