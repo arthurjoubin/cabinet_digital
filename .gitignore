@@ -173,3 +173,5 @@ cython_debug/
 # Permettre les fichiers JS spécifiques
 !static/js/alpine.min.js
 !static/js/htmx.min.js
+
+static/software_previews/*
