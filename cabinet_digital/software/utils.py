@@ -25,6 +25,31 @@ def capture_website_scroll(url, output_path):
         driver.get(url)
         time.sleep(3)  # Attendre le chargement
         
+        # Tenter de fermer différents types de popups de cookies
+        try:
+            # Boutons communs pour les popups de cookies
+            selectors = [
+                '#cookieConsent button', 
+                '.cookie-banner button',
+                '#onetrust-accept-btn-handler',
+                '.cookie-notice button',
+                'button[data-cookiebanner="accept"]',
+                '.cookies-accept',
+                '#didomi-notice-agree-button',
+                '.cookie-consent button'
+            ]
+            
+            for selector in selectors:
+                try:
+                    button = driver.find_element('css selector', selector)
+                    button.click()
+                    time.sleep(0.5)
+                    break
+                except:
+                    continue
+        except:
+            pass  # Continue si aucun popup n'est trouvé
+            
         # Vérifier le code de statut HTTP
         navigation_entry = driver.execute_script("return window.performance.getEntries()[0]")
         if "responseStatus" in navigation_entry and navigation_entry["responseStatus"] == 403:

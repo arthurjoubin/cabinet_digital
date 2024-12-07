@@ -32,13 +32,19 @@ def generate_all_previews():
         gif_path = os.path.join(preview_dir, f'{software.slug}_preview.gif')
         
         if capture_website_scroll(software.site, gif_path):
-            with open(gif_path, 'rb') as f:
-                software.preview_gif.save(
-                    f'{software.slug}_preview.gif',
-                    File(f),
-                    save=True
-                )
-            print(f"✓ GIF généré pour {software.name}")
+            try:
+                with open(gif_path, 'rb') as f:
+                    software.preview_gif.save(
+                        f'{software.slug}_preview.gif',
+                        File(f),
+                        save=True
+                    )
+                print(f"✓ GIF généré pour {software.name}")
+            except django.core.exceptions.ValidationError as e:
+                print(f"✗ Erreur de validation pour {software.name}: {e}")
+                # Supprimer le fichier GIF généré puisqu'il n'a pas pu être sauvegardé
+                if os.path.exists(gif_path):
+                    os.remove(gif_path)
         else:
             print(f"✗ Échec pour {software.name}")
 
