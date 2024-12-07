@@ -3330,6 +3330,11 @@ video {
   --tw-shadow: var(--tw-shadow-colored);
 }
 
+.shadow-sky-200 {
+  --tw-shadow-color: #bae6fd;
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
 .outline {
   outline-style: solid;
 }
