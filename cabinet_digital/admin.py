@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import Software, SoftwareCategory, Article, Actualites, Tag, Metier
 from django.db import models
-from tinymce.widgets import TinyMCE
 from django import forms
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin
@@ -72,9 +71,6 @@ class SoftwareAdmin(ModelAdmin):
         return ", ".join([category.name for category in obj.category.all()])
     categories_list.short_description = 'Catégories'
 
-    formfield_overrides = {
-        models.TextField: {'widget': TinyMCE()},
-    }
 
     compressed_fields = True
     warn_unsaved_form = True

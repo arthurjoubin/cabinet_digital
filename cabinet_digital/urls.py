@@ -81,7 +81,6 @@ urlpatterns = [
     path('actualites/', views.actualites, name='actualites'),
     path('actualites/<slug:slug>/', ActualitesDetailView.as_view(), name='actualite_detail'),
     path('markdownx/', include('markdownx.urls')),
-    path('tinymce/', include('tinymce.urls')),
     path('logiciels/<str:slug>/alternatives/', alternative_detail, name='alternative_detail'),
     re_path(r'^(?P<old_path>categorie)/logiciel_(?P<slug>[^/]+)(?:/r/(?P<r_id>[^/]+))?/?$', 
     views.custom_redirect_view, 

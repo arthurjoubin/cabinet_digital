@@ -3,7 +3,6 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.urls import reverse
 from markdownx.models import MarkdownxField
-from tinymce.models import HTMLField
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 import unidecode
