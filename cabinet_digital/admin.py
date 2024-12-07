@@ -55,7 +55,7 @@ class SoftwareAdmin(ModelAdmin):
             'fields': ('name', 'slug', 'description')
         }),
         ('Détails', {
-            'fields': ('excerpt', 'category', 'metier', 'logo', 'image_principale'),
+            'fields': ('excerpt', 'category', 'metier', 'logo', 'image_principale', 'preview_gif'),
             'classes': ('collapse',)
         }),
         ('Publication', {
@@ -159,7 +159,8 @@ class TagAdminForm(forms.ModelForm):
 @admin.register(Tag)
 class TagAdmin(ModelAdmin):
     form = TagAdminForm
-    list_display = ('name', 'color', 'colored_tag')
+    list_display = ('name', 'slug', 'color', 'colored_tag')
+    list_editable = ['slug']
     search_fields = ('name',)
     inlines = [ActualitesInline, ArticleInline]
 

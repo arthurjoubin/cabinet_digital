@@ -1,5 +1,6 @@
 {% if software %}
-<article class="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg p-1 h-full flex flex-col relative">
+<article class="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:bg-gray-50 p-1 h-full flex flex-col relative group cursor-pointer"
+         onclick="window.location='{% url 'software_detail' software.slug %}'">
     {% if software.is_top_pick %}
         <div class="absolute top-0 left-0 bg-black text-white px-4 py-1.5 text-xs font-medium rounded-br-lg">
             Top Pick
@@ -22,12 +23,13 @@
         {% for category in software.category.all|dictsort:"name" %}
             <a href="{% url 'category_detail' category.slug %}" 
                class="inline-block px-2 py-1 text-xs font-medium bg-sky-100 text-gray-900 rounded-full hover:bg-sky-200 hover:text-black hover:scale-105 transition-all duration-200"
-               x-show="showAllTags || {{ forloop.counter }} <= 2">
+               x-show="showAllTags || {{ forloop.counter }} <= 2"
+               onclick="event.stopPropagation()">
                 {{ category.name }}
             </a>
         {% endfor %}
         {% if software.category.all.count > 2 %}
-            <button @click="showAllTags = !showAllTags"
+            <button @click="showAllTags = !showAllTags; event.stopPropagation()"
                     class="inline-block px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-all duration-200">
                 <span x-text="showAllTags ? 'Voir moins' : '+{{ software.category.all.count|add:'-2' }}'"></span>
             </button>
@@ -35,19 +37,8 @@
     </div>
     {% endif %}
 
-    <div class="flex justify-center mt-auto">
-        {% if software.slug %}
-            <a href="{% url 'software_detail' software.slug %}" class="inline-flex items-center px-4 py-2 mb-2 bg-white text-black text-sm font-semibold rounded-md border border-black hover:bg-black hover:text-white transition-all duration-200">
-                Voir la fiche
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-            </a>
-        {% else %}
-            <span class="inline-flex items-center px-5 py-2.5 bg-gray-100 text-gray-400 text-sm font-medium rounded-lg cursor-not-allowed">
-                Fiche non disponible
-            </span>
-        {% endif %}
+    <div class="flex justify-center items-center mt-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <span class="text-sm font-medium text-gray-600">Voir la fiche →</span>
     </div>
 </article>
 {% endif %}

@@ -6,6 +6,10 @@ from markdownx.models import MarkdownxField
 from tinymce.models import HTMLField
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
+import unidecode
+from django.conf import settings
+import os
+from .software.utils import capture_website_scroll
 
 class SoftwareCategory(models.Model):
     name = models.CharField(max_length=100)
@@ -27,8 +31,9 @@ class SoftwareCategory(models.Model):
         verbose_name_plural = "Software Categories"
 
 class Tag(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    color = models.CharField(max_length=7, default='#000000')
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100, unique=False, blank=True)
+    color = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
         return self.name
@@ -49,6 +54,7 @@ class Software(models.Model):
     unique_views = models.IntegerField(default=0)
     metier = models.ForeignKey('Metier', on_delete=models.CASCADE, null=True, blank=True)
     last_modified = models.DateTimeField(auto_now=True)
+    preview_gif = models.ImageField(upload_to='software_previews/', null=True, blank=True)
 
     def clean(self):
         super().clean()
@@ -61,6 +67,13 @@ class Software(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+        
+        # Générer le GIF seulement si l'URL a changé
+        if self.site and (not self.preview_gif or self._state.adding):
+            gif_path = os.path.join(settings.MEDIA_ROOT, 'software_previews', f'{self.slug}_preview.gif')
+            if capture_website_scroll(self.site, gif_path):
+                self.preview_gif = f'software_previews/{self.slug}_preview.gif'
+                super().save(update_fields=['preview_gif'])
 
     class Meta:
         ordering = ['-is_top_pick', 'name']

@@ -13,39 +13,37 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200"
-    x-data="{ 
-        selectedTag: null,
-        setTag(tagId) {
-            this.selectedTag = this.selectedTag === tagId ? null : tagId;
-        },
-        isVisible(actualiteTags) {
-            if (!this.selectedTag) return true;
-            return actualiteTags.split(',').includes(this.selectedTag);
-        }
-    }">
+<div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
     <h1 class="custom-header">Actualités</h1>
+    
+    <!-- Debug info -->
+    <div class="hidden">
+        Tags disponibles:
+        {% for tag in tags %}
+            Tag: {{ tag.name }} (slug: {{ tag.slug }})
+        {% endfor %}
+        
+        Tag sélectionné: {{ selected_tag }}
+    </div>
     
     <!-- Filtres -->
     <div class="flex flex-wrap gap-2 mb-4 justify-center">
+        <a href="{% url 'actualites' %}" 
+           class="px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ease-in-out hover:shadow-md hover:brightness-110 {% if not selected_tag %}bg-sky-500 text-white{% else %}bg-gray-100 text-gray-700{% endif %}">
+            Tous
+        </a>
         {% for tag in tags %}
-            <button 
-                @click="setTag('{{ tag.id }}')"
-                :class="{ 'scale-105 shadow-lg ring-2 ring-offset-2 ring-opacity-50': selectedTag === '{{ tag.id }}' }"
-                class="px-4 py-1.5 text-sm font-medium text-white rounded-full transition-all duration-200 ease-in-out hover:shadow-md hover:brightness-110"
-                style="background-color: {{ tag.color }}; ring-color: {{ tag.color }}">
+            <a href="{% url 'actualites' %}?tag={{ tag.slug }}" 
+               class="px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ease-in-out hover:shadow-md hover:brightness-110 {% if selected_tag == tag.slug %}scale-105 shadow-lg ring-2 ring-offset-2 ring-opacity-50{% endif %} text-white"
+               {% if tag.color %}style="background-color: {{ tag.color }}"{% endif %}>
                 {{ tag.name }}
-            </button>
+            </a>
         {% endfor %}
     </div>
     
     <div class="grid gap-6 md:gap-8 md:grid-cols-2 lg:grid-cols-3">
         {% for actualite in actualites %}
-        <div 
-            x-show="isVisible('{% for tag in actualite.tags.all %}{{ tag.id }}{% if not forloop.last %},{% endif %}{% endfor %}')"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 transform scale-95"
-            x-transition:enter-end="opacity-100 transform scale-100">
+        <div class="transition-all duration-200">
             {% include "template_card_article.html" with article=actualite articles='actualites' article_detail='actualite_detail' %}
         </div>
         {% empty %}

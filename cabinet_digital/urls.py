@@ -72,13 +72,13 @@ admin.site.index_title = "Bienvenue sur Cabinet Digital"
 urlpatterns = [
 
     path('admin/', admin.site.urls),
-    path('logiciels/',  views.SoftwareListView.as_view(), name='software_list'),
+    path('logiciels/', SoftwareListView.as_view(), name='software_list'),
     path('', views.home, name='home'),
     path('logiciels/<str:slug>/', SoftwareDetailView.as_view(), name='software_detail'),
    path('categories/', CategoryListView.as_view(), name='category_list'),
     path('categories/<str:slug>/', CategoryDetailView.as_view(), name='category_detail'),
     path('contact/', views.contact, name='contact'),
-    path('actualites/', ActualitesListView.as_view(), name='actualites'),
+    path('actualites/', views.actualites, name='actualites'),
     path('actualites/<slug:slug>/', ActualitesDetailView.as_view(), name='actualite_detail'),
     path('markdownx/', include('markdownx.urls')),
     path('tinymce/', include('tinymce.urls')),

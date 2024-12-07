@@ -1271,6 +1271,10 @@ video {
   left: 1rem;
 }
 
+.right-auto {
+  right: auto;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -1297,6 +1301,10 @@ video {
 
 .col-span-1 {
   grid-column: span 1 / span 1;
+}
+
+.m-4 {
+  margin: 1rem;
 }
 
 .mx-1 {

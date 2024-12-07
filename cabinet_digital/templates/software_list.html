@@ -20,11 +20,6 @@
     submitForm() {
         this.isLoading = true;
         window.location.href = `{% url 'software_list' %}?categorie=${this.selectedCategory}&search=${this.searchQuery}`;
-    },
-
-    goToPage(page) {
-        this.isLoading = true;
-        window.location.href = `{% url 'software_list' %}?page=${page}&categorie=${this.selectedCategory}&search=${this.searchQuery}`;
     }
 }">
     <h1 class="custom-header">Liste des logiciels</h1>
@@ -76,39 +71,8 @@
 
     <div id="software-list-content" class="w-full">
         <div id="software-grid" 
-             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
-             :class="{ 'opacity-50': isLoading }">
-            {% for software in softwares %}
-            {% include 'template_card_software.html' with software=software %}
-            {% endfor %}
-        </div>
-
-        <div class="flex justify-center mt-12">
-            <div class="inline-flex rounded-md shadow-sm">
-                {% if page_obj.has_previous %}
-                    <button @click="goToPage({{ page_obj.previous_page_number }})"
-                       :disabled="isLoading"
-                       class="px-4 py-2 text-sm font-semibold text-black bg-white border border-black rounded-l-md hover:bg-black hover:text-white transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Précédent
-                    </button>
-                {% else %}
-                    <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-300 rounded-l-md cursor-not-allowed">Précédent</span>
-                {% endif %}
-                
-                <span class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-300">
-                    Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
-                </span>
-                
-                {% if page_obj.has_next %}
-                    <button @click="goToPage({{ page_obj.next_page_number }})"
-                       :disabled="isLoading"
-                       class="px-4 py-2 text-sm font-semibold text-black bg-white border border-black rounded-r-md hover:bg-black hover:text-white transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Suivant
-                    </button>
-                {% else %}
-                    <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-white border border-gray-300 rounded-r-md cursor-not-allowed">Suivant</span>
-                {% endif %}
-            </div>
+             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {% include 'template_card_software_list_partial.html' %}
         </div>
     </div>
 </div>

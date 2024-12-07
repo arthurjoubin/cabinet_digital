@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'cabinet_digital',
     'compressor',
     'django_htmx',
+    
 
 ]
 

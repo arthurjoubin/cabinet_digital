@@ -86,6 +86,12 @@
               x-text="expanded ? 'Voir moins' : 'Lire la suite'">
       </button>
     </div>
+
+    {% if software.preview_gif %}
+    <div class="mt-8 flex justify-center">
+      <img src="{{ MEDIA_URL }}{{ software.preview_gif.url }}" alt="Démonstration {{ software.name }}" class="max-w-full h-auto rounded-lg shadow-lg">
+    </div>
+    {% endif %}
   </div>
 
   <div class="border-t border-gray-200 p-4 sm:p-6 text-center">

@@ -92,7 +92,7 @@ class CategoryDetailView(DetailView):
         slug = self.kwargs.get('slug')
         # Décoder et nettoyer le slug
         decoded_slug = unidecode.unidecode(slug)
-        clean_slug = slugify(decoded_slug)[:49]  # Limiter à 49 caractères
+        clean_slug = slugify(decoded_slug)[:49]  # Limiter  49 caractères
         
         # Chercher la catégorie avec le slug nettoyé
         return get_object_or_404(queryset, slug=clean_slug)
@@ -109,7 +109,12 @@ class SoftwareListView(ListView):
     model = Software
     template_name = 'software_list.html'
     context_object_name = 'softwares'
-    paginate_by = 16
+    paginate_by = 12
+
+    def get_template_names(self):
+        if self.request.headers.get('HX-Request'):
+            return ['template_card_software_list_partial.html']
+        return [self.template_name]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -119,16 +124,20 @@ class SoftwareListView(ListView):
         context['selected_category'] = self.request.GET.get('categorie')
         context['search_query'] = self.request.GET.get('search', '')
         return context
+
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-is_top_pick', Lower('name'))
         queryset = queryset.filter(is_published=True, slug__isnull=False).exclude(slug='')
         category = self.request.GET.get('categorie')
         search = self.request.GET.get('search')
-        queryset = queryset.filter(is_published=True)
+        
         if category and category != 'None':
             queryset = queryset.filter(category__slug=category)
         if search and search.strip():
-            queryset = queryset.filter(Q(name__icontains=search) | Q(description__icontains=search))
+            queryset = queryset.filter(
+                Q(name__icontains=search) | 
+                Q(description__icontains=search)
+            )
         return queryset
 
 class ActualitesListView(ListView):
@@ -635,3 +644,19 @@ def amortissement_calculateur(request):
 
 def outils(request):
     return render(request, 'outils/outils.html')
+
+def actualites(request):
+    tag_slug = request.GET.get('tag')
+    tags = Tag.objects.all()
+    
+    if tag_slug:
+        actualites = Actualites.objects.filter(tags__slug=tag_slug, is_published=True).order_by('-pub_date')
+    else:
+        actualites = Actualites.objects.filter(is_published=True).order_by('-pub_date')
+        
+    context = {
+        'actualites': actualites,
+        'tags': tags,
+        'selected_tag': tag_slug
+    }
+    return render(request, 'actualites.html', context)
