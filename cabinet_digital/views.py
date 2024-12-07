@@ -646,17 +646,31 @@ def outils(request):
     return render(request, 'outils/outils.html')
 
 def actualites(request):
-    tag_slug = request.GET.get('tag')
+    # Récupérer tous les tags
     tags = Tag.objects.all()
     
-    if tag_slug:
-        actualites = Actualites.objects.filter(tags__slug=tag_slug, is_published=True).order_by('-pub_date')
-    else:
-        actualites = Actualites.objects.filter(is_published=True).order_by('-pub_date')
+    # Récupérer le tag sélectionné depuis l'URL et le nettoyer
+    selected_tag = request.GET.get('tag', '').strip()
+    
+    # Debug logging
+    logger.info(f"Tag sélectionné: '{selected_tag}'")
+    
+    # Commencer avec les actualités publiées
+    actualites = Actualites.objects.filter(is_published=True)
+    
+    # Filtrer par tag si un tag est sélectionné
+    if selected_tag:
+        actualites = actualites.filter(tags__slug=selected_tag)
+        logger.info(f"Nombre d'actualités après filtre: {actualites.count()}")
+        logger.info(f"Query SQL: {actualites.query}")
+    
+    # Ordonner par date de publication
+    actualites = actualites.order_by('-pub_date')
         
     context = {
         'actualites': actualites,
         'tags': tags,
-        'selected_tag': tag_slug
+        'selected_tag': selected_tag,
     }
+    
     return render(request, 'actualites.html', context)

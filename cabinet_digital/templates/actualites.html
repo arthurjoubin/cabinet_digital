@@ -27,17 +27,19 @@
     </div>
     
     <!-- Filtres -->
-    <div class="flex flex-wrap gap-2 mb-4 justify-center">
+    <div class="flex flex-wrap gap-3 mb-8 justify-center">
         <a href="{% url 'actualites' %}" 
-           class="px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ease-in-out hover:shadow-md hover:brightness-110 {% if not selected_tag %}bg-sky-500 text-white{% else %}bg-gray-100 text-gray-700{% endif %}">
+           class="px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 ease-in-out hover:shadow-md hover:-translate-y-0.5 {% if not selected_tag %}bg-sky-500 text-white shadow-sky-200/50 hover:bg-sky-600 ring-2 ring-sky-600 ring-offset-2{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
             Tous
         </a>
         {% for tag in tags %}
-            <a href="{% url 'actualites' %}?tag={{ tag.slug }}" 
-               class="px-4 py-1.5 text-sm font-medium rounded-full transition-all duration-200 ease-in-out hover:shadow-md hover:brightness-110 {% if selected_tag == tag.slug %}scale-105 shadow-lg ring-2 ring-offset-2 ring-opacity-50{% endif %} text-white"
-               {% if tag.color %}style="background-color: {{ tag.color }}"{% endif %}>
-                {{ tag.name }}
-            </a>
+            {% if tag.slug %}
+                <a href="?tag={{ tag.slug }}" 
+                   class="px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 ease-in-out hover:shadow-md hover:-translate-y-0.5 {% if selected_tag == tag.slug %}scale-105 shadow-lg ring-2 ring-offset-2{% endif %} text-white"
+                   {% if tag.color %}style="background-color: {{ tag.color }}; box-shadow: 0 4px 6px -1px {{ tag.color }}20; {% if selected_tag == tag.slug %}--tw-ring-color: {{ tag.color }};{% endif %}"{% endif %}>
+                    {{ tag.name }}
+                </a>
+            {% endif %}
         {% endfor %}
     </div>
     
