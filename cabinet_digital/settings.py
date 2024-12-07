@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     # Third party apps
     'cabinet_digital',
     'compressor',
-    'django_htmx',
     
 
 ]
