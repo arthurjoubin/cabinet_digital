@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.urls import reverse
 from markdownx.models import MarkdownxField
+from tinymce.models import HTMLField
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 import unidecode
@@ -12,7 +13,7 @@ from .software.utils import capture_website_scroll
 
 class SoftwareCategory(models.Model):
     name = models.CharField(max_length=100)
-    description = HTMLField(blank=True)
+    description = MarkdownxField(blank=True)
     slug = models.SlugField(blank=True, unique=False)
     metier = models.ForeignKey('Metier', on_delete=models.CASCADE, null=True, blank=True)
     is_published = models.BooleanField(default=False)
@@ -37,11 +38,10 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
     
-
 class Software(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
-    description = HTMLField()
+    description = MarkdownxField()
     excerpt = models.CharField(max_length=200, blank=True)
     category = models.ManyToManyField('SoftwareCategory', related_name='categories_softwares_link')
     logo = models.ImageField(upload_to='logos/', null=True, blank=True)
@@ -66,13 +66,6 @@ class Software(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
-        
-        # Générer le GIF seulement si l'URL a changé
-        if self.site and (not self.preview_gif or self._state.adding):
-            gif_path = os.path.join(settings.MEDIA_ROOT, 'software_previews', f'{self.slug}_preview.gif')
-            if capture_website_scroll(self.site, gif_path):
-                self.preview_gif = f'software_previews/{self.slug}_preview.gif'
-                super().save(update_fields=['preview_gif'])
 
     class Meta:
         ordering = ['-is_top_pick', 'name']
