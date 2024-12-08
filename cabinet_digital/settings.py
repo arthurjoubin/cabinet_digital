@@ -57,9 +57,7 @@ INSTALLED_APPS = [
     
     # Third party apps
     'cabinet_digital',
-    'compressor',
-    
-
+    'compressor'
 ]
 
 MIDDLEWARE = [

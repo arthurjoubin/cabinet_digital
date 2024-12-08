@@ -2,7 +2,6 @@ from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
 from django.urls import reverse
-from markdownx.models import MarkdownxField
 from tinymce.models import HTMLField
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
@@ -13,7 +12,7 @@ from .software.utils import capture_website_scroll
 
 class SoftwareCategory(models.Model):
     name = models.CharField(max_length=100)
-    description = MarkdownxField(blank=True)
+    description = HTMLField(blank=True)
     slug = models.SlugField(blank=True, unique=False)
     metier = models.ForeignKey('Metier', on_delete=models.CASCADE, null=True, blank=True)
     is_published = models.BooleanField(default=False)
@@ -41,7 +40,7 @@ class Tag(models.Model):
 class Software(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
-    description = MarkdownxField()
+    description = HTMLField()
     excerpt = models.CharField(max_length=200, blank=True)
     category = models.ManyToManyField('SoftwareCategory', related_name='categories_softwares_link')
     logo = models.ImageField(upload_to='logos/', null=True, blank=True)

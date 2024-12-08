@@ -80,6 +80,10 @@ class SoftwareAdmin(ModelAdmin):
     change_form_before_template = "admin/software_before.html"
     change_form_after_template = "admin/software_after.html"
 
+    formfield_overrides = {
+        models.TextField: {'widget': WysiwygWidget},
+    }
+
 @admin.register(SoftwareCategory)
 class CategoryAdmin(ModelAdmin):
     list_display = ('name', 'software_count', 'excerpt', 'metier')
