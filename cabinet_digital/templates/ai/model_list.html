@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta_description %}
+<title>Modèles d'IA pour Experts-Comptables | Cabinet Digital</title>
+<meta name="description" content="Découvrez et comparez les meilleurs modèles d'IA pour votre cabinet d'expertise comptable. GPT-4, Claude, PaLM et bien d'autres.">
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row gap-8">
+        <!-- Filtres -->
+        <div class="w-full md:w-64 bg-white rounded-lg shadow-sm border border-purple-100 p-6 h-fit">
+            <h2 class="text-lg font-semibold text-purple-900 mb-4">Filtres</h2>
+            
+            <form x-data="{
+                provider: new URLSearchParams(window.location.search).get('provider') || '',
+                is_open_source: new URLSearchParams(window.location.search).get('is_open_source') || '',
+                has_api: new URLSearchParams(window.location.search).get('has_api') || '',
+                modality: new URLSearchParams(window.location.search).get('modality') || ''
+            }" 
+            hx-get="{% url 'ai_model_list' %}"
+            hx-target="#models-grid"
+            hx-trigger="change"
+            hx-push-url="true"
+            class="space-y-6">
+                
+                <!-- Fournisseur -->
+                <div>
+                    <label class="block text-sm font-medium text-purple-900 mb-2">Entreprise</label>
+                    <select name="provider" x-model="provider" class="w-full rounded-lg border-purple-200 text-gray-700 focus:ring-purple-500">
+                        <option value="">Tous</option>
+                        {% for provider in providers %}
+                        <option value="{{ provider }}">{{ provider }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Réinitialiser -->
+                <button type="reset" 
+                        @click="provider = ''; is_open_source = ''; has_api = ''; modality = ''"
+                        class="w-full px-4 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition">
+                    Réinitialiser les filtres
+                </button>
+            </form>
+        </div>
+
+        <!-- Liste des modèles -->
+        <div class="flex-1">
+            <h1 class="text-3xl font-bold text-purple-900 mb-6">Modèles d'IA</h1>
+            
+            <div id="models-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {% for model in models %}
+                <div class="bg-white rounded-lg shadow-sm border border-purple-100 p-6 hover:shadow-md transition">
+                    <div class="flex items-center mb-4">
+                        {% if model.logo %}
+                        <img src="{{ model.logo.url }}" alt="{{ model.name }}" class="w-12 h-12 rounded-lg object-contain">
+                        {% endif %}
+                        <div class="ml-4">
+                            <h2 class="font-semibold text-lg text-purple-900">{{ model.name }}</h2>
+                            <p class="text-purple-600">{{ model.provider }}</p>
+                        </div>
+                    </div>
+                    
+                    <p class="text-gray-600 mb-4">{{ model.excerpt }}</p>
+                    
+                    <a href="{{ model.get_absolute_url }}" class="text-purple-600 hover:text-purple-700 font-medium">En savoir plus →</a>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <div class="mt-8 flex justify-center">
+                <div class="flex space-x-2">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-white text-purple-600 rounded-lg border border-purple-200 hover:bg-purple-50">Précédent</a>
+                    {% endif %}
+                    
+                    <span class="px-4 py-2 bg-purple-600 text-white rounded-lg">{{ page_obj.number }}</span>
+                    
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-white text-purple-600 rounded-lg border border-purple-200 hover:bg-purple-50">Suivant</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

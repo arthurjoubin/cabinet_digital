@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta_description %}
+<title>Outils IA pour Experts-Comptables | Cabinet Digital</title>
+<meta name="description" content="Découvrez les meilleurs outils d'IA pour votre cabinet d'expertise comptable. ChatGPT Enterprise, Claude, Copilot et bien d'autres.">
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- En-tête -->
+    <div class="max-w-4xl mx-auto text-center mb-12">
+        <h1 class="text-4xl font-bold text-purple-900 mb-4">Outils IA pour Experts-Comptables</h1>
+        <p class="text-lg text-purple-700">Explorez notre sélection d'outils d'IA spécialement choisis pour les experts-comptables.</p>
+    </div>
+
+    <!-- Liste des outils -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        {% for tool in tools %}
+        <div class="bg-white rounded-lg shadow-sm border border-purple-100 p-6 hover:shadow-md transition">
+            <div class="flex items-center mb-4">
+                {% if tool.logo %}
+                <img src="{{ tool.logo.url }}" alt="{{ tool.name }}" class="w-12 h-12 rounded-lg object-contain">
+                {% endif %}
+                <div class="ml-4">
+                    <h2 class="font-semibold text-lg text-purple-900">{{ tool.name }}</h2>
+                </div>
+            </div>
+            
+            <p class="text-gray-600 mb-4">{{ tool.excerpt }}</p>
+            
+            <div class="flex flex-wrap gap-2 mb-4">
+                {% for category in tool.category.all %}
+                <span class="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-sm">{{ category.name }}</span>
+                {% endfor %}
+            </div>
+            
+            {% if tool.site %}
+            <a href="{{ tool.site }}" target="_blank" rel="noopener noreferrer" 
+               class="inline-flex items-center mb-4 text-purple-600 hover:text-purple-700">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+                Site officiel
+            </a>
+            {% endif %}
+            
+            <a href="{{ tool.get_absolute_url }}" class="text-purple-600 hover:text-purple-700 font-medium block">En savoir plus →</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="mt-12 flex justify-center">
+        <div class="flex space-x-2">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-white text-purple-600 rounded-lg border border-purple-200 hover:bg-purple-50">Précédent</a>
+            {% endif %}
+            
+            <span class="px-4 py-2 bg-purple-600 text-white rounded-lg">{{ page_obj.number }}</span>
+            
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-white text-purple-600 rounded-lg border border-purple-200 hover:bg-purple-50">Suivant</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

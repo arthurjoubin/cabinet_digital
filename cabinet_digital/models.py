@@ -110,3 +110,57 @@ class Metier(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class AIModel(models.Model):
+    provider = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, blank=True)
+    description = HTMLField()
+    excerpt = models.CharField(max_length=200, blank=True)
+    logo = models.ImageField(upload_to='logos/', null=True, blank=True)
+    is_published = models.BooleanField(default=False)
+    site = models.URLField(max_length=200, blank=True)
+    is_top_pick = models.BooleanField(default=False)
+    unique_views = models.IntegerField(default=0)
+    test_prompt = models.TextField(blank=True)
+
+    class Meta:
+        verbose_name = "Modèle IA"
+        verbose_name_plural = "Modèles IA"
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('ai_model_detail', kwargs={'slug': self.slug})
+
+class AITool(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, blank=True)
+    description = HTMLField()
+    excerpt = models.CharField(max_length=200, blank=True)
+    logo = models.ImageField(upload_to='logos/', null=True, blank=True)
+    is_published = models.BooleanField(default=False)
+    is_top_pick = models.BooleanField(default=False)
+    unique_views = models.IntegerField(default=0)
+    site = models.URLField(max_length=200, blank=True)
+
+    class Meta:
+        verbose_name = "Outil IA"
+        verbose_name_plural = "Outils IA"
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('ai_tool_detail', kwargs={'slug': self.slug})
+
+class AIArticle(Article):
+    class Meta:
+        proxy = True
+        verbose_name = "Article IA"
+        verbose_name_plural = "Articles IA"
+
+    def get_absolute_url(self):
+        return reverse('ai_article_detail', kwargs={'slug': self.slug})

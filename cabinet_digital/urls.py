@@ -17,7 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from cabinet_digital import views
-from cabinet_digital.views import  CategoryListView, CategoryDetailView, ActualitesListView, ActualitesDetailView, alternative_detail, SoftwareDetailView, SoftwareListView, Custom404View
+from cabinet_digital.views import (
+    CategoryListView, CategoryDetailView, ActualitesListView, ActualitesDetailView,
+    alternative_detail, SoftwareDetailView, SoftwareListView, Custom404View,
+    AIModelListView, AIModelDetailView, AIToolListView, AIToolDetailView,
+    AIArticleListView, AIArticleDetailView
+)
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
@@ -95,7 +100,13 @@ urlpatterns = [
     path('outils/sftp-script-generateur/', views.sftp_generator, name='sftp_generator'),
     path('outils/tableau-amortissement-generateur/', views.amortissement_calculateur, name='amortissement_calculateur'),
     path('outils/', views.outils, name='outils'),
-    ]
+    path('ia/modeles/', AIModelListView.as_view(), name='ai_model_list'),
+    path('ia/modeles/<slug:slug>/', AIModelDetailView.as_view(), name='ai_model_detail'),
+    path('ia/outils/', AIToolListView.as_view(), name='ai_tool_list'),
+    path('ia/outils/<slug:slug>/', AIToolDetailView.as_view(), name='ai_tool_detail'),
+    path('ia/guides/', AIArticleListView.as_view(), name='ai_article_list'),
+    path('ia/guides/<slug:slug>/', AIArticleDetailView.as_view(), name='ai_article_detail'),
+]
 
 urlpatterns += [
     path('404/', views.Custom404View.as_view(), name='404'),

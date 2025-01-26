@@ -1,4 +1,4 @@
-from .models import Software, SoftwareCategory, Article, Actualites, Tag
+from .models import Software, SoftwareCategory, Article, Actualites, Tag, AIModel, AITool, AIArticle
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView
 from django.conf import settings
@@ -669,3 +669,101 @@ def actualites(request):
     }
     
     return render(request, 'actualites.html', context)
+
+class AIModelListView(ListView):
+    model = AIModel
+    template_name = 'ai/model_list.html'
+    context_object_name = 'models'
+    paginate_by = 12
+
+    def get_queryset(self):
+        queryset = AIModel.objects.filter(is_published=True)
+        
+        # Filtres
+        provider = self.request.GET.get('provider')
+        if provider:
+            queryset = queryset.filter(provider=provider)
+
+
+        origin = self.request.GET.get('origin')
+        if origin:
+            queryset = queryset.filter(origin=origin)
+            
+        return queryset.distinct()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['providers'] = AIModel.objects.values_list('provider', flat=True).distinct()
+        context['origins'] = AIModel.objects.values_list('origin', flat=True).distinct()
+        return context
+
+class AIModelDetailView(DetailView):
+    model = AIModel
+    template_name = 'ai/model_detail.html'
+    context_object_name = 'model'
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        
+        slug = self.kwargs.get('slug')
+        decoded_slug = unidecode.unidecode(slug)
+        clean_slug = slugify(decoded_slug)[:49]
+        
+        obj = get_object_or_404(queryset, slug=clean_slug, is_published=True)
+        obj.unique_views += 1
+        obj.save()
+        
+        return obj
+
+class AIToolListView(ListView):
+    model = AITool
+    template_name = 'ai/tool_list.html'
+    context_object_name = 'tools'
+    paginate_by = 12
+
+    def get_queryset(self):
+        return AITool.objects.filter(is_published=True)
+
+class AIToolDetailView(DetailView):
+    model = AITool
+    template_name = 'ai/tool_detail.html'
+    context_object_name = 'tool'
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        
+        slug = self.kwargs.get('slug')
+        decoded_slug = unidecode.unidecode(slug)
+        clean_slug = slugify(decoded_slug)[:49]
+        
+        obj = get_object_or_404(queryset, slug=clean_slug, is_published=True)
+        obj.unique_views += 1
+        obj.save()
+        
+        return obj
+
+class AIArticleListView(ListView):
+    model = AIArticle
+    template_name = 'ai/article_list.html'
+    context_object_name = 'articles'
+    paginate_by = 12
+
+    def get_queryset(self):
+        return AIArticle.objects.filter(is_published=True).order_by('-pub_date')
+
+class AIArticleDetailView(DetailView):
+    model = AIArticle
+    template_name = 'ai/article_detail.html'
+    context_object_name = 'article'
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        
+        slug = self.kwargs.get('slug')
+        decoded_slug = unidecode.unidecode(slug)
+        clean_slug = slugify(decoded_slug)[:49]
+        
+        return get_object_or_404(queryset, slug=clean_slug, is_published=True)

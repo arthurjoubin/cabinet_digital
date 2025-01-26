@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Software, SoftwareCategory, Article, Actualites, Tag, Metier
+from .models import Software, SoftwareCategory, Article, Actualites, Tag, Metier, AIModel, AITool, AIArticle
 from django.db import models
 from django import forms
 from django.utils.html import format_html
@@ -174,6 +174,7 @@ class TagAdmin(ModelAdmin):
 @admin.register(Metier)
 class MetierAdmin(ModelAdmin):
     list_display = ('name', 'slug')
+    list_filter = ['name']
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
     fieldsets = (
@@ -181,4 +182,46 @@ class MetierAdmin(ModelAdmin):
             'fields': ('name', 'slug')
         }),
     )
+
+
+@admin.register(AIModel)
+class AIModelAdmin(ModelAdmin):
+    list_display = ['name', 'provider', 'is_published', 'is_top_pick', 'unique_views']
+    list_editable = ['is_top_pick']
+    search_fields = ['name', 'provider', 'description']
+    list_filter = ['is_published', 'is_top_pick', 'provider']
+    readonly_fields = ['unique_views', 'slug']
+    prepopulated_fields = {'slug': ['name']}
+
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'slug', 'provider', 'description', 'excerpt')
+        }),
+        ('Media', {
+            'fields': ('logo', 'site'),
+            'classes': ('collapse',)
+        }),
+        ('Status', {
+            'fields': ('is_published', 'is_top_pick', 'unique_views'),
+            'classes': ('collapse',)
+        })
+    )
+
+    formfield_overrides = {
+        models.TextField: {'widget': WysiwygWidget},
+    }
+
+    compressed_fields = True
+    warn_unsaved_form = True
+    list_filter_sheet = True
+
+@admin.register(AITool)
+class AIToolAdmin(SoftwareAdmin):
+    list_display = ['name', 'is_published', 'is_top_pick', 'unique_views']
+    list_filter = ['name']
+    list_editable = ['is_top_pick', 'unique_views']
+
+@admin.register(AIArticle)
+class AIArticleAdmin(ArticleAdmin):
+    pass
 

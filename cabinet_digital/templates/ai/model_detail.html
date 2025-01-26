@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta_description %}
+<title>{{ model.name }} - Modèle IA | Cabinet Digital</title>
+<meta name="description" content="{{ model.excerpt }}">
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- En-tête -->
+        <div class="bg-white rounded-xl p-8 mb-8 border border-purple-100">
+            <div class="flex items-center mb-6">
+                {% if model.logo %}
+                <img src="{{ model.logo.url }}" alt="{{ model.name }}" class="w-16 h-16 rounded-lg object-contain">
+                {% endif %}
+                <div class="ml-6">
+                    <h1 class="text-3xl font-bold text-purple-900">{{ model.name }}</h1>
+                    <p class="text-lg text-purple-600">{{ model.provider }}</p>
+                </div>
+            </div>
+
+            <p class="text-gray-600 text-lg mb-6">{{ model.excerpt }}</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Caractéristiques -->
+                <div class="bg-purple-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-purple-900 mb-2">Origine</h3>
+                    <p class="text-purple-700">{{ model.origin }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Description détaillée -->
+        <div class="bg-white rounded-xl p-8 mb-8 border border-purple-100">
+            <h2 class="text-2xl font-bold text-purple-900 mb-6">Description</h2>
+            <div class="prose max-w-none">
+                {{ model.description|safe }}
+            </div>
+        </div>
+
+        <!-- Liens et ressources -->
+        <div class="bg-white rounded-xl p-8 mb-8 border border-purple-100">
+            <h2 class="text-2xl font-bold text-purple-900 mb-6">Liens et ressources</h2>
+            
+            {% if model.site %}
+            <a href="{{ model.site }}" target="_blank" rel="noopener noreferrer" 
+               class="flex items-center mb-4 text-purple-600 hover:text-purple-700">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+                Site officiel
+            </a>
+            {% endif %}
+
+            {% if model.video %}
+            <a href="{{ model.video }}" target="_blank" rel="noopener noreferrer"
+               class="flex items-center text-purple-600 hover:text-purple-700">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Voir la démo
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- Autres modèles -->
+        {% if related_models %}
+        <div class="bg-white rounded-xl p-8 border border-purple-100">
+            <h2 class="text-2xl font-bold text-purple-900 mb-6">Modèles similaires</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% for related in related_models %}
+                <div class="bg-purple-50 rounded-lg p-6">
+                    <div class="flex items-center mb-4">
+                        {% if related.logo %}
+                        <img src="{{ related.logo.url }}" alt="{{ related.name }}" class="w-12 h-12 rounded-lg object-contain">
+                        {% endif %}
+                        <div class="ml-4">
+                            <h3 class="font-semibold text-purple-900">{{ related.name }}</h3>
+                            <p class="text-purple-600">{{ related.provider }}</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">{{ related.excerpt }}</p>
+                    <a href="{{ related.get_absolute_url }}" class="text-purple-600 hover:text-purple-700 font-medium">En savoir plus →</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 
