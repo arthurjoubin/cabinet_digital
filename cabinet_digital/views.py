@@ -123,7 +123,7 @@ class SoftwareListView(ListView):
         sort = self.request.GET.get('sort')
         # Apply sorting
         if sort == 'views':
-            queryset = queryset.order_by('-unique_views', '-is_top_pick', Lower('name'))
+            queryset = queryset.order_by('-unique_views')
         elif sort == 'alpha':
             queryset = queryset.order_by('name')
         if category and category != 'None':
