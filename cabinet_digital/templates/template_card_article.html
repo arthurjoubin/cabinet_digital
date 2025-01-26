@@ -1,4 +1,4 @@
-<div class="border border-gray-200 bg-white rounded-2xl overflow-hidden relative flex flex-col transition-all duration-300 ease-in-out h-full hover:bg-sky-50 [&:hover_#tags]:bg-white">
+<div class="border border-gray-200 bg-white rounded-2xl overflow-hidden relative flex flex-col transition-all duration-300 ease-in-out h-full hover:bg-sky-50 [&:hover_#tags]:bg-white [&:hover_#title]:text-sky-600">
     <a href="{% url article_detail article.slug %}" class="flex flex-col h-full">
         <div class="p-6 flex flex-col h-full">
             <!-- Tags section -->
@@ -11,7 +11,7 @@
             </div>
 
             <!-- Title section -->
-            <h2 class="text-xl font-semibold text-gray-900 group-hover:text-sky-600 transition-colors duration-300">
+            <h2 id="title" class="text-xl font-semibold text-gray-900 group-hover:text-sky-600 transition-colors duration-300">
                 {{ article.title }}
             </h2>
 
