@@ -116,3 +116,13 @@ class Metier(models.Model):
         return self.name
 
 
+class ModelAI(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
+    description = models.TextField()
+    logo = models.ImageField(upload_to='models/logos', null=True, blank=True)
+    is_published = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+

@@ -1,30 +1,18 @@
-from django.shortcuts import render
-from .models import Software, SoftwareCategory, Article, Actualites, Tag
-from django.contrib import messages
+from .models import Software, SoftwareCategory, Article, Actualites, Tag, ModelAI
 from django.shortcuts import get_object_or_404
-from django.core.paginator import Paginator
-from django.db.models import Q, F
 from django.views.generic import ListView, DetailView
-from django.contrib.admin.views.decorators import staff_member_required
 from django.conf import settings
-from django.utils.safestring import mark_safe
-from django.db.models import Count  
-from django.http import Http404
+from django.db.models import Count, Prefetch, Q, F
 from django.shortcuts import redirect
 from django.utils.text import slugify
 import unidecode
 from urllib.parse import unquote
-import os
-from django.utils.html import escape
 from django.db.models.functions import Lower
-from django.http import HttpResponse
-import json
 from django.http import JsonResponse
 import logging
 from django.template.loader import get_template
-from logging.handlers import RotatingFileHandler
-import shutil
-from django.core import serializers
+from django.shortcuts import render
+from datetime import date
 
 logger = logging.getLogger(__name__)
 
@@ -191,27 +179,28 @@ class SoftwareDetailView(DetailView):
     context_object_name = 'software'
     
     def get_queryset(self):
-        return Software.objects.prefetch_related('category')
+        return (
+            Software.objects
+            .prefetch_related(
+                Prefetch('category', queryset=SoftwareCategory.objects.only('name', 'slug'))
+            )
+            .select_related('metier')
+            .only('name', 'description', 'slug', 'unique_views', 'is_top_pick', 'metier__name')
+        )
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
         
-        # Créer une clé unique pour ce logiciel dans la session
         viewed_softwares = self.request.session.get('viewed_softwares', [])
         
-        # Si l'ID du logiciel n'est pas dans la session, on incrémente le compteur
         if obj.id not in viewed_softwares:
-            # Incrémenter le compteur de manière atomique
             Software.objects.filter(id=obj.id).update(unique_views=F('unique_views') + 1)
             
-            # Rafraîchir l'objet depuis la base de données
             obj.refresh_from_db()
             
-            # Ajouter l'ID à la liste des logiciels vus
             viewed_softwares.append(obj.id)
             self.request.session['viewed_softwares'] = viewed_softwares
             
-            # Définir une expiration de session après 24h
             self.request.session.set_expiry(86400)  # 24 heures en secondes
         
         return obj
@@ -221,14 +210,17 @@ class SoftwareDetailView(DetailView):
         software = self.object
         categories = software.category.all()
 
-        # Optimisation de la requête pour les logiciels similaires
         similar_softwares = (
-            Software.objects.filter(
+            Software.objects
+            .filter(
                 is_published=True,
                 category__in=categories,
             )
             .exclude(id=software.id)
-            .prefetch_related('category')
+            .prefetch_related(
+                Prefetch('category', queryset=SoftwareCategory.objects.only('name', 'slug'))
+            )
+            .only('name', 'slug', 'is_top_pick')
             .distinct()
             .annotate(
                 common_categories=Count(
@@ -236,16 +228,12 @@ class SoftwareDetailView(DetailView):
                     filter=Q(category__in=categories)
                 )
             )
-            .order_by('-common_categories').order_by('-is_top_pick')[:4]
+            .order_by('-common_categories', '-is_top_pick')[:4]
         )
-
-        from datetime import date
-        start_date = date(2024, 11, 10)
-        days_since = (date.today() - start_date).days
 
         context.update({
             'similar_softwares': similar_softwares,
-            'days_since': days_since,
+            'days_since': (date.today() - date(2024, 11, 10)).days,
         })
         return context
     

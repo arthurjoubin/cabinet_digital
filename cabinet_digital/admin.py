@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Software, SoftwareCategory, Article, Actualites, Tag, Metier
+from .models import Software, SoftwareCategory, Article, Actualites, Tag, Metier, ModelAI
 from django.db import models
 from django import forms
 from django.utils.html import format_html
@@ -176,6 +176,18 @@ class TagAdmin(ModelAdmin):
 @admin.register(Metier)
 class MetierAdmin(ModelAdmin):
     list_display = ('name', 'slug')
+    search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'slug')
+        }),
+    )
+
+
+@admin.register(ModelAI)
+class ModelAIAdmin(ModelAdmin):
+    list_display = ('name', 'slug', 'is_published')
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
     fieldsets = (

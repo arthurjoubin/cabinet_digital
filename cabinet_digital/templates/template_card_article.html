@@ -1,46 +1,39 @@
 <div x-data="{ hover: false }" 
      @mouseenter="hover = true" 
      @mouseleave="hover = false"
-     :class="{ 'shadow-lg translate-y-[-3px]': hover, 'shadow-sm': !hover }"
-     class="bg-white rounded-xl overflow-hidden border border-gray-100 relative flex flex-col transition-all duration-300 ease-in-out">
-    <div class="absolute top-3 left-3 flex flex-wrap gap-2">
-        {% for tag in article.tags.all %}
-        <span x-show="true"
-              x-transition:enter="transition ease-out duration-300"
-              x-transition:enter-start="opacity-0 transform scale-90"
-              x-transition:enter-end="opacity-100 transform scale-100"
-              :class="{ 'shadow-md translate-y-[-1px]': hover }"
-              class="px-2.5 py-1 text-xs font-medium text-white rounded-lg bg-opacity-90 transition-all duration-300" 
-              style="background-color: {{ tag.color }};">
-            {{ tag.name }}
-        </span>
-        {% endfor %}
-    </div>
-    <div class="p-3 mt-auto">
-        <p class="text-sm text-gray-400 flex items-center justify-end">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            {{ article.pub_date|date:"d/m/Y" }}
-        </p>
-    </div>
-    <div class="px-5 flex-grow mb-3 flex flex-col justify-center">
+     :class="{ 'shadow-lg': hover, 'shadow': !hover }"
+     class="border border-gray-200 bg-white rounded-2xl overflow-hidden relative flex flex-col transition-all duration-300 ease-in-out h-full">
+    
+    <div class="p-6 flex flex-col h-full">
+        <!-- Tags section -->
+        <div class="flex flex-wrap gap-2 mb-4">
+            {% for tag in article.tags.all %}
+            <span class="px-3 py-1 text-xs font-medium rounded-lg" 
+                  style="background-color: {{ tag.color }}; color: white;">
+                {{ tag.name }}
+            </span>
+            {% endfor %}
+        </div>
+
+        <!-- Title section -->
         <a href="{% url article_detail article.slug %}" 
-           class="block mb-1.5 group">
-            <h2 :class="{ 'text-sky-600': hover }"
-                class="text-base font-medium tracking-tight text-gray-800 transition-all duration-300">
+           class="group mb-3">
+            <h2 class="text-xl font-semibold text-gray-900 group-hover:text-sky-600 transition-colors duration-300">
                 {{ article.title }}
             </h2>
         </a>
-        <p x-show="hover"
-           x-transition:enter="transition ease-out duration-200" 
-           x-transition:enter-start="opacity-0 transform translate-y-2"
-           x-transition:enter-end="opacity-100 transform translate-y-0"
-           x-transition:leave="transition ease-in duration-150"
-           x-transition:leave-start="opacity-100 transform translate-y-0"
-           x-transition:leave-end="opacity-0 transform translate-y-2"
-           class="text-sm text-gray-500 italic">
-           {{ article.description|truncatewords:20 }}
+
+        <!-- Description section -->
+        <p class="text-sm text-gray-500 mb-4 flex-grow">
+            {{ article.description|truncatewords:20 }}
         </p>
+
+        <!-- Date section -->
+        <div class="flex items-center text-gray-400 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            {{ article.pub_date|date:"d/m/Y" }}
+        </div>
     </div>
 </div>

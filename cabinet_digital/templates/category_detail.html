@@ -12,42 +12,19 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-white p-4 sm:p-6 rounded-lg shadow-sm border-2 border-gray-200">
-    <div class="relative mb-8">
-        <div class="absolute inset-0 flex items-center" aria-hidden="true">
-            <div class="w-full border-t border-gray-300"></div>
-        </div>
-        <div class="relative flex justify-center">
-            <h1 class="px-4 text-2xl sm:text-3xl font-semibold bg-white">
+<div class="max-w-5xl mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-sm border-2 border-gray-200">
+    <div class="relative mb-8 bg-sky-50 p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="relative flex flex-col items-center">
+            <h1 class="text-2xl sm:text-3xl font-bold text-black text-center">
                 Les {{ count }} meilleures {{ category.excerpt }}
-                <span class="inline-block bg-black text-white px-2 py-1 rounded-lg mt-2 sm:mt-0">{{ category.name }}</span>
             </h1>
         </div>
     </div>
     
     {% if category.description %}
-    <div class="mb-6 sm:mb-8 prose max-w-full w-full bg-sky-50 p-4 sm:p-6 rounded-lg border border-sky-200"
-         x-data="{ 
-            expanded: false,
-            isOverflowing: false,
-            init() {
-                this.isOverflowing = this.$refs.content.scrollHeight > 600;
-            }
-         }">
-        <div x-ref="content" 
-             :class="{ 'max-h-[600px] overflow-hidden': !expanded && isOverflowing }"
-             class="relative">
+        <div class="relative prose max-w-none text-gray-700 leading-relaxed p-8">
             {{ category.description|safe }}
-            <div x-show="!expanded && isOverflowing" 
-                 class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-sky-50 to-transparent">
-            </div>
         </div>
-        <button x-show="isOverflowing"
-                @click="expanded = !expanded"
-                class="mt-4 text-sky-600 hover:text-sky-800 font-medium"
-                x-text="expanded ? 'Voir moins' : 'Lire la suite'">
-        </button>
-    </div>
     {% endif %}
     
     <div class="mb-6 sm:mb-8 bg-white rounded-lg shadow-sm border border-gray-200">

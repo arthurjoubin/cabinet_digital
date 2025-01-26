@@ -101,17 +101,10 @@ WSGI_APPLICATION = 'cabinet_digital.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'cabinet_digital.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
         'OPTIONS': {
             'timeout': 20,
-            'pragmas': {
-                'journal_mode': 'wal',
-                'cache_size': -1 * 64000,  # 64MB
-                'foreign_keys': 1,
-                'ignore_check_constraints': 0,
-                'synchronous': 1,
-            }
         }
     }
 }
