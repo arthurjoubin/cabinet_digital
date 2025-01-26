@@ -15,27 +15,57 @@
 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200" x-data="{
     searchQuery: '{{ search_query }}',
     selectedCategory: '{{ selected_category }}',
+    currentSort: '{{ current_sort|default:'alpha' }}',
     isLoading: false,
     
     submitForm() {
         this.isLoading = true;
-        window.location.href = `{% url 'software_list' %}?categorie=${this.selectedCategory}&search=${this.searchQuery}`;
+        window.location.href = `{% url 'software_list' %}?categorie=${this.selectedCategory}&search=${this.searchQuery}&sort=${this.currentSort}`;
     }
 }">
     <h1 class="custom-header">Liste des logiciels</h1>
     <div class="flex flex-col space-y-4 md:space-y-0 md:flex-row md:justify-between md:items-start mb-8">
-        <div class="w-full md:w-[30%]">
+     
+        <!-- Tri -->
+        <div class="w-auto">
+            <button 
+                @click="currentSort = (currentSort === 'views' ? 'alpha' : 'views'); submitForm()"
+                class="w-full px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-lg hover:border-sky-100 hover:bg-sky-50 font-medium transition-all duration-300 flex items-center justify-center gap-2">
+                
+                <template x-if="currentSort !== 'views'">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <span>Trier par vues</span>
+                    </div>
+                </template>
+
+                <template x-if="currentSort === 'views'">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                        </svg>
+                        <span>Trier par ordre alphabétique</span>
+                    </div>
+                </template>
+            </button>
+        </div>
+
+        <!-- Filtre par catégorie -->
+        <div class="w-auto">
             <div class="relative">
                 <label for="category-filter" class="sr-only">Filtrer par catégorie</label>
                 <select 
                     id="category-filter" 
                     x-model="selectedCategory"
                     @change="submitForm()"
-                    class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-100 appearance-none transition-all duration-300 hover:border-sky-100">
-                    <option value="">Toutes les catégories</option>
+                    class="hover:cursor-pointer w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-100 appearance-none transition-all duration-300 hover:border-sky-100">
+                    <option value="" class="text-sky-700 bg-sky-50 font-medium">Toutes les catégories</option>
                     {% for category in categories %}
                         {% if category.software_count > 0 %}
-                            <option value="{{ category.slug }}">
+                    <option value="{{ category.slug }}" class="text-black font-medium">
                                 {{ category.name }} ({{ category.software_count }})
                             </option>
                         {% endif %}
@@ -48,25 +78,25 @@
                 </div>
             </div>
         </div>
-
-        <div class="w-full md:w-[60%] ml-4">
-            <div class="flex flex-col sm:flex-row">
-                <label for="search-input" class="sr-only">Rechercher un logiciel</label>
-                <input 
-                    type="text" 
-                    id="search-input" 
-                    x-model="searchQuery"
-                    @keyup.enter="submitForm()"
-                    placeholder="Rechercher un logiciel" 
-                    class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg sm:rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-100">
-                <button 
-                    @click="submitForm()"
-                    type="button" 
-                    class="w-full sm:w-auto mt-2 sm:mt-0 px-6 py-3 bg-black text-white rounded-lg sm:rounded-l-none hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 transition duration-300">
-                    Rechercher
-                </button>
-            </div>
-        </div>
+   <!-- Recherche -->
+   <div class="w-auto">
+    <div class="flex flex-col sm:flex-row">
+        <label for="search-input" class="sr-only">Rechercher un logiciel</label>
+        <input 
+            type="text" 
+            id="search-input" 
+            x-model="searchQuery"
+            @keyup.enter="submitForm()"
+            placeholder="Rechercher un logiciel" 
+            class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg sm:rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-100">
+        <button 
+            @click="submitForm()"
+            type="button" 
+            class="w-full sm:w-auto mt-2 sm:mt-0 px-6 py-3 bg-black text-white rounded-lg sm:rounded-l-none hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 transition duration-300">
+            Rechercher
+        </button>
+    </div>
+</div>
     </div>
 
     <div id="software-list-content" class="w-full">

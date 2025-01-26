@@ -6,7 +6,7 @@
 
 {% if page_obj.has_next %}
 <div class="h-0 w-full !col-span-full invisible"
-     hx-get="{% url 'software_list' %}?page={{ page_obj.next_page_number }}{% if selected_category %}&categorie={{ selected_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}"
+     hx-get="{% url 'software_list' %}?page={{ page_obj.next_page_number }}{% if selected_category %}&categorie={{ selected_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
      hx-trigger="intersect once"
      hx-swap="beforeend"
      hx-target="#software-grid"

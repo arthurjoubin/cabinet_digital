@@ -1,18 +1,19 @@
-from .models import Software, SoftwareCategory, Article, Actualites, Tag, ModelAI
+from .models import Software, SoftwareCategory, Article, Actualites, Tag
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView
 from django.conf import settings
 from django.db.models import Count, Prefetch, Q, F
 from django.shortcuts import redirect
 from django.utils.text import slugify
-import unidecode
-from urllib.parse import unquote
 from django.db.models.functions import Lower
 from django.http import JsonResponse
 import logging
 from django.template.loader import get_template
 from django.shortcuts import render
 from datetime import date
+import unidecode
+from urllib.parse import unquote
+
 
 logger = logging.getLogger(__name__)
 
@@ -111,6 +112,7 @@ class SoftwareListView(ListView):
         ).order_by(Lower('name'))
         context['selected_category'] = self.request.GET.get('categorie')
         context['search_query'] = self.request.GET.get('search', '')
+        context['current_sort'] = self.request.GET.get('sort', 'alpha')
         return context
 
     def get_queryset(self):
@@ -118,7 +120,12 @@ class SoftwareListView(ListView):
         queryset = queryset.filter(is_published=True, slug__isnull=False).exclude(slug='')
         category = self.request.GET.get('categorie')
         search = self.request.GET.get('search')
-        
+        sort = self.request.GET.get('sort')
+        # Apply sorting
+        if sort == 'views':
+            queryset = queryset.order_by('-unique_views', '-is_top_pick', Lower('name'))
+        elif sort == 'alpha':
+            queryset = queryset.order_by('name')
         if category and category != 'None':
             queryset = queryset.filter(category__slug=category)
         if search and search.strip():

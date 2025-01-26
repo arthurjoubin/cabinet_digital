@@ -1,14 +1,10 @@
 from django.db import models
 from django.utils import timezone
-from django.utils.text import slugify
 from django.urls import reverse
 from tinymce.models import HTMLField
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
-import unidecode
 from django.conf import settings
-import os
-from .software.utils import capture_website_scroll
 
 class SoftwareCategory(models.Model):
     name = models.CharField(max_length=100)
@@ -114,15 +110,3 @@ class Metier(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class ModelAI(models.Model):
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True)
-    description = models.TextField()
-    logo = models.ImageField(upload_to='models/logos', null=True, blank=True)
-    is_published = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.name
-
