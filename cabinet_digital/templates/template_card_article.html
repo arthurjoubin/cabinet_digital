@@ -1,39 +1,32 @@
-<div x-data="{ hover: false }" 
-     @mouseenter="hover = true" 
-     @mouseleave="hover = false"
-     :class="{ 'shadow-lg': hover, 'shadow': !hover }"
-     class="border border-gray-200 bg-white rounded-2xl overflow-hidden relative flex flex-col transition-all duration-300 ease-in-out h-full">
-    
-    <div class="p-6 flex flex-col h-full">
-        <!-- Tags section -->
-        <div class="flex flex-wrap gap-2 mb-4">
-            {% for tag in article.tags.all %}
-            <span class="px-3 py-1 text-xs font-medium rounded-lg" 
-                  style="background-color: {{ tag.color }}; color: white;">
-                {{ tag.name }}
-            </span>
-            {% endfor %}
-        </div>
+<div class="border border-gray-200 bg-white rounded-2xl overflow-hidden relative flex flex-col transition-all duration-300 ease-in-out h-full hover:bg-sky-50 [&:hover_#tags]:bg-white">
+    <a href="{% url article_detail article.slug %}" class="flex flex-col h-full">
+        <div class="p-6 flex flex-col h-full">
+            <!-- Tags section -->
+            <div class="flex flex-wrap gap-2 mb-4">
+                {% for tag in article.tags.all %}
+                <span id="tags" class="px-3 py-1 text-xs font-medium rounded-lg bg-sky-100 text-sky-700" >
+                    {{ tag.name }}
+                </span>
+                {% endfor %}
+            </div>
 
-        <!-- Title section -->
-        <a href="{% url article_detail article.slug %}" 
-           class="group mb-3">
+            <!-- Title section -->
             <h2 class="text-xl font-semibold text-gray-900 group-hover:text-sky-600 transition-colors duration-300">
                 {{ article.title }}
             </h2>
-        </a>
 
-        <!-- Description section -->
-        <p class="text-sm text-gray-500 mb-4 flex-grow">
-            {{ article.description|truncatewords:20 }}
-        </p>
+            <!-- Description section -->
+            <p class="text-sm text-gray-500 mb-4 flex-grow">
+                {{ article.description|truncatewords:20 }}
+            </p>
 
-        <!-- Date section -->
-        <div class="flex items-center text-gray-400 text-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            {{ article.pub_date|date:"d/m/Y" }}
+            <!-- Date section -->
+            <div class="flex items-center text-gray-400 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                {{ article.pub_date|date:"d/m/Y" }}
+            </div>
         </div>
-    </div>
+    </a>
 </div>

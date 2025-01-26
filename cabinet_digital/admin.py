@@ -76,9 +76,7 @@ class SoftwareAdmin(ModelAdmin):
     warn_unsaved_form = True
     list_filter_sheet = True
     list_horizontal_scrollbar_top = True
-    
-    change_form_before_template = "admin/software_before.html"
-    change_form_after_template = "admin/software_after.html"
+
 
     formfield_overrides = {
         models.TextField: {'widget': WysiwygWidget},

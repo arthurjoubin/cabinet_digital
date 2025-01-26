@@ -109,9 +109,7 @@ class SoftwareAdmin(ModelAdmin):
     warn_unsaved_form = True
     list_filter_sheet = True
     list_horizontal_scrollbar_top = True
-    
-    change_form_before_template = "admin/software_before.html"
-    change_form_after_template = "admin/software_after.html"
+
 
     formfield_overrides = {
         models.TextField: {'widget': WysiwygWidget},
@@ -818,8 +816,11 @@ FILE: cabinet_digital\templates\category_detail.html
 <div class="max-w-5xl mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-sm border-2 border-gray-200">
     <div class="relative mb-8 bg-sky-50 p-6 rounded-lg shadow-sm border border-gray-200">
         <div class="relative flex flex-col items-center">
+            <span class="bg-black text-white px-2 py-1 rounded-lg mb-4">
+                {{ category.name }}
+            </span>
             <h1 class="text-2xl sm:text-3xl font-bold text-black text-center">
-                Les {{ count }} meilleures {{ category.excerpt }}
+                Les <span class="underline">{{ count }}</span> meilleures {{ category.excerpt }}
             </h1>
         </div>
     </div>
@@ -869,16 +870,16 @@ FILE: cabinet_digital\templates\category_list.html
     <h1 class="custom-header">Catégories de logiciels</h1>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {% for category in categories %}
-            <div class="group">
+            <div class="group [&:hover_#numlogiciel]:bg-white">
                 <a href="{% url 'category_detail' category.slug %}" class="block h-full">
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 transition-all duration-300 hover:shadow-md hover:border-sky-100 group-hover:border-sky-200 h-full flex flex-col justify-between relative">
+                    <div class="bg-white border border-gray-200 rounded-lg  hover:bg-sky-50 p-4 transition-all duration-300 group-hover:border-sky-200 h-full flex flex-col justify-between relative">
                         <h2 class="text-lg font-medium text-gray-800 group-hover:text-sky-600 mt-4">
                             {% if category.icon %}
                                 <img src="{{ category.icon.url }}" alt="{{ category.name }}" class="w-6 h-6 mr-2 inline-block">
                             {% endif %}
                             {{ category.name }}
                         </h2>
-                        <span class="absolute top-2 right-2 inline-block px-2 py-1 text-xs font-medium bg-sky-50 text-sky-700 rounded-full hover:bg-sky-100 hover:text-sky-800 transition-colors duration-300 shadow-sm hover:shadow-md">
+                        <span id="numlogiciel" class="absolute top-2 right-2 inline-block px-2 py-1 text-xs font-medium bg-sky-50 text-sky-700 rounded-full hover:bg-sky-100 hover:text-sky-800 transition-colors duration-300 shadow-sm hover:shadow-md">
                             {{ category.software_count }} logiciel{% if category.software_count > 1 %}s{% endif %}
                         </span>
                     </div>
@@ -1190,27 +1191,29 @@ FILE: cabinet_digital\templates\software_list.html
      
         <!-- Tri -->
         <div class="w-auto">
-            <template x-if="currentSort !== 'views'">
-                <button 
-                    @click="currentSort = 'views'; submitForm()"
-                    class="w-full px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-lg hover:border-sky-100 font-medium transition-all duration-300 flex items-center justify-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    Trier par vues
-                </button>
-            </template>
-            <template x-if="currentSort === 'views'">
-                <button 
-                    @click="currentSort = 'alpha'; submitForm()"
-                    class="w-full px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-lg hover:border-sky-100 font-medium transition-all duration-300 flex items-center justify-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-                    </svg>
-                    Trier par A-Z
-                </button>
-            </template>
+            <button 
+                @click="currentSort = (currentSort === 'views' ? 'alpha' : 'views'); submitForm()"
+                class="w-full px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-lg hover:border-sky-100 hover:bg-sky-50 font-medium transition-all duration-300 flex items-center justify-center gap-2">
+                
+                <template x-if="currentSort !== 'views'">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <span>Trier par vues</span>
+                    </div>
+                </template>
+
+                <template x-if="currentSort === 'views'">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                        </svg>
+                        <span>Trier par ordre alphabétique</span>
+                    </div>
+                </template>
+            </button>
         </div>
 
         <!-- Filtre par catégorie -->
@@ -1221,11 +1224,11 @@ FILE: cabinet_digital\templates\software_list.html
                     id="category-filter" 
                     x-model="selectedCategory"
                     @change="submitForm()"
-                    class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-100 appearance-none transition-all duration-300 hover:border-sky-100">
+                    class="hover:cursor-pointer w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-100 appearance-none transition-all duration-300 hover:border-sky-100">
                     <option value="" class="text-sky-700 bg-sky-50 font-medium">Toutes les catégories</option>
                     {% for category in categories %}
                         {% if category.software_count > 0 %}
-                            <option value="{{ category.slug }}" class="text-black font-medium">
+                    <option value="{{ category.slug }}" class="text-black font-medium">
                                 {{ category.name }} ({{ category.software_count }})
                             </option>
                         {% endif %}
@@ -1327,44 +1330,37 @@ FILE: cabinet_digital\templates\template_article.html
 FILE: cabinet_digital\templates\template_card_article.html
 ================================================================================
 
-<div x-data="{ hover: false }" 
-     @mouseenter="hover = true" 
-     @mouseleave="hover = false"
-     :class="{ 'shadow-lg': hover, 'shadow': !hover }"
-     class="border border-gray-200 bg-white rounded-2xl overflow-hidden relative flex flex-col transition-all duration-300 ease-in-out h-full">
-    
-    <div class="p-6 flex flex-col h-full">
-        <!-- Tags section -->
-        <div class="flex flex-wrap gap-2 mb-4">
-            {% for tag in article.tags.all %}
-            <span class="px-3 py-1 text-xs font-medium rounded-lg" 
-                  style="background-color: {{ tag.color }}; color: white;">
-                {{ tag.name }}
-            </span>
-            {% endfor %}
-        </div>
+<div class="border border-gray-200 bg-white rounded-2xl overflow-hidden relative flex flex-col transition-all duration-300 ease-in-out h-full hover:bg-sky-50 [&:hover_#tags]:bg-white">
+    <a href="{% url article_detail article.slug %}" class="flex flex-col h-full">
+        <div class="p-6 flex flex-col h-full">
+            <!-- Tags section -->
+            <div class="flex flex-wrap gap-2 mb-4">
+                {% for tag in article.tags.all %}
+                <span id="tags" class="px-3 py-1 text-xs font-medium rounded-lg bg-sky-100 text-sky-700" >
+                    {{ tag.name }}
+                </span>
+                {% endfor %}
+            </div>
 
-        <!-- Title section -->
-        <a href="{% url article_detail article.slug %}" 
-           class="group mb-3">
+            <!-- Title section -->
             <h2 class="text-xl font-semibold text-gray-900 group-hover:text-sky-600 transition-colors duration-300">
                 {{ article.title }}
             </h2>
-        </a>
 
-        <!-- Description section -->
-        <p class="text-sm text-gray-500 mb-4 flex-grow">
-            {{ article.description|truncatewords:20 }}
-        </p>
+            <!-- Description section -->
+            <p class="text-sm text-gray-500 mb-4 flex-grow">
+                {{ article.description|truncatewords:20 }}
+            </p>
 
-        <!-- Date section -->
-        <div class="flex items-center text-gray-400 text-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            {{ article.pub_date|date:"d/m/Y" }}
+            <!-- Date section -->
+            <div class="flex items-center text-gray-400 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                {{ article.pub_date|date:"d/m/Y" }}
+            </div>
         </div>
-    </div>
+    </a>
 </div>
 
 
@@ -1373,15 +1369,15 @@ FILE: cabinet_digital\templates\template_card_software.html
 ================================================================================
 
 {% if software %}
-<article class="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:bg-sky-50 p-6 h-full flex flex-col relative group cursor-pointer"
+<article class="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:bg-sky-50  [&:hover_#categs]:bg-white [&:hover_#views]:bg-white p-6 h-full flex flex-col relative group cursor-pointer"
          onclick="window.location='{% url 'software_detail' software.slug %}'">
-    <div class="absolute top-2 left-2 bg-sky-50 text-sky-700 px-2 py-2 rounded-md text-sm font-medium flex items-center justify-center"
+    <div id="views" class="absolute top-2 left-2 bg-sky-50 text-sky-700 px-2 py-2 rounded-lg text-sm font-medium flex items-center justify-center"
          onclick="event.stopPropagation()">
         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
         </svg>
-        <span class="font-bold">{{ software.unique_views }}&nbsp;</span>vues
+        <span  class="font-bold">{{ software.unique_views }}&nbsp;</span>vues
     </div>
 
     {% if software.is_top_pick %}
@@ -1403,7 +1399,7 @@ FILE: cabinet_digital\templates\template_card_software.html
     {% if software.category.all %}
     <div x-data="{ showAllTags: false }" class="flex justify-center flex-wrap gap-2">
         {% for category in software.category.all|dictsort:"name" %}
-            <a href="{% url 'category_detail' category.slug %}" 
+            <a href="{% url 'category_detail' category.slug %}" id="categs"
                class="inline-block px-2 py-1 text-xs font-medium bg-sky-100 text-gray-900 rounded-full hover:bg-sky-200 hover:text-black hover:scale-105 transition-all duration-200"
                x-show="showAllTags || {{ forloop.counter }} <= 2"
                onclick="event.stopPropagation()">
@@ -1570,6 +1566,7 @@ class SoftwareListView(ListView):
         ).order_by(Lower('name'))
         context['selected_category'] = self.request.GET.get('categorie')
         context['search_query'] = self.request.GET.get('search', '')
+        context['current_sort'] = self.request.GET.get('sort', 'alpha')
         return context
 
     def get_queryset(self):
@@ -1580,7 +1577,7 @@ class SoftwareListView(ListView):
         sort = self.request.GET.get('sort')
         # Apply sorting
         if sort == 'views':
-            queryset = queryset.order_by('-unique_views', '-is_top_pick', Lower('name'))
+            queryset = queryset.order_by('-unique_views')
         elif sort == 'alpha':
             queryset = queryset.order_by('name')
         if category and category != 'None':

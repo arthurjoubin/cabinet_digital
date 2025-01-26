@@ -16,16 +16,16 @@
     <h1 class="custom-header">Catégories de logiciels</h1>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {% for category in categories %}
-            <div class="group">
+            <div class="group [&:hover_#numlogiciel]:bg-white">
                 <a href="{% url 'category_detail' category.slug %}" class="block h-full">
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 transition-all duration-300 hover:shadow-md hover:border-sky-100 group-hover:border-sky-200 h-full flex flex-col justify-between relative">
+                    <div class="bg-white border border-gray-200 rounded-lg  hover:bg-sky-50 p-4 transition-all duration-300 group-hover:border-sky-200 h-full flex flex-col justify-between relative">
                         <h2 class="text-lg font-medium text-gray-800 group-hover:text-sky-600 mt-4">
                             {% if category.icon %}
                                 <img src="{{ category.icon.url }}" alt="{{ category.name }}" class="w-6 h-6 mr-2 inline-block">
                             {% endif %}
                             {{ category.name }}
                         </h2>
-                        <span class="absolute top-2 right-2 inline-block px-2 py-1 text-xs font-medium bg-sky-50 text-sky-700 rounded-full hover:bg-sky-100 hover:text-sky-800 transition-colors duration-300 shadow-sm hover:shadow-md">
+                        <span id="numlogiciel" class="absolute top-2 right-2 inline-block px-2 py-1 text-xs font-medium bg-sky-50 text-sky-700 rounded-full hover:bg-sky-100 hover:text-sky-800 transition-colors duration-300 shadow-sm hover:shadow-md">
                             {{ category.software_count }} logiciel{% if category.software_count > 1 %}s{% endif %}
                         </span>
                     </div>
