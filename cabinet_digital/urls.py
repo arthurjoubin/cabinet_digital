@@ -76,7 +76,6 @@ admin.site.index_title = "Bienvenue sur Cabinet Digital"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('__debug__/', include('debug_toolbar.urls')),  # Debug Toolbar URLs
     path('logiciels/', SoftwareListView.as_view(), name='software_list'),
     path('', views.home, name='home'),
     path('logiciels/<str:slug>/', SoftwareDetailView.as_view(), name='software_detail'),

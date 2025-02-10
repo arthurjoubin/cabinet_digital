@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     # Third party apps
     'cabinet_digital',
     'compressor',
-    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -70,7 +69,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_htmx.middleware.HtmxMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
 ]
 
