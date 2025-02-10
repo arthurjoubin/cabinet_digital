@@ -48,11 +48,12 @@
                     </div>
 
 
-                    <p class="text-sm text-gray-500 text-center leading-normal max-w-xs">{{  model.excerpt|safe|truncatechars:100 }}</p>
+                    <p class="text-sm text-gray-500 text-center leading-normal max-w-xs">{{ model.excerpt|safe|truncatechars:100 }}</p>
                     {% if model.price %}
-                    <div class="mt-2 inline-flex items-center h-10 px-3 bg-emerald-50 text-emerald-700 rounded-md shadow-sm border border-emerald-200 transition-all duration-300 group-hover:bg-white">
-                        <span class="text-sm font-medium mr-1">Tarif :</span>
-                        <span class="text-sm">{{ model.price }}</span>
+                    <div class="mt-2 flex flex-col items-center gap-1">
+                        <div class="inline-flex items-center px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg shadow-sm border border-emerald-200 transition-all duration-300 group-hover:bg-white">
+                            <span class="text-sm font-bold">{{ model.price }}</span><span class="text-xs ml-1 text-emerald-600">pour ~10 romans générés</span>
+                        </div>
                     </div>
                     {% endif %}
                 </header>
