@@ -6,7 +6,12 @@ __pycache__/
 # Media files
 media/
 CACHE/
-static/
+
+# Collected static files
+/static/
+
+# Keep staticfiles directory
+!staticfiles/
 
 # SQLite database
 db.sqlite3

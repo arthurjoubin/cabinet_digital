@@ -665,8 +665,7 @@ class AIModelListView(ListView):
         if provider:
             queryset = queryset.filter(provider=provider)
 
-            
-        return queryset.distinct()
+        return queryset.distinct().order_by('-is_top_pick', Lower('name'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -702,7 +701,8 @@ class AIToolListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        return AITool.objects.filter(is_published=True)
+        queryset = AITool.objects.filter(is_published=True)
+        return queryset.distinct().order_by('-is_top_pick', Lower('name'))
 
 class AIToolDetailView(DetailView):
     model = AITool

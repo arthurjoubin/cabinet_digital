@@ -21,6 +21,11 @@
             {% for model in models %}
             <div class="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:bg-emerald-50 p-4 h-full flex flex-col relative group cursor-pointer"
                 onclick="window.location='{{ model.get_absolute_url }}'">
+                {% if model.is_top_pick %}
+                    <div class="absolute top-4 right-4 bg-green-100 text-green-800 px-3 py-1 text-xs font-medium rounded-full">
+                        Top Pick
+                    </div>
+                {% endif %}
                 <header class="flex flex-col items-center">
                     {% if model.logo %}
                     <div class="w-16 h-16 flex items-center justify-center mb-4">
