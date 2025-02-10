@@ -7,9 +7,11 @@ __pycache__/
 CACHE/
 
 # Collected static files
+/static/
 
 # Keep staticfiles directory
 !staticfiles/
+
 
 # SQLite database
 db.sqlite3
