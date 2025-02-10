@@ -21,9 +21,8 @@
             Retour à la liste des modèles
         </a>
         {% if model.price %}
-        <div class="inline-flex items-center h-10 px-3 bg-emerald-50 text-emerald-700 rounded-md shadow-sm border border-emerald-200">
-          <span class="text-base font-semibold mr-1">Tarif :</span>
-          <span class="text-base font-medium">{{ model.price }}</span>
+        <div class="inline-flex items-center px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg shadow-sm border border-emerald-200">
+          <span class="text-sm font-bold">{{ model.price }}</span><span class="text-xs ml-1 text-emerald-600">pour ~10 romans générés</span>
         </div>
         {% endif %}
     
