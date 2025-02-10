@@ -163,60 +163,6 @@
                     </div>
                 </div>
 
-                <!-- Menu Outils -->
-                <div class="relative" x-data="{ 
-                    open: false,
-                    toggle() { this.open = !this.open },
-                    close() { this.open = false }
-                }">
-                    <button @click="toggle()" 
-                            @click.away="close()"
-                            type="button"
-                            class="text-lg font-semibold text-gray-900 hover:bg-amber-100 hover:text-amber-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2"
-                            :class="{ 'bg-amber-100 text-amber-600': currentPath.startsWith('/outils/') }">
-                        <span>Outils</span>
-                        <svg class="w-4 h-4" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                    <div x-show="open" 
-                         x-cloak 
-                         @keydown.escape.window="close()"
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 transform scale-95"
-                         x-transition:enter-end="opacity-100 transform scale-100"
-                         x-transition:leave="transition ease-in duration-150"
-                         x-transition:leave-start="opacity-100 transform scale-100"
-                         x-transition:leave-end="opacity-0 transform scale-95"
-                         class="absolute left-0 mt-2 w-80 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 divide-y divide-gray-100">
-                        <div class="p-2 space-y-1">
-                            <a href="{% url 'roi_calculateur' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-amber-100 hover:text-amber-600 rounded-md group">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                                </svg>
-                                <span>Calculer le ROI d'un logiciel</span>
-                            </a>
-                            <a href="{% url 'amortissement_calculateur' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-amber-100 hover:text-amber-600 rounded-md group">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                </svg>
-                                <span>Amortissement d'un emprunt</span>
-                            </a>
-                            <a href="{% url 'sftp_generator' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-amber-100 hover:text-amber-600 rounded-md group">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                <span>Générer script SFTP</span>
-                            </a>
-                            <a href="{% url 'immobilier_calculateur' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-amber-100 hover:text-amber-600 rounded-md group">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                                </svg>
-                                <span>Immobilier : achat vs location</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
                 <a href="{% url 'contact' %}" class="text-black border border-gray-200 px-6 py-2.5 text-lg font-medium hover:bg-black hover:text-white transition-all duration-300 rounded-lg shadow-sm flex items-center gap-3">
@@ -310,44 +256,6 @@
                     </div>
                 </div>
 
-                <!-- Section Outils Mobile -->
-                <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open"
-                            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-amber-100 hover:text-amber-600"
-                            :class="{ 'bg-amber-100 text-amber-600': currentPath.startsWith('/outils/') }">
-                        <div class="flex items-center">
-                            <span>Outils</span>
-                        </div>
-                        <svg class="w-5 h-5 transition-transform duration-200" 
-                             :class="{'rotate-180': open}"
-                             fill="none" 
-                             stroke="currentColor" 
-                             viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div x-show="open"
-                         x-cloak
-                         class="mt-2 space-y-1">
-                        <a href="{% url 'roi_calculateur' %}" 
-                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-amber-100 hover:text-amber-600 pl-6">
-                            Calculer le ROI d'un logiciel
-                        </a>
-                        <a href="{% url 'amortissement_calculateur' %}" 
-                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-amber-100 hover:text-amber-600 pl-6">
-                            Amortissement d'un emprunt
-                        </a>
-                        <a href="{% url 'sftp_generator' %}" 
-                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-amber-100 hover:text-amber-600 pl-6">
-                            Générer script SFTP
-                        </a>
-                        <a href="{% url 'immobilier_calculateur' %}" 
-                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-amber-100 hover:text-amber-600 pl-6">
-                            Immobilier : achat vs location
-                        </a>
-                    </div>
-                </div>
-                
                 <a href="{% url 'contact' %}" class="block w-full text-center text-gray-900 border border-gray-200 px-6 py-2.5 text-lg font-medium hover:bg-sky-50 transition-all duration-300 rounded-lg shadow-sm mt-4">
                     Contact
                 </a>
@@ -358,13 +266,42 @@
         {% block content %}{% endblock %}
     </main>
     <footer class="bg-white border-t border-gray-200 shadow-sm w-full">
-        <div class="container mx-auto px-4 py-6">
-            <nav>
-                <ul class="flex flex-wrap justify-center space-x-4 sm:space-x-8 text-sm text-gray-600">
-                    <li class="font-medium">Cabinet Digital</li>
-                    <li><a href="{% url 'contact' %}" class="hover:text-sky-500 transition-colors duration-300">Contacter</a></li>
-                </ul>
-            </nav>
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="font-medium text-lg mb-4 text-gray-900">Cabinet Digital</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{% url 'contact' %}" class="text-gray-600 hover:text-sky-500 transition-colors duration-300">Nous contacter</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-medium text-lg mb-4 text-gray-900">Logiciels experts comptables</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{% url 'software_list' %}" class="text-gray-600 hover:text-sky-500 transition-colors duration-300">Tous les logiciels</a></li>
+                        <li><a href="{% url 'category_list' %}" class="text-gray-600 hover:text-sky-500 transition-colors duration-300">Catégories</a></li>
+                        <li><a href="{% url 'actualites' %}" class="text-gray-600 hover:text-sky-500 transition-colors duration-300">Actualité logiciels</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-medium text-lg mb-4 text-gray-900">Intelligence Artificielle</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{% url 'ai_model_list' %}" class="text-gray-600 hover:text-emerald-600 transition-colors duration-300">Modèles LLMs</a></li>
+                        <li><a href="{% url 'ai_tool_list' %}" class="text-gray-600 hover:text-emerald-600 transition-colors duration-300">Outils d'automatisation</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-medium text-lg mb-4 text-gray-900">Outils</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{% url 'roi_calculateur' %}" class="text-gray-600 hover:text-amber-600 transition-colors duration-300">Calculer le ROI d'un logiciel</a></li>
+                        <li><a href="{% url 'amortissement_calculateur' %}" class="text-gray-600 hover:text-amber-600 transition-colors duration-300">Amortissement d'un emprunt</a></li>
+                        <li><a href="{% url 'sftp_generator' %}" class="text-gray-600 hover:text-amber-600 transition-colors duration-300">Générer script SFTP</a></li>
+                        <li><a href="{% url 'immobilier_calculateur' %}" class="text-gray-600 hover:text-amber-600 transition-colors duration-300">Immobilier : achat vs location</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-200">
+                <p class="text-center text-gray-500 text-sm">&copy; {% now "Y" %} Cabinet Digital. Tous droits réservés.</p>
+            </div>
         </div>
     </footer>
 </body>
