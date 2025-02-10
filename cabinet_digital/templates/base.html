@@ -80,7 +80,7 @@
                             type="button"
                             class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2"
                             :class="{ 'bg-sky-50 text-sky-600': currentPath.startsWith('/experts-comptables/') }">
-                        <span>Experts Comptables</span>
+                        <span>Logiciels experts-comptables</span>
                         <svg class="w-4 h-4" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
@@ -129,8 +129,10 @@
                             type="button"
                             class="text-lg font-semibold text-gray-900 hover:bg-emerald-50 hover:text-emerald-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2"
                             :class="{ 'bg-emerald-50 text-emerald-600': currentPath.startsWith('/ia/') }">
-                        <span>Intelligence Artificielle</span>
-                        <span class="bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded text-xs font-medium">New</span>
+                        <span>Meilleures outils d'IA</span>
+                        <span class="bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded text-xs font-medium">Nouveau</span>
+
+
                         <svg class="w-4 h-4" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
@@ -140,25 +142,18 @@
                          @keydown.escape.window="close()"
                          class="absolute left-0 mt-2 w-80 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 divide-y divide-gray-100">
                         <div class="p-2 space-y-1">
-                  
-                            <a href="{% url 'ai_model_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 rounded-md group">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                                </svg>
-                                <span>Modèles LLMs</span>
-                            </a>
                             <a href="{% url 'ai_tool_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 rounded-md group">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                 </svg>
                                 <span>Outils d'automatisation</span>
                             </a>
-                            <!-- <a href="{% url 'ai_article_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 rounded-md group">
+                            <a href="{% url 'ai_model_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 rounded-md group">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
                                 </svg>
-                                <span>Guides pratiques</span>
-                            </a> -->
+                                <span>Modèles de langage</span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -194,7 +189,7 @@
                     <button @click="open = !open"
                             class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600"
                             :class="{ 'bg-sky-50 text-sky-600': currentPath.startsWith('/experts-comptables/') }">
-                        <span>Experts Comptables</span>
+                        <span>Logiciels experts comptables</span>
                         <svg class="w-5 h-5 transition-transform duration-200" 
                              :class="{'rotate-180': open}"
                              fill="none" 
@@ -227,8 +222,8 @@
                             class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-emerald-50 hover:text-emerald-600"
                             :class="{ 'bg-emerald-50 text-emerald-600': currentPath.startsWith('/ia/') }">
                         <div class="flex items-center">
-                            <span>Intelligence Artificielle</span>
-                            <span class="ml-2 bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded text-xs font-medium">New</span>
+                            <span>Meilleures outils d'IA</span>
+                            <span class="ml-2 bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded text-xs font-medium">Nouveau</span>
                         </div>
                         <svg class="w-5 h-5 transition-transform duration-200" 
                              :class="{'rotate-180': open}"
@@ -241,18 +236,14 @@
                     <div x-show="open"
                          x-cloak
                          class="mt-2 space-y-1">
-                        <a href="{% url 'ai_model_list' %}" 
-                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-emerald-50 hover:text-emerald-600 pl-6">
-                            Modèles LLMs
-                        </a>
                         <a href="{% url 'ai_tool_list' %}" 
                            class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-emerald-50 hover:text-emerald-600 pl-6">
-                            Outils d'automatisation
+                            Outils de productivité
                         </a>
-                        <!-- <a href="{% url 'ai_article_list' %}" 
+                        <a href="{% url 'ai_model_list' %}" 
                            class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-emerald-50 hover:text-emerald-600 pl-6">
-                            Guides pratiques
-                        </a> -->
+                            Modèles de langage
+                        </a>
                     </div>
                 </div>
 
@@ -286,7 +277,7 @@
                     <h3 class="font-medium text-lg mb-4 text-gray-900">Intelligence Artificielle</h3>
                     <ul class="space-y-2">
                         <li><a href="{% url 'ai_model_list' %}" class="text-gray-600 hover:text-emerald-600 transition-colors duration-300">Modèles LLMs</a></li>
-                        <li><a href="{% url 'ai_tool_list' %}" class="text-gray-600 hover:text-emerald-600 transition-colors duration-300">Outils d'automatisation</a></li>
+                        <li><a href="{% url 'ai_tool_list' %}" class="text-gray-600 hover:text-emerald-600 transition-colors duration-300">Outils de productivité</a></li>
                     </ul>
                 </div>
                 <div>
