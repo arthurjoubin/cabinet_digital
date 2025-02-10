@@ -21,7 +21,7 @@ from cabinet_digital.views import (
     CategoryListView, CategoryDetailView, ActualitesListView, ActualitesDetailView,
     alternative_detail, SoftwareDetailView, SoftwareListView, Custom404View,
     AIModelListView, AIModelDetailView, AIToolListView, AIToolDetailView,
-    AIArticleListView, AIArticleDetailView
+    AIArticleListView, AIArticleDetailView, ProviderDetailView
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -75,8 +75,8 @@ admin.site.site_title = "Cabinet Digital Admin Portal"
 admin.site.index_title = "Bienvenue sur Cabinet Digital"
 
 urlpatterns = [
-
     path('admin/', admin.site.urls),
+    path('__debug__/', include('debug_toolbar.urls')),  # Debug Toolbar URLs
     path('logiciels/', SoftwareListView.as_view(), name='software_list'),
     path('', views.home, name='home'),
     path('logiciels/<str:slug>/', SoftwareDetailView.as_view(), name='software_detail'),
@@ -102,6 +102,7 @@ urlpatterns = [
     path('outils/', views.outils, name='outils'),
     path('ia/modeles/', AIModelListView.as_view(), name='ai_model_list'),
     path('ia/modeles/<slug:slug>/', AIModelDetailView.as_view(), name='ai_model_detail'),
+    path('ia/editeurs/<slug:slug>/', ProviderDetailView.as_view(), name='provider_detail'),
     path('ia/outils/', AIToolListView.as_view(), name='ai_tool_list'),
     path('ia/outils/<slug:slug>/', AIToolDetailView.as_view(), name='ai_tool_detail'),
     path('ia/guides/', AIArticleListView.as_view(), name='ai_article_list'),

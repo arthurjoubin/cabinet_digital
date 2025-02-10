@@ -1,6 +1,6 @@
-from .models import Software, SoftwareCategory, Article, Actualites, Tag, AIModel, AITool, AIArticle
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView
+from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI
 from django.conf import settings
 from django.db.models import Count, Prefetch, Q, F
 from django.shortcuts import redirect
@@ -28,26 +28,6 @@ REDIRECTIONS = {
     ('article', 'liste_candidats_pdp_facture_electronique', 'rec2aRliZkqrBZ8HP'): '/actualites/lliste-des-pdp-accreditees-facture-electronique/',
     ('article', 'congres-de-l-ordre-experts-comptables-2023-guide-complet', 'rec0TrJ0pZJzkfmxL'): '/actualites/guide-du-congres-de-lordre-des-experts-comptables/',
 }
-
-class ArticleListView(ListView):
-    model = Article
-    template_name = "article_list.html"
-    queryset = Article.objects.filter(is_published=True)
-
-class ArticleDetailView(DetailView):
-    model = Article
-    template_name = "article_detail.html"
-
-    def get_object(self, queryset=None):
-        if queryset is None:
-            queryset = self.get_queryset()
-        
-        slug = self.kwargs.get('slug')
-        # Décoder et nettoyer le slug
-        decoded_slug = unidecode.unidecode(slug)
-        clean_slug = slugify(decoded_slug)[:49]  # Limiter à 49 caractères
-        
-        return get_object_or_404(queryset, slug=clean_slug, is_published=True)
 
 def home(request):
     return render(request, 'home.html')
@@ -200,7 +180,8 @@ class SoftwareDetailView(DetailView):
         
         viewed_softwares = self.request.session.get('viewed_softwares', [])
         
-        if obj.id not in viewed_softwares:
+        # On ne compte que sur une requête de chargement complet et si ce n'est pas un robot
+        if not self.request.headers.get('HX-Request') and obj.id not in viewed_softwares and not self.request.user_agent.is_bot:
             Software.objects.filter(id=obj.id).update(unique_views=F('unique_views') + 1)
             
             obj.refresh_from_db()
@@ -684,17 +665,12 @@ class AIModelListView(ListView):
         if provider:
             queryset = queryset.filter(provider=provider)
 
-
-        origin = self.request.GET.get('origin')
-        if origin:
-            queryset = queryset.filter(origin=origin)
             
         return queryset.distinct()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['providers'] = AIModel.objects.values_list('provider', flat=True).distinct()
-        context['origins'] = AIModel.objects.values_list('origin', flat=True).distinct()
         return context
 
 class AIModelDetailView(DetailView):
@@ -711,8 +687,11 @@ class AIModelDetailView(DetailView):
         clean_slug = slugify(decoded_slug)[:49]
         
         obj = get_object_or_404(queryset, slug=clean_slug, is_published=True)
-        obj.unique_views += 1
-        obj.save()
+        
+        # Ne pas incrémenter le compteur si c'est un robot
+        if not self.request.user_agent.is_bot:
+            obj.unique_views += 1
+            obj.save()
         
         return obj
 
@@ -739,8 +718,11 @@ class AIToolDetailView(DetailView):
         clean_slug = slugify(decoded_slug)[:49]
         
         obj = get_object_or_404(queryset, slug=clean_slug, is_published=True)
-        obj.unique_views += 1
-        obj.save()
+        
+        # Ne pas incrémenter le compteur si c'est un robot
+        if not self.request.user_agent.is_bot:
+            obj.unique_views += 1
+            obj.save()
         
         return obj
 
@@ -749,6 +731,10 @@ class AIArticleListView(ListView):
     template_name = 'ai/article_list.html'
     context_object_name = 'articles'
     paginate_by = 12
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tags'] = Tag.objects.all()
+        return context
 
     def get_queryset(self):
         return AIArticle.objects.filter(is_published=True).order_by('-pub_date')
@@ -767,3 +753,27 @@ class AIArticleDetailView(DetailView):
         clean_slug = slugify(decoded_slug)[:49]
         
         return get_object_or_404(queryset, slug=clean_slug, is_published=True)
+
+class ProviderDetailView(DetailView):
+    model = ProviderAI
+    template_name = 'ai/provider_detail.html'
+    context_object_name = 'provider'
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        
+        slug = self.kwargs.get('slug')
+        decoded_slug = unidecode.unidecode(slug)
+        clean_slug = slugify(decoded_slug)[:49]
+        
+        return get_object_or_404(queryset, slug=clean_slug, is_published=True)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Ajouter les modèles associés à cet éditeur
+        context['provider_models'] = AIModel.objects.filter(
+            provider=self.object,
+            is_published=True
+        ).order_by('-is_top_pick', 'name')
+        return context

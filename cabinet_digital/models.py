@@ -23,16 +23,20 @@ class SoftwareCategory(models.Model):
         return reverse('category_detail', kwargs={'slug': self.slug})
 
     class Meta:
-        verbose_name_plural = "Software Categories"
+        verbose_name = "Logiciels - Catégories"
+        verbose_name_plural = "Logiciels - Catégories"
 
 class Tag(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=False, blank=True)
     color = models.CharField(max_length=50, blank=True)
-
+    class Meta:
+        verbose_name = "Logiciels - Tags"
+        verbose_name_plural = "Logiciels - Tags"
     def __str__(self):
         return self.name
     
+
 class Software(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
@@ -64,28 +68,17 @@ class Software(models.Model):
 
     class Meta:
         ordering = ['-is_top_pick', 'name']
+        verbose_name = "Logiciel - Liste"
+        verbose_name_plural = "Logiciels - Liste"
+
+
 
     def __str__(self):
         return self.name
 
+
     def get_absolute_url(self):
         return reverse('software_detail', kwargs={'slug': self.slug})
-
-class Article(models.Model):
-    title = models.CharField(max_length=200)
-    excerpt = models.CharField(max_length=500)
-    content = models.TextField()
-    pub_date = models.DateTimeField(default=timezone.now)
-    slug = models.SlugField(unique=True)
-    image = models.ImageField(upload_to='articles/images', null=True, blank=True)
-    tags = models.ManyToManyField(Tag, blank=True)
-    is_published = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.title
-
-    def get_absolute_url(self):
-        return reverse('article_detail', kwargs={'slug': self.slug})
 
 
 
@@ -102,32 +95,58 @@ class Actualites(models.Model):
         return self.title
 
     class Meta:
-        verbose_name_plural = "Actualites"
+        verbose_name_plural = "Logiciels - Actualités"
+
 
 class Metier(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
+    class Meta:
+        verbose_name = "Logiciels - Métiers"
+        verbose_name_plural = "Logiciels - Métiers"
+
 
     def __str__(self):
         return self.name
 
+class ProviderAI(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, blank=True)
+    description = HTMLField(blank=True)
+    logo = models.ImageField(upload_to='providers/', null=True, blank=True)
+    site = models.URLField(max_length=200, blank=True)
+    is_published = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "IA - Editeurs"
+        verbose_name_plural = "IA - Editeurs"
+
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('provider_detail', kwargs={'slug': self.slug})
 
 class AIModel(models.Model):
-    provider = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
+    provider = models.ForeignKey(ProviderAI, on_delete=models.SET_NULL, null=True, blank=True)
     slug = models.SlugField(unique=True, blank=True)
     description = HTMLField()
     excerpt = models.CharField(max_length=200, blank=True)
+    price = models.CharField(max_length=200, blank=True)
     logo = models.ImageField(upload_to='logos/', null=True, blank=True)
     is_published = models.BooleanField(default=False)
     site = models.URLField(max_length=200, blank=True)
+
     is_top_pick = models.BooleanField(default=False)
     unique_views = models.IntegerField(default=0)
-    test_prompt = models.TextField(blank=True)
+    tags = models.CharField(max_length=50, blank=True)
 
     class Meta:
-        verbose_name = "Modèle IA"
-        verbose_name_plural = "Modèles IA"
+        verbose_name = "IA - Modèle"
+        verbose_name_plural = "IA - Modèles"
+
 
     def __str__(self):
         return self.name
@@ -135,7 +154,22 @@ class AIModel(models.Model):
     def get_absolute_url(self):
         return reverse('ai_model_detail', kwargs={'slug': self.slug})
 
+class AIToolCategory(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, blank=True)
+    description = HTMLField()
+    excerpt = models.CharField(max_length=200, blank=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "IA - Catégories"
+        verbose_name_plural = "IA - Catégories"
+
+
 class AITool(models.Model):
+    provider = models.ForeignKey(ProviderAI, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
     description = HTMLField()
@@ -145,22 +179,43 @@ class AITool(models.Model):
     is_top_pick = models.BooleanField(default=False)
     unique_views = models.IntegerField(default=0)
     site = models.URLField(max_length=200, blank=True)
+    category = models.ManyToManyField(AIToolCategory, blank=True)
 
     class Meta:
-        verbose_name = "Outil IA"
-        verbose_name_plural = "Outils IA"
+        verbose_name = "IA - Outil"
+        verbose_name_plural = "IA - Outils"
+
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
         return reverse('ai_tool_detail', kwargs={'slug': self.slug})
+    
 
-class AIArticle(Article):
+
+
+class AIArticle(models.Model):
+    title = models.CharField(max_length=200)
+    excerpt = models.CharField(max_length=500)
+    content = models.TextField()
+    pub_date = models.DateTimeField(default=timezone.now)
+    slug = models.SlugField(unique=True)
+    banner = models.ImageField(upload_to='articles/images', null=True, blank=True)
+    is_published = models.BooleanField(default=True)
+    banner = models.ImageField(upload_to='articles/banners', null=True, blank=True)
+    related_ai_models = models.ManyToManyField(AIModel, blank=True)
+    related_ai_tools = models.ManyToManyField(AITool, blank=True)
+    tags = models.CharField(max_length=50, blank=True)
+    site = models.URLField(max_length=200, blank=True)
+
     class Meta:
-        proxy = True
-        verbose_name = "Article IA"
-        verbose_name_plural = "Articles IA"
+        verbose_name = "IA - Article"
+        verbose_name_plural = "IA - Articles"
+
+
+    def __str__(self):
+        return self.title
 
     def get_absolute_url(self):
         return reverse('ai_article_detail', kwargs={'slug': self.slug})

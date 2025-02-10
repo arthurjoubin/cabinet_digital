@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta_description %}
+<title>{{ provider.name }} | Éditeur d'IA - Cabinet Digital</title>
+<meta name="description" content="{{ provider.description|striptags|truncatewords:30 }}">
+<meta property="og:title" content="{{ provider.name }} - Éditeur d'IA - Cabinet Digital">
+<meta property="og:description" content="{{ provider.description|striptags|truncatewords:30 }}">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-12">
+    <!-- Header Section -->
+    <div class="p-4 sm:p-6 border-b border-gray-200">
+        <div class="flex flex-col space-y-4">
+            <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4">
+                <a href="{% url 'ai_model_list' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-emerald-700 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors duration-300">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Retour à la liste des modèles
+                </a>
+                {% if provider.site %}
+                <a href="{{ provider.site }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center">
+                    Visiter leur site
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="p-4 sm:p-8 max-w-4xl mx-auto">
+        <div class="flex flex-col md:flex-row items-center md:items-start mb-8">
+            {% if provider.logo %}
+            <div class="w-24 h-24 mb-4 md:mb-0 md:mr-6 flex-shrink-0">
+                <img src="{{ provider.logo.url }}" alt="{{ provider.name }}" class="w-full h-full object-contain">
+            </div>
+            {% endif %}
+            <div class="flex-grow text-center md:text-left">
+                <h1 class="text-3xl sm:text-4xl font-bold text-emerald-800 mb-4">Les modèles d'IA de {{ provider.name }}</h1>
+                <div class="prose max-w-none text-gray-700">
+                    {{ provider.description|safe }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Models Section -->
+        <div class="mt-12">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for model in provider_models %}
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:bg-emerald-50 p-4 h-full flex flex-col relative group cursor-pointer"
+                    onclick="window.location='{{ model.get_absolute_url }}'">
+                    <header class="flex flex-col items-center">
+                       
+                        <h3 class="text-2xl font-bold text-gray-900 text-center mb-2">{{ model.name }}</h3>
+                        {% if model.tags %}
+                        <div class="inline-block px-2 py-1 mt-2 mb-2 bg-emerald-100 text-emerald-800 text-xs font-medium rounded-full border border-emerald-200">
+                            {{ model.tags }}
+                        </div>
+                        {% endif %}
+                        <p class="text-sm text-gray-500 text-center leading-normal max-w-xs">{{ model.excerpt|safe|truncatechars:100 }}</p>
+                        {% if model.price %}
+                        <div class="mt-2 inline-flex items-center h-10 px-3 bg-emerald-50 text-emerald-700 rounded-md shadow-sm border border-emerald-200 transition-all duration-300 group-hover:bg-white">
+                            <span class="text-sm font-medium mr-1">Tarif :</span>
+                            <span class="text-sm">{{ model.price }}</span>
+                        </div>
+                        {% endif %}
+                    </header>
+                </div>
+                {% empty %}
+                <div class="col-span-full flex items-center justify-center min-h-[300px] bg-emerald-50/50 rounded-xl border border-emerald-100">
+                    <p class="text-xl text-gray-600">Aucun modèle disponible pour cet éditeur.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

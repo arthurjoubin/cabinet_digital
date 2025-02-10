@@ -20,7 +20,7 @@
     <div class="grid gap-6 md:gap-8 md:grid-cols-2 lg:grid-cols-3">
         {% for actualite in actualites %}
         <div class="transition-all duration-200">
-            {% include "template_card_article.html" with article=actualite articles='actualites' article_detail='actualite_detail' %}
+            {% include "template_card_article.html" with article=actualite detail_url_name='actualite_detail' %}
         </div>
         {% empty %}
         <div class="col-span-full flex items-center justify-center min-h-[300px] bg-sky-50/50 rounded-xl border border-sky-100">

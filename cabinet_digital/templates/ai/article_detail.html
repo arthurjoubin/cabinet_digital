@@ -2,70 +2,106 @@
 {% load static %}
 
 {% block meta_description %}
-<title>{{ article.title }} | Cabinet Digital</title>
+<title>{{ article.title }} - Cabinet Digital</title>
 <meta name="description" content="{{ article.excerpt }}">
+<meta property="og:title" content="{{ article.title }} - Cabinet Digital">
+<meta property="og:description" content="{{ article.excerpt }}">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-4xl mx-auto">
-        <!-- En-tête -->
-        <div class="bg-white rounded-xl p-8 mb-8 border border-purple-100">
-            <div class="flex flex-wrap gap-2 mb-6">
-                {% for tag in article.tags.all %}
-                <span class="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-sm">{{ tag.name }}</span>
-                {% endfor %}
-            </div>
-
-            <h1 class="text-4xl font-bold text-purple-900 mb-4">{{ article.title }}</h1>
-            <p class="text-lg text-gray-600 mb-6">{{ article.excerpt }}</p>
-
-            <div class="flex items-center text-gray-500">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-                <span>{{ article.pub_date|date:"d F Y" }}</span>
-            </div>
-        </div>
-
-        <!-- Image principale -->
-        {% if article.image %}
-        <div class="bg-white rounded-xl p-8 mb-8 border border-purple-100">
-            <img src="{{ article.image.url }}" alt="{{ article.title }}" class="w-full rounded-lg">
-        </div>
-        {% endif %}
-
-        <!-- Contenu -->
-        <div class="bg-white rounded-xl p-8 mb-8 border border-purple-100">
-            <div class="prose max-w-none">
-                {{ article.content|safe }}
+<article class="max-w-5xl mx-auto bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-12">
+    <!-- Header Section -->
+    <div class="p-4 sm:p-6 border-b border-gray-200">
+        <div class="flex flex-col space-y-4">
+            <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4">
+                <a href="{% url 'ai_article_list' %}" 
+                   class="inline-flex items-center px-4 py-2 text-sm font-medium text-emerald-700 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors duration-300">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    {% if custom_plural %}
+                        {{ custom_plural }}
+                    {% else %}
+                        Retour aux articles
+                    {% endif %}
+                </a>
+                
+                <!-- Date in header -->
+                <div class="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    {{ article.pub_date|date:"d F Y"|lower }}
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- Articles liés -->
-        {% if related_articles %}
-        <div class="bg-white rounded-xl p-8 border border-purple-100">
-            <h2 class="text-2xl font-bold text-purple-900 mb-6">Articles similaires</h2>
+    <div class="p-4 sm:p-8 max-w-4xl mx-auto">
+        <!-- Title and Excerpt -->
+        <div class="mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-emerald-800 mb-4">{{ article.title }}</h1>
+            {% if article.excerpt %}
+                <p class="text-gray-700 text-lg leading-relaxed">{{ article.excerpt|safe }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Related Tools and Models -->
+        {% if article.related_ai_tools.exists or article.related_ai_models.exists %}
+        <div class="bg-emerald-50 rounded-lg p-6 mb-8 border border-emerald-100">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {% for related in related_articles %}
-                <div class="bg-purple-50 rounded-lg p-6">
-                    <div class="flex flex-wrap gap-2 mb-3">
-                        {% for tag in related.tags.all %}
-                        <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">{{ tag.name }}</span>
+                {% if article.related_ai_models.exists %}
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4">Modèles IA associés</h4>
+                    <div class="flex flex-wrap gap-2">
+                        {% for model in article.related_ai_models.all %}
+                        <a href="{{ model.get_absolute_url }}" 
+                           class="group flex items-center px-4 py-2 bg-white text-emerald-700 rounded-lg border border-emerald-200 hover:border-emerald-300 hover:shadow-sm transition-all">
+                            <span class="text-sm">{{ model.name }}</span>
+                            <svg class="w-4 h-4 ml-2 transform transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
                         {% endfor %}
                     </div>
-                    <h3 class="font-semibold text-lg text-purple-900 mb-3">{{ related.title }}</h3>
-                    <p class="text-gray-600 mb-4">{{ related.excerpt }}</p>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-500">{{ related.pub_date|date:"d F Y" }}</span>
-                        <a href="{{ related.get_absolute_url }}" class="text-purple-600 hover:text-purple-700 font-medium">Lire l'article →</a>
+                </div>
+                {% endif %}
+    
+                {% if article.related_ai_tools.exists %}
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4">Outils techniques</h4>
+                    <div class="flex flex-wrap gap-2">
+                        {% for tool in article.related_ai_tools.all %}
+                        <a href="{{ tool.get_absolute_url }}" 
+                        class="group flex items-center px-4 py-2 bg-white text-emerald-700 rounded-lg border border-emerald-200 hover:border-emerald-300 hover:shadow-sm transition-all">
+                            <span class="text-sm">{{ tool.name }}</span>
+                            <svg class="w-4 h-4 ml-2 transform transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                        {% endfor %}
                     </div>
                 </div>
-                {% endfor %}
+                {% endif %}
             </div>
         </div>
         {% endif %}
+
+        <!-- Article Content -->
+        <div class="prose prose-lg max-w-none prose-headings:font-bold prose-a:text-emerald-600">
+            {{ article.content|safe }}
+        </div>
     </div>
-</div>
+
+    <!-- Footer -->
+    <div class="bg-white p-6 border-t border-gray-200 rounded-b-lg shadow-sm text-center">
+        <h2 class="text-2xl font-semibold text-emerald-800 mb-4">À propos de <span class="bg-black text-white px-2 rounded">Cabinet Digital</span></h2>
+        <p class="text-gray-700 leading-relaxed max-w-2xl mx-auto">
+            Cabinet Digital est un site indépendant dédié aux entreprises et experts-comptables. Notre mission est de vous aider à choisir les logiciels les plus adaptés à vos besoins spécifiques en matière de comptabilité, gestion et finance.
+        </p>
+    </div>
+</article>
 {% endblock %} 

@@ -2,7 +2,7 @@
 {% load compress %}
 
 <!DOCTYPE html>
-<html lang="fr" class="bg-sky-50">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,7 +41,7 @@
     {% block extra_head %}{% endblock %}
 </head>
 
-<body class="flex flex-col min-h-screen text-black">
+<body class="flex flex-col min-h-screen text-black bg-gray-100">
     <header x-data="{ 
         scrolled: false,
         currentPath: window.location.pathname,
@@ -98,7 +98,7 @@
                         <div class="p-2 space-y-1">
                             <a href="{% url 'software_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                 </svg>
                                 <span>Tous les logiciels</span>
                             </a>
@@ -127,10 +127,10 @@
                     <button @click="toggle()" 
                             @click.away="close()"
                             type="button"
-                            class="text-lg font-semibold text-gray-900 hover:bg-purple-50 hover:text-purple-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2"
-                            :class="{ 'bg-purple-50 text-purple-600': currentPath.startsWith('/ia/') }">
+                            class="text-lg font-semibold text-gray-900 hover:bg-emerald-50 hover:text-emerald-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2"
+                            :class="{ 'bg-emerald-50 text-emerald-600': currentPath.startsWith('/ia/') }">
                         <span>Intelligence Artificielle</span>
-                        <span class="bg-purple-100 text-purple-600 px-2 py-0.5 rounded text-xs font-medium">New</span>
+                        <span class="bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded text-xs font-medium">New</span>
                         <svg class="w-4 h-4" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
@@ -141,24 +141,24 @@
                          class="absolute left-0 mt-2 w-80 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 divide-y divide-gray-100">
                         <div class="p-2 space-y-1">
                   
-                            <a href="{% url 'ai_model_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-md group">
+                            <a href="{% url 'ai_model_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 rounded-md group">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
                                 </svg>
                                 <span>Modèles LLMs</span>
                             </a>
-                            <a href="{% url 'ai_tool_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-md group">
+                            <a href="{% url 'ai_tool_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 rounded-md group">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                 </svg>
                                 <span>Outils d'automatisation</span>
                             </a>
-                            <a href="{% url 'ai_article_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-md group">
+                            <!-- <a href="{% url 'ai_article_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 rounded-md group">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                 </svg>
                                 <span>Guides pratiques</span>
-                            </a>
+                            </a> -->
                         </div>
                     </div>
                 </div>
@@ -172,9 +172,9 @@
                     <button @click="toggle()" 
                             @click.away="close()"
                             type="button"
-                            class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2">
+                            class="text-lg font-semibold text-gray-900 hover:bg-amber-100 hover:text-amber-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2"
+                            :class="{ 'bg-amber-100 text-amber-600': currentPath.startsWith('/outils/') }">
                         <span>Outils</span>
-                        <span class="bg-sky-100 text-sky-600 px-2 py-0.5 rounded text-xs font-medium">New</span>
                         <svg class="w-4 h-4" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
@@ -190,25 +190,25 @@
                          x-transition:leave-end="opacity-0 transform scale-95"
                          class="absolute left-0 mt-2 w-80 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 divide-y divide-gray-100">
                         <div class="p-2 space-y-1">
-                            <a href="{% url 'roi_calculateur' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
+                            <a href="{% url 'roi_calculateur' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-amber-100 hover:text-amber-600 rounded-md group">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                                 </svg>
                                 <span>Calculer le ROI d'un logiciel</span>
                             </a>
-                            <a href="{% url 'amortissement_calculateur' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
+                            <a href="{% url 'amortissement_calculateur' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-amber-100 hover:text-amber-600 rounded-md group">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                                 </svg>
                                 <span>Amortissement d'un emprunt</span>
                             </a>
-                            <a href="{% url 'sftp_generator' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
+                            <a href="{% url 'sftp_generator' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-amber-100 hover:text-amber-600 rounded-md group">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
                                 <span>Générer script SFTP</span>
                             </a>
-                            <a href="{% url 'immobilier_calculateur' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
+                            <a href="{% url 'immobilier_calculateur' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-amber-100 hover:text-amber-600 rounded-md group">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                                 </svg>
@@ -219,8 +219,11 @@
                 </div>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                <a href="{% url 'contact' %}" class="text-black border border-gray-200 px-6 py-2.5 text-lg font-medium hover:bg-sky-50 transition-all duration-300 rounded-lg shadow-sm flex items-center gap-3">
+                <a href="{% url 'contact' %}" class="text-black border border-gray-200 px-6 py-2.5 text-lg font-medium hover:bg-black hover:text-white transition-all duration-300 rounded-lg shadow-sm flex items-center gap-3">
                     Contact
+
+
+
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                     </svg>
@@ -240,30 +243,46 @@
              class="lg:hidden" 
              id="mobile-menu">
             <div class="space-y-1 px-4 pb-3 pt-2">
-                <a href="{% url 'software_list' %}" 
-                   :class="{ 'bg-sky-50 text-sky-600': currentPath === '{% url 'software_list' %}' }"
-                   class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600">
-                    Logiciels
-                </a>
-                <a href="{% url 'category_list' %}" 
-                   :class="{ 'bg-sky-50 text-sky-600': currentPath === '{% url 'category_list' %}' }"
-                   class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600">
-                    Catégories
-                </a>
-                <a href="{% url 'actualites' %}" 
-                   :class="{ 'bg-sky-50 text-sky-600': currentPath === '{% url 'actualites' %}' }"
-                   class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600">
-                    Actualités
-                </a>
+                <!-- Section Experts Comptables Mobile -->
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open"
+                            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600"
+                            :class="{ 'bg-sky-50 text-sky-600': currentPath.startsWith('/experts-comptables/') }">
+                        <span>Experts Comptables</span>
+                        <svg class="w-5 h-5 transition-transform duration-200" 
+                             :class="{'rotate-180': open}"
+                             fill="none" 
+                             stroke="currentColor" 
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="open"
+                         x-cloak
+                         class="mt-2 space-y-1">
+                        <a href="{% url 'software_list' %}" 
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 pl-6">
+                            Tous les logiciels
+                        </a>
+                        <a href="{% url 'category_list' %}" 
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 pl-6">
+                            Catégories de logiciels
+                        </a>
+                        <a href="{% url 'actualites' %}" 
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 pl-6">
+                            Actualités du marché
+                        </a>
+                    </div>
+                </div>
 
                 <!-- Section IA Mobile -->
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open"
-                            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-purple-50 hover:text-purple-600"
-                            :class="{ 'bg-purple-50 text-purple-600': currentPath.startsWith('/ia/') }">
+                            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-emerald-50 hover:text-emerald-600"
+                            :class="{ 'bg-emerald-50 text-emerald-600': currentPath.startsWith('/ia/') }">
                         <div class="flex items-center">
                             <span>Intelligence Artificielle</span>
-                            <span class="ml-2 bg-purple-100 text-purple-600 px-2 py-0.5 rounded text-xs font-medium">New</span>
+                            <span class="ml-2 bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded text-xs font-medium">New</span>
                         </div>
                         <svg class="w-5 h-5 transition-transform duration-200" 
                              :class="{'rotate-180': open}"
@@ -276,29 +295,28 @@
                     <div x-show="open"
                          x-cloak
                          class="mt-2 space-y-1">
-                 
                         <a href="{% url 'ai_model_list' %}" 
-                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-purple-50 hover:text-purple-600 pl-6">
-                            Modèles IA
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-emerald-50 hover:text-emerald-600 pl-6">
+                            Modèles LLMs
                         </a>
                         <a href="{% url 'ai_tool_list' %}" 
-                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-purple-50 hover:text-purple-600 pl-6">
-                            Outils IA
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-emerald-50 hover:text-emerald-600 pl-6">
+                            Outils d'automatisation
                         </a>
-                        <a href="{% url 'ai_article_list' %}" 
-                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-purple-50 hover:text-purple-600 pl-6">
-                            Guides IA
-                        </a>
+                        <!-- <a href="{% url 'ai_article_list' %}" 
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-emerald-50 hover:text-emerald-600 pl-6">
+                            Guides pratiques
+                        </a> -->
                     </div>
                 </div>
 
                 <!-- Section Outils Mobile -->
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open"
-                            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600">
+                            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-amber-100 hover:text-amber-600"
+                            :class="{ 'bg-amber-100 text-amber-600': currentPath.startsWith('/outils/') }">
                         <div class="flex items-center">
                             <span>Outils</span>
-                            <span class="ml-2 bg-sky-100 text-sky-600 px-2 py-0.5 rounded text-xs font-medium">New</span>
                         </div>
                         <svg class="w-5 h-5 transition-transform duration-200" 
                              :class="{'rotate-180': open}"
@@ -311,41 +329,35 @@
                     <div x-show="open"
                          x-cloak
                          class="mt-2 space-y-1">
-                        <a href="{% url 'roi_calculateur' %}" class="flex items-center gap-3 rounded-md px-3 py-2 text-base hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 pl-6">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                            </svg>
-                            <span>Calculer le ROI d'un logiciel</span>
+                        <a href="{% url 'roi_calculateur' %}" 
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-amber-100 hover:text-amber-600 pl-6">
+                            Calculer le ROI d'un logiciel
                         </a>
-                        <a href="{% url 'amortissement_calculateur' %}" class="flex items-center gap-3 rounded-md px-3 py-2 text-base hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 pl-6">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                            </svg>
-                            <span>Amortissement d'un emprunt</span>
+                        <a href="{% url 'amortissement_calculateur' %}" 
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-amber-100 hover:text-amber-600 pl-6">
+                            Amortissement d'un emprunt
                         </a>
-                        <a href="{% url 'sftp_generator' %}" class="flex items-center gap-3 rounded-md px-3 py-2 text-base hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 pl-6">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                            <span>Générer script SFTP</span>
+                        <a href="{% url 'sftp_generator' %}" 
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-amber-100 hover:text-amber-600 pl-6">
+                            Générer script SFTP
                         </a>
-                        <a href="{% url 'immobilier_calculateur' %}" class="flex items-center gap-3 rounded-md px-3 py-2 text-base hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 pl-6">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                            </svg>
-                            <span>Immobilier : achat vs location</span>
+                        <a href="{% url 'immobilier_calculateur' %}" 
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-amber-100 hover:text-amber-600 pl-6">
+                            Immobilier : achat vs location
                         </a>
                     </div>
                 </div>
                 
-                <a href="{% url 'contact' %}" class="block w-full text-center bg-sky-100 text-black px-4 py-2 text-base font-medium hover:bg-sky-200 transition-colors duration-300 rounded-md mt-2">Contact</a>
+                <a href="{% url 'contact' %}" class="block w-full text-center text-gray-900 border border-gray-200 px-6 py-2.5 text-lg font-medium hover:bg-sky-50 transition-all duration-300 rounded-lg shadow-sm mt-4">
+                    Contact
+                </a>
             </div>
         </div>
     </header>
-    <main class="flex-grow container mx-auto px-2 sm:px-4 py-4 sm:py-8 bg-sky-50">
+    <main class="flex-grow container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         {% block content %}{% endblock %}
     </main>
-    <footer class="bg-sky-50 border-t border-gray-200 shadow-sm w-full">
+    <footer class="bg-white border-t border-gray-200 shadow-sm w-full">
         <div class="container mx-auto px-4 py-6">
             <nav>
                 <ul class="flex flex-wrap justify-center space-x-4 sm:space-x-8 text-sm text-gray-600">

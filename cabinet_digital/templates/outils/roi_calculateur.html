@@ -3,7 +3,8 @@
 {% block extra_head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 
-<title>Calculateur de ROI d'un logiciel (gratuit) | Cabinet Digital</title>
+<title>Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME</title>
+
 
 <meta name="description" content="Calculez gratuitement le retour sur investissement de votre logiciel. Évaluez les coûts et gains sur 24 mois avec notre simulateur.">
 
@@ -15,8 +16,8 @@
 
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2" 
-     x-data="{
+<div class="max-w-8xl mx-auto px-2 sm:px-6 lg:px-8 py-4"
+    x-data="{
         formData: {
             monthly_cost_saas: 800,
             one_time_cost_saas: 3000,
@@ -27,7 +28,7 @@
             employee_hours_per_week_gained: 10,
             cost_of_employee_hour: 30,
             other_savings: 200,
-            months_projection: 24
+            months_projection: 36
         },
         chartInstance: null,
         isLoading: false,
@@ -142,11 +143,15 @@
             const dataLength = Math.min(data.costs.length, data.savings.length, data.net.length);
             const labels = Array.from({length: dataLength}, (_, i) => `Mois ${i + 1}`);
 
-            // Vérifier que toutes les données sont des nombres valides
-            const validData = {
-                costs: data.costs.slice(0, dataLength).map(v => Number(v) || 0),
-                savings: data.savings.slice(0, dataLength).map(v => Number(v) || 0),
-                net: data.net.slice(0, dataLength).map(v => Number(v) || 0)
+            // Convertir les coûts et gains en valeurs mensuelles (non cumulées)
+            const monthlyData = {
+                costs: data.costs.map((cost, index) => 
+                    index === 0 ? cost : cost - data.costs[index - 1]
+                ),
+                savings: data.savings.map((saving, index) => 
+                    index === 0 ? saving : saving - data.savings[index - 1]
+                ),
+                net: data.net // Garder le ROI en cumulé
             };
 
             if (this.chartInstance) {
@@ -159,8 +164,8 @@
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Coûts',
-                            data: validData.costs,
+                            label: 'Coûts mensuels',
+                            data: monthlyData.costs,
                             borderColor: '#ef4444',
                             backgroundColor: 'rgba(239, 68, 68, 0.1)',
                             fill: false,
@@ -170,8 +175,8 @@
                             order: 2
                         },
                         {
-                            label: 'Gains',
-                            data: validData.savings,
+                            label: 'Gains mensuels',
+                            data: monthlyData.savings,
                             borderColor: '#22c55e',
                             backgroundColor: 'rgba(34, 197, 94, 0.1)',
                             fill: false,
@@ -181,8 +186,8 @@
                             order: 1
                         },
                         {
-                            label: 'ROI Net',
-                            data: validData.net,
+                            label: 'ROI Net cumulé',
+                            data: monthlyData.net,
                             borderColor: '#0ea5e9',
                             backgroundColor: 'rgba(14, 165, 233, 0.1)',
                             fill: true,
@@ -260,59 +265,68 @@
         }
      }">
     <div class="text-center mb-6">
-        <h1 class="text-4xl font-bold text-gray-900">Calculateur de <span class="bg-black text-white px-3 py-1 rounded-lg">ROI</span> d'un logiciel</h1>
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Calculateur de <span class="bg-amber-500 text-gray-900 px-3 py-1 rounded-lg">ROI d'un logiciel</span></h1>
         <p class="mt-2 text-lg text-gray-600">Estimez le retour sur investissement de votre logiciel</p>
-        <button @click="shareCalculation()" class="mt-4 inline-flex items-center px-3 py-2 text-sm sm:px-4 sm:py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-50 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 sm:w-5 sm:h-5 mr-2">
+        <button @click="shareCalculation()" 
+                class="mt-4 inline-flex items-center px-4 py-2 text-sm bg-black text-white rounded-lg hover:bg-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-200 focus:ring-offset-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+
                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
             </svg>
             Partager votre simulation
         </button>
     </div>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Formulaire -->
-        <div>
+        <div class="space-y-6">
             <form id="roiForm" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="months_projection" :value="formData.months_projection">
                 <!-- Section Coûts -->
-                <div class="space-y-4 bg-red-50 p-6 mb-6 rounded-xl border-4 border-red-200">
-                    <div class="flex items-center justify-center gap-2 mb-2">
-                        <div class="bg-red-100 p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />
+                <div class="space-y-2 bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                    <div class="flex items-center justify-center gap-1 mb-2">
+
+                        <h2 class="text-xl font-semibold text-center text-gray-800 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mr-2 text-red-500">
+
+
+
+
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
                             </svg>
-                        </div>
-                        <h2 class="text-lg font-semibold text-gray-800">Coûts</h2>
+                            Coûts
+                        </h2>
                     </div>
                     
-                    <div class="grid grid-cols-1 gap-2">
+                    <div class="grid grid-cols-1 gap-4">
                         <!-- Encadré Logiciel -->
-                        <div class="bg-red-100 rounded-lg border border-red-100">
-                            <h3 class="text-sm font-bold text-center text-gray-900 py-1">Logiciel</h3>
-                            <div class="grid grid-cols-2 gap-1 p-1">
-                                <div class="p-1.5 rounded-lg shadow-sm">
-                                    <label class="block text-xs font-medium text-gray-700">Coût mensuel</label>
+                        <div class="bg-gray-50/50 backdrop-blur-sm border border-gray-200 rounded-xl p-2">
+                            <h3 class="text-sm font-medium text-gray-700 mb-1 text-center">Logiciel</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Coût mensuel</label>
                                     <div class="relative">
                                         <input type="text"
                                                x-on:input="handleInput($event, 'monthly_cost_saas')"
                                                :value="formData.monthly_cost_saas"
-                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <span class="text-gray-500 sm:text-sm">€</span>
+                                            <span class="text-gray-400 sm:text-sm">€</span>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <div class="p-1.5 rounded-lg shadow-sm">
-                                    <label class="block text-xs font-medium text-gray-700">Frais de setup</label>
+                                <div>
+                                    <label class="block text-xs font-medium  text-gray-600 mb-1">Frais de setup</label>
                                     <div class="relative">
                                         <input type="text"
                                                x-on:input="handleInput($event, 'one_time_cost_saas')"
-                                               :value="formData.one_time_cost_saas"
-                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                                                :value="formData.one_time_cost_saas"
+
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <span class="text-gray-500 sm:text-sm">€</span>
+                                            <span class="text-gray-400 sm:text-sm">€</span>
                                         </div>
                                     </div>
                                 </div>
@@ -320,31 +334,33 @@
                         </div>
 
                         <!-- Encadré Intégrateur -->
-                        <div class="bg-red-100 rounded-lg border border-red-100">
-                            <h3 class="text-sm font-bold text-center text-gray-900 py-1">Intégrateur</h3>
-                            <div class="grid grid-cols-2 gap-1 p-1">
-                                <div class="p-1.5 rounded-lg shadow-sm">
-                                    <label class="block text-xs font-medium text-gray-700">Coût intégrateur</label>
+                        <div class="bg-gray-50/50 backdrop-blur-sm border border-gray-200 rounded-xl p-2">
+                            <h3 class="text-sm font-medium text-gray-700 mb-2 text-center">Intégrateur</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+
+
+                                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Coût intégrateur</label>
                                     <div class="relative">
                                         <input type="text"
                                                x-on:input="handleInput($event, 'integrator_cost_implementation')"
                                                :value="formData.integrator_cost_implementation"
-                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <span class="text-gray-500 sm:text-sm">€</span>
+                                            <span class="text-gray-400 sm:text-sm">€</span>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <div class="p-1.5 rounded-lg shadow-sm">
-                                    <label class="block text-xs font-medium text-gray-700">Maintenance mensuelle</label>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1.5">Maintenance mensuelle</label>
                                     <div class="relative">
                                         <input type="text"
                                                x-on:input="handleInput($event, 'integrator_maintenance')"
                                                :value="formData.integrator_maintenance"
-                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <span class="text-gray-500 sm:text-sm">€</span>
+                                            <span class="text-gray-400 sm:text-sm">€</span>
                                         </div>
                                     </div>
                                 </div>
@@ -352,315 +368,300 @@
                         </div>
 
                         <!-- Encadré Internes -->
-                        <div class="bg-red-100 rounded-lg border border-red-100">
-                            <h3 class="text-sm font-bold text-center text-gray-900 py-1">Internes</h3>
-                            <div class="grid grid-cols-2 gap-1 p-1">
-                                <div class="p-1.5 rounded-lg shadow-sm">
-                                    <label class="block text-xs font-medium text-gray-700">Heures collaborateurs</label>
+                        <div class="bg-gray-50/50 backdrop-blur-sm border border-gray-200 rounded-xl p-2">
+                            <h3 class="text-sm font-medium text-gray-700 mb-2 text-center">Internes</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Heures collaborateurs</label>
                                     <div class="relative">
                                         <input type="text"
                                                x-on:input="handleInput($event, 'internal_hours_internal_implementation')"
+
                                                :value="formatHours(formData.internal_hours_internal_implementation)"
-                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <span class="text-gray-500 sm:text-sm">h</span>
+                                            <span class="text-gray-400 sm:text-sm">h</span>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <div class="p-1.5 rounded-lg shadow-sm">
-                                    <label class="block text-xs font-medium text-gray-700">Coût horaire</label>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Coût horaire</label>
                                     <div class="relative">
                                         <input type="text"
+
                                                x-on:input="handleInput($event, 'cost_per_hour_internal_implementation')"
                                                :value="formData.cost_per_hour_internal_implementation"
-                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <span class="text-gray-500 sm:text-sm">€</span>
+                                            <span class="text-gray-400 sm:text-sm">€</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Ajout du récapitulatif des coûts -->
-                    <div class="mt-4 bg-white p-4 rounded-lg border border-red-100 shadow-sm">
-                        <div class="flex justify-between items-baseline">
-                            <span class="text-gray-700 font-medium flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />
-                                </svg>
-                                Investissement initial
-                            </span>
-                            <span class="text-lg font-bold text-red-600" x-text="formatCurrency(formData.one_time_cost_saas + formData.integrator_cost_implementation + (formData.internal_hours_internal_implementation * formData.cost_per_hour_internal_implementation))"></span>
-                        </div>
-                    </div>
+                 
                 </div>
-
-                <!-- Section Gains -->
-                <div class="space-y-4 bg-green-50 p-6 rounded-xl border-4 border-green-100">
-                    <div class="flex items-center justify-center gap-2 mb-2">
-                        <div class="bg-green-100 p-2 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                            </svg>
-                        </div>
-                        <h2 class="text-lg font-semibold text-gray-800">Gains</h2>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 gap-2">
-                        <!-- Encadré Gains -->
-                        <div class="bg-green-100 rounded-lg border border-green-100">
-                            <h3 class="text-sm font-bold text-center text-gray-900 py-1">Gains mensuels</h3>
-                            <div class="grid grid-cols-2 gap-1 p-1">
-                                <div class="p-1.5 rounded-lg shadow-sm">
-                                    <label class="block text-xs font-medium text-gray-700">Heures gagnées/semaine</label>
-                                    <div class="relative">
-                                        <input type="text"
-                                               x-on:input="handleInput($event, 'employee_hours_per_week_gained')"
-                                               :value="formatHours(formData.employee_hours_per_week_gained)"
-                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
-                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <span class="text-gray-500 sm:text-sm">h</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="p-1.5 rounded-lg shadow-sm">
-                                    <label class="block text-xs font-medium text-gray-700">Coût horaire</label>
-                                    <div class="relative">
-                                        <input type="text"
-                                               x-on:input="handleInput($event, 'cost_of_employee_hour')"
-                                               :value="formData.cost_of_employee_hour"
-                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
-                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <span class="text-gray-500 sm:text-sm">€</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Encadré Autres gains -->
-                        <div class="bg-green-100 rounded-lg border border-green-100">
-                            <h3 class="text-sm font-bold text-center text-gray-900 py-1">Autres gains</h3>
-                            <div class="p-1.5 rounded-lg shadow-sm">
-                                <label class="block text-xs font-medium text-gray-700">Économies mensuelles</label>
-                                <div class="relative">
-                                    <input type="text"
-                                           x-on:input="handleInput($event, 'other_savings')"
-                                           :value="formData.other_savings"
-                                           class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
-                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                        <span class="text-gray-500 sm:text-sm">€</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Ajout du récapitulatif des gains -->
-                    <div class="mt-4 bg-white p-4 rounded-lg border border-green-100 shadow-sm">
-                        <div class="flex justify-between items-baseline">
-                            <span class="text-gray-700 font-medium flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                                </svg>
-                                Gains mensuels estimés
-                            </span>
-                            <span class="text-lg font-bold text-green-600" x-text="formatCurrency((formData.employee_hours_per_week_gained * 4 * formData.cost_of_employee_hour) + formData.other_savings)"></span>
-                        </div>
-                    </div>
-                </div>
-
-
             </form>
         </div>
-        <!-- Résultats -->
+
+        <!-- Section Gains -->
         <div class="space-y-6">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                <h2 class="text-2xl font-bold text-gray-900 text-center mb-6">Projection du retour sur investissement</h2>
-                <!-- Résumé des résultats -->
-                <div id="roiSummary" 
-                     class="mb-4"
-                     x-show="!isLoading">
-                    <div class="space-y-6">
-                        <div class="grid grid-cols-3 gap-6">
-                            <div class="p-4 bg-gradient-to-br from-sky-50 to-white rounded-xl border border-sky-100">
-                                <h3 class="text-sm font-semibold text-gray-600 mb-2">Investissement</h3>
-                                <p id="initialInvestment" class="text-2xl font-bold text-sky-700">-</p>
+            <div class="space-y-4 bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                <div class="flex items-center justify-center gap-2 mb-2">
+                    <h2 class="text-xl font-semibold text-center text-gray-800 flex items-center">
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mr-2 text-green-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+
+                        </svg>
+                        Gains
+                    </h2>
+                </div>
+                
+                <div class="grid grid-cols-1 gap-4">
+                    <!-- Encadré Gains -->
+                    <div class="bg-gray-50/50 backdrop-blur-sm border border-gray-200 rounded-xl p-4">
+                        <h3 class="text-sm font-medium text-gray-700 mb-2 text-center">Gains mensuels</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Heures gagnées/semaine</label>
+                                <div class="relative">
+                                    <input type="text"
+                                           x-on:input="handleInput($event, 'employee_hours_per_week_gained')"
+
+                                           :value="formatHours(formData.employee_hours_per_week_gained)"
+                                           class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-400 sm:text-sm">h</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="p-4 bg-gradient-to-br from-red-50 to-white rounded-xl border border-red-100">
-                                <h3 class="text-sm font-semibold text-gray-600 mb-2">Coût/mois</h3>
-                                <p id="monthlyCost" class="text-2xl font-bold text-red-600">-</p>
-                            </div>
-                            <div class="p-4 bg-gradient-to-br from-green-50 to-white rounded-xl border border-green-100">
-                                <h3 class="text-sm font-semibold text-gray-600 mb-2">Économies/mois</h3>
-                                <p id="monthlySavings" class="text-2xl font-bold text-green-700">-</p>
+                            
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Coût horaire</label>
+                                <div class="relative">
+                                    <input type="text"
+                                           x-on:input="handleInput($event, 'cost_of_employee_hour')"
+
+                                           :value="formData.cost_of_employee_hour"
+                                           class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-400 sm:text-sm">€</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="p-3 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200">
-                            <div class="flex items-center justify-center gap-1">
-                                <span class="text-sm font-semibold text-gray-600">Point d'équilibre au</span>
-                                <span id="breakEvenText" class="text-sm font-bold text-gray-700">-</span>
+                    </div>
+
+                    <!-- Encadré Autres gains -->
+                    <div class="bg-gray-50/50 backdrop-blur-sm border border-gray-200 rounded-xl p-4">
+                        <h3 class="text-sm font-medium text-gray-700 mb-2 text-center">Autres gains</h3>
+                        <div class="p-1.5 rounded-lg shadow-sm">
+
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Économies mensuelles</label>
+                            <div class="relative">
+                                <input type="text"
+                                       x-on:input="handleInput($event, 'other_savings')"
+
+                                       :value="formData.other_savings"
+                                       class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-400 sm:text-sm">€</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Graphique avec le sélecteur de période -->
-                <div id="roiChartContainer" class="bg-sky-50 p-4 rounded-xl shadow-sm border border-gray-200">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-semibold text-gray-900">Évolution du ROI</h3>
-                        <div class="flex items-center gap-3">
-                            <!-- Bouton pour ouvrir le modal -->
-                            <button 
-                                @click="$store.modal.open()"
-                                x-show="chartData"
-                                class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-colors duration-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                Voir le détail
-                            </button>
-                            
-                            <div class="inline-flex items-center gap-3 bg-sky-50 px-4 py-2 rounded-full border border-sky-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-sky-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                <select x-model.number="formData.months_projection" 
-                                        name="months_projection" 
-                                        @change="updateROIDebounced()"
-                                        class="bg-transparent text-sky-700 font-medium text-sm focus:outline-none focus:ring-0 border-0 cursor-pointer pr-8 appearance-none">
-                                    <option value="12">12 mois</option>
-                                    <option value="24">24 mois</option>
-                                    <option value="36">36 mois</option>
-                                    <option value="48">48 mois</option>
-                                    <option value="60">60 mois</option>
-                                </select>
-                                <svg class="h-4 w-4 text-sky-600 -ml-6 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="chartContainer" class="h-[400px]">
-                        <div id="chartWrapper" class="w-full h-full"></div>
+                <!-- Récapitulatif des gains -->
+                <div class="mt-4 bg-green-50 backdrop-blur-sm border border-gray-200 rounded-xl p-4">
+                    <div class="flex justify-between items-baseline">
+                        <span class="text-gray-700 font-medium">Gains mensuels estimés</span>
+
+                        <span class="text-lg font-semibold text-gray-900" x-text="formatCurrency((formData.employee_hours_per_week_gained * 4 * formData.cost_of_employee_hour) + formData.other_savings)"></span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal (déplacé ici, à l'intérieur du composant principal) -->
-    <template x-teleport="body">
-        <div x-show="$store.modal.isOpen"
-             @keydown.escape.window="$store.modal.close()"
-             class="fixed inset-0 z-50 overflow-y-auto"
-             style="display: none;">
-            <!-- Overlay -->
-            <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
-                 x-show="$store.modal.isOpen"
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100"
-                 x-transition:leave="transition ease-in duration-200"
-                 x-transition:leave-start="opacity-100"
-                 x-transition:leave-end="opacity-0"
-                 @click="$store.modal.close()">
+    <!-- Résultats (maintenant en pleine largeur sous les formulaires) -->
+    <div class="mt-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-900 text-center mb-4">Projection du retour sur investissement</h2>
+            <!-- Résumé des résultats -->
+            <div id="roiSummary" 
+                 class="mb-4"
+                 x-show="!isLoading">
+                <div class="flex flex-col gap-3">
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="p-3 bg-white/80 rounded-lg border border-gray-100 shadow-sm hover:shadow transition-all duration-200">
+                            <div class="flex items-center gap-2 mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                                </svg>
+                                <h3 class="text-xs font-medium text-gray-500">Investissement initial</h3>
+                            </div>
+                            <p id="initialInvestment" class="text-lg font-semibold text-red-600">-</p>
+                        </div>
+                        <div class="p-3 bg-white/80 rounded-lg border border-gray-100 shadow-sm hover:shadow transition-all duration-200">
+                            <div class="flex items-center gap-2 mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2" />
+                                </svg>
+                                <h3 class="text-xs font-medium text-gray-500">Coût mensuel</h3>
+                            </div>
+                            <p id="monthlyCost" class="text-lg font-semibold text-red-600">-</p>
+                        </div>
+                        <div class="p-3 bg-white/80 rounded-lg border border-gray-100 shadow-sm hover:shadow transition-all duration-200">
+                            <div class="flex items-center gap-2 mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                </svg>
+                                <h3 class="text-xs font-medium text-gray-500">Économies mensuelles</h3>
+                            </div>
+                            <p id="monthlySavings" class="text-lg font-semibold text-green-600">-</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center gap-2 py-2 px-4 bg-amber-50 rounded-lg border border-amber-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        <span class="text-xs font-bold text-amber-800">Point d'équilibre au</span>
+                        <span id="breakEvenText" class="border-2 border-amber-200 rounded-lg px-2 py-1 text-sm font-bold text-amber-900">-</span>
+                    </div>
+                </div>
+
+
+
             </div>
 
-            <!-- Modal Content -->
-            <div class="relative min-h-screen flex items-center justify-center p-4">
-                <div class="relative bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden"
-                     x-show="$store.modal.isOpen"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 transform translate-y-4"
-                     x-transition:enter-end="opacity-100 transform translate-y-0"
-                     x-transition:leave="transition ease-in duration-200"
-                     x-transition:leave-start="opacity-100 transform translate-y-0"
-                     x-transition:leave-end="opacity-0 transform translate-y-4"
-                     @click.stop>
-                    
-                    <!-- Modal Header -->
-                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                        <h3 class="text-xl font-semibold text-gray-900">Tableau d'amortissement détaillé</h3>
-                        <button @click="$store.modal.close()" class="text-gray-400 hover:text-gray-500">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- Modal Body -->
-                    <div class="overflow-auto max-h-[calc(80vh-8rem)]">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50 sticky top-0">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mois</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Coûts</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gains</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ROI Net</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <template x-if="chartData">
-                                    <template x-for="(_, index) in chartData.costs" :key="index">
-                                        <tr class="hover:bg-gray-50">
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" x-text="`Mois ${index + 1}`"></td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600" 
-                                                x-text="formatCurrency(chartData.costs[index])"></td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600" 
-                                                x-text="formatCurrency(chartData.savings[index])"></td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm" 
-                                                :class="chartData.net[index] >= 0 ? 'text-green-600' : 'text-red-600'"
-                                                x-text="formatCurrency(chartData.net[index])"></td>
-                                        </tr>
-                                    </template>
-                                </template>
-                            </tbody>
-                        </table>
-                    </div>
+            <!-- Graphique (section modifiée) -->
+            <div id="roiChartContainer" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold text-gray-900">Évolution du ROI sur 36 mois</h3>
+                </div>
+                <div id="chartContainer" class="h-[400px]">
+                    <div id="chartWrapper" class="w-full h-full"></div>
                 </div>
             </div>
         </div>
-    </template>
+    </div>
 </div>
+
+<!-- Modal (déplacé ici, à l'intérieur du composant principal) -->
+<template x-teleport="body">
+    <div x-show="$store.modal.isOpen"
+         @keydown.escape.window="$store.modal.close()"
+         class="fixed inset-0 z-50 overflow-y-auto"
+         style="display: none;">
+        <!-- Overlay -->
+        <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+             x-show="$store.modal.isOpen"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click="$store.modal.close()">
+        </div>
+
+        <!-- Modal Content -->
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="relative bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden"
+                 x-show="$store.modal.isOpen"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 transform translate-y-0"
+                 x-transition:leave-end="opacity-0 transform translate-y-4"
+                 @click.stop>
+                
+                <!-- Modal Header -->
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="text-xl font-semibold text-gray-900">Tableau d'amortissement détaillé</h3>
+                    <button @click="$store.modal.close()" class="text-gray-400 hover:text-gray-500">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="overflow-auto max-h-[calc(80vh-8rem)]">
+                    <table class="min-w-full divide-y divide-gray-200 bg-white/50 backdrop-blur-sm">
+                        <thead class="bg-gray-50/50 backdrop-blur-sm sticky top-0">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mois</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Coûts</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gains</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ROI Net</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <template x-if="chartData">
+                                <template x-for="(_, index) in chartData.costs" :key="index">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" x-text="`Mois ${index + 1}`"></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600" 
+                                            x-text="formatCurrency(chartData.costs[index])"></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600" 
+                                            x-text="formatCurrency(chartData.savings[index])"></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm" 
+                                            :class="chartData.net[index] >= 0 ? 'text-green-600' : 'text-red-600'"
+                                            x-text="formatCurrency(chartData.net[index])"></td>
+                                    </tr>
+                                </template>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
 
 <div class="max-w-7xl mx-auto mt-12 px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <!-- Première section -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200">
             <h2 class="text-xl font-bold mb-4">Un simulateur complet pour votre ROI</h2>
             <p class="text-gray-600 mb-4">Notre calculateur analyse tous les aspects financiers de votre investissement :</p>
             <ul class="space-y-2 text-gray-600">
                 <li class="flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                     Coûts initiaux et récurrents
                 </li>
                 <li class="flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                     Gains mensuels estimés
                 </li>
                 <li class="flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                     Point d'équilibre
                 </li>
                 <li class="flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                     Projections sur mesure
                 </li>
                 <li class="flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                     Graphiques d'évolution
@@ -669,30 +670,30 @@
         </div>
 
         <!-- Deuxième section -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200">
             <h2 class="text-xl font-bold mb-4">Pourquoi calculer le ROI ?</h2>
             <p class="text-gray-600 mb-4">Le calcul du ROI est essentiel pour :</p>
             <ul class="space-y-2 text-gray-600">
                 <li class="flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                     Évaluer la rentabilité d'un projet
                 </li>
                 <li class="flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                     Comparer différentes solutions
                 </li>
                 <li class="flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                     Convaincre les décideurs
                 </li>
                 <li class="flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                     Anticiper les gains financiers
@@ -701,7 +702,7 @@
         </div>
 
         <!-- Troisième section -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200">
             <h2 class="text-xl font-bold mb-4">Exemple concret de ROI</h2>
             <p class="text-gray-600 mb-4">Pour un logiciel avec les paramètres suivants :</p>
             <ul class="space-y-2 text-gray-600">
@@ -729,23 +730,23 @@
         </div>
     </div>
 
-    <div class="mt-12 bg-white p-8 rounded-xl border border-gray-200">
+    <div class="mt-12 bg-white/50 backdrop-blur-sm p-8 rounded-xl border border-gray-200 shadow-sm">
         <h2 class="text-xl font-bold mb-6">Comment utiliser le calculateur de ROI ?</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="flex items-center">
-                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-sky-100 text-sky-700 font-bold mr-3">1</span>
+            <div class="flex items-center p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
+                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold mr-3">1</span>
                 <span class="text-gray-600">Renseignez les coûts initiaux et mensuels</span>
             </div>
-            <div class="flex items-center">
-                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-sky-100 text-sky-700 font-bold mr-3">2</span>
+            <div class="flex items-center p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
+                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold mr-3">2</span>
                 <span class="text-gray-600">Estimez les gains de temps et économies</span>
             </div>
-            <div class="flex items-center">
-                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-sky-100 text-sky-700 font-bold mr-3">3</span>
+            <div class="flex items-center p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
+                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold mr-3">3</span>
                 <span class="text-gray-600">Choisissez la durée de projection</span>
             </div>
-            <div class="flex items-center">
-                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-sky-100 text-sky-700 font-bold mr-3">4</span>
+            <div class="flex items-center p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
+                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold mr-3">4</span>
                 <span class="text-gray-600">Analysez les résultats et graphiques</span>
             </div>
         </div>
@@ -755,9 +756,6 @@
 <!-- Scripts -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-
-    
-    // Définir formatCurrency dans le scope global
     window.formatCurrency = function(value) {
         return new Intl.NumberFormat('fr-FR', { 
             style: 'currency', 
@@ -766,16 +764,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }).format(value);
     };
 
-    // Supprimer la fonction updateROI car elle est déjà gérée par Alpine.js
-    // window.updateROI = function() { ... }
-
-    // Conserver uniquement ces parties
     document.querySelectorAll('input[type="range"]').forEach(slider => {
         slider.style.accentColor = '#000000';
     });
-
-    // Le bouton de téléchargement est déjà géré par Alpine.js, donc on peut supprimer
-    // document.getElementById('downloadChart').addEventListener('click', function() { ... });
 });
 </script>
 

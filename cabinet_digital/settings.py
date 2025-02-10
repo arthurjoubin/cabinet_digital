@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     
     # Third party apps
     'cabinet_digital',
-    'compressor'
+    'compressor',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +70,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_htmx.middleware.HtmxMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'django_user_agents.middleware.UserAgentMiddleware',
 ]
 
 ROOT_URLCONF = 'cabinet_digital.urls'
@@ -206,4 +209,12 @@ UNFOLD = {
     "STYLES": [],
     "SCRIPTS": [],
 }
+
+# Debug Toolbar Configuration
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
+# Configuration pour django-user-agents
+USER_AGENTS_CACHE = 'default'
 

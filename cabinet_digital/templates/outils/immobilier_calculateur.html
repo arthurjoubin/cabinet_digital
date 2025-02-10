@@ -60,7 +60,6 @@
           this.formData.notary_fees = this.formData.property_cost * 0.08;
         }
         
-        
         this.calculateLoan();
       },
 
@@ -127,32 +126,34 @@
 {% endblock %}
 
 {% block meta_description %}
-<title>Simulateur d'investissement immobilier</title>
+<title>Comparer la location à l'achat d'un bien immobilier - outil gratuit et moderne</title>
 <meta name="description" content="Simulez votre investissement immobilier en prenant en compte tous les paramètres">
 <meta name="keywords" content="simulateur, investissement, immobilier, calcul, immobilier">
 {% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4" x-data="immobilierCalculator">
+<div class="max-w-8xl mx-auto px-2 sm:px-6 lg:px-8 py-4"    x-data="immobilierCalculator">
     <div class="text-center mb-8">
-        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Simulateur <span class="bg-black text-white px-3 py-1 rounded-lg">investissement immobilier</span></h1>
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Simulateur <span class="bg-amber-500 text-gray-900 px-3 py-1 rounded-lg">investissement immobilier</span></h1>
         <p class="mt-2 text-base sm:text-lg text-gray-600">Comparez l'achat et la location en prenant en compte tous les paramètres</p>
-        <button @click="shareCalculation()" class="mt-4 inline-flex items-center px-3 py-2 text-sm sm:px-4 sm:py-2 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-50 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 sm:w-5 sm:h-5 mr-2">
+        <button @click="shareCalculation()" class="mt-4 inline-flex items-center px-4 py-2 text-sm bg-black text-white rounded-lg hover:bg-amber-500 hover:text-black transition-colors focus:outline-none focus:ring focus:ring-amber-200">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+
                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
             </svg>
             Partager votre simulation
         </button>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
-        <!-- Colonne de gauche - Formulaire -->
-        <div class="space-y-6">
+    <!-- Formulaire sur toute la largeur -->
+    <div class="bg-white p-6 rounded-md border border-gray-200 shadow-sm mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Le bien -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                <h2 class="text-lg font-semibold mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+            <div class="border-b md:border-b-0 md:border-r border-gray-400 pb-4 md:pb-0 md:pr-4">
+                <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-800">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-amber-500">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" />
                     </svg>
                     Le bien
                 </h2>
@@ -163,9 +164,9 @@
                         <input type="text"
                                x-on:input="handleInput($event, 'property_cost')"
                                :value="formatNumber(formData.property_cost)"
-                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
-                               <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 sm:text-sm">€</span>
+                               class="block w-full pl-4 pr-12 py-2 rounded-md border border-gray-200 bg-white transition duration-150 placeholder-gray-400 focus:outline-none focus:ring-amber-200">
+                        <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-sm">€</span>
                         </div>
                     </div>
 
@@ -175,30 +176,30 @@
                         <input type="text"
                                x-on:input="handleInput($event, 'notary_fees')"
                                :value="formatNumber(formData.notary_fees)"
-                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
-                               <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
-                                <span class="text-gray-500 sm:text-sm">€</span>
+                               class="block w-full pl-4 pr-12 py-2 rounded-md border border-gray-200 bg-white transition duration-150 placeholder-gray-400 focus:outline-none focus:ring-amber-200">
+                        <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-sm">€</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Financement -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                <h2 class="text-lg font-semibold mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+            <div class="border-b md:border-b-0 md:border-r border-gray-400 pb-4 md:pb-0 md:pr-4">
+                <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-amber-500">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
                     </svg>
                     Financement
                 </h2>
                 
                 <div class="mb-4">
-                    <div class="bg-sky-50 p-4 rounded-xl">
+                    <div class="bg-amber-50 p-3 rounded-md">
                         <div class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-sky-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-amber-600">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                             </svg>
-                            <span class="text-sm text-sky-900">Mensualités fixes avec remboursement constant chaque mois</span>
+                            <span class="text-sm text-amber-800">Mensualités fixes avec remboursement constant</span>
                         </div>
                     </div>
                 </div>
@@ -209,9 +210,9 @@
                         <input type="text"
                                x-on:input="handleInput($event, 'down_payment')"
                                :value="formatNumber(formData.down_payment)"
-                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                               class="block w-full pl-4 pr-12 py-2 rounded-md border border-gray-200 bg-white transition duration-150 placeholder-gray-400 focus:outline-none focus:ring-amber-200">
                         <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 sm:text-sm">€</span>
+                            <span class="text-gray-500 text-sm">€</span>
                         </div>
                     </div>
 
@@ -221,9 +222,10 @@
                                x-model="formData.interest_rate"
                                @input="calculateLoan"
                                step="0.1"
-                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 sm:text-sm">%</span>
+                               class="block w-full pl-4 pr-12 py-2 rounded-md border border-gray-200 bg-white transition duration-150 placeholder-gray-400 focus:outline-none focus:ring-amber-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                        <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-sm">%</span>
+
                         </div>
                     </div>
 
@@ -232,25 +234,27 @@
                         <input type="number"
                                x-model="formData.loan_years"
                                @input="calculateLoan"
-                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 sm:text-sm">ans</span>
+                               class="block w-full pl-4 pr- py-2 rounded-md border border-gray-200 bg-white transition duration-150 placeholder-gray-400 focus:outline-none focus:ring-amber-200">
+                        <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-sm">ans</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-4 bg-sky-50 p-3 rounded-lg">
-                    <div class="flex justify-between items-baseline">
+                <div class="mt-4 bg-amber-50 p-2 rounded-md">
+                    <div class="flex justify-between items-center">
                         <span class="text-gray-700 font-medium">Montant à emprunter</span>
-                        <span class="text-lg font-bold text-sky-600" x-text="formatNumber(formData.total_loan) + ' €'"></span>
+                        <span class="text-lg font-bold text-amber-600" x-text="formatNumber(formData.total_loan) + ' €'"></span>
                     </div>
                 </div>
             </div>
 
-            <!-- Charges -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                <h2 class="text-lg font-semibold mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+            <!-- Charges et Comparaison location -->
+            <div>
+                <h2 class="text-lg font-semibold mb-4 flex items-center text-gray-800">
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-amber-500">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
                     </svg>
                     Charges
@@ -258,422 +262,395 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="relative">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Taux d'assurance</label>
-                        <div class="text-xs text-gray-500 mb-1">Environ 0.3% du capital par an</div>
+                        <div class="text-xs text-gray-500 mb-1">Environ 0.3% du capital/an</div>
                         <input type="number"
                                x-model="formData.insurance_rate"
                                @input="calculateLoan"
                                step="0.1"
-                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
-                        <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 sm:text-sm">%</span>
+                               class="block w-full pl-4 pr-12 py-2 rounded-md border border-gray-200 bg-white transition duration-150 placeholder-gray-400 focus:outline-none focus:ring-amber-200">
+                               <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 text-sm">%</span>
                         </div>
+
                     </div>
 
                     <div class="relative">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Charges copropriété</label>
-                        <div class="text-xs text-gray-500 mb-1">20-30€/m² par an en moyenne</div>
+                        <div class="text-xs text-gray-500 mb-1">20-30€/m²/an</div>
                         <input type="number"
                                x-model="formData.condo_fees"
                                @input="calculateLoan"
-                               class="block w-full pl-4 pr-16 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                               class="block w-full pl-4 pr-16 py-2 rounded-md border border-gray-200 bg-white transition duration-150 placeholder-gray-400 focus:outline-none focus:ring-amber-200">
                         <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 sm:text-sm">€/mois</span>
+                            <span class="text-gray-500 text-sm">€/mois</span>
                         </div>
                     </div>
 
                     <div class="relative">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Taxe foncière</label>
-                        <div class="text-xs text-gray-500 mb-1">Environ 1 mois de loyer par an</div>
+                        <div class="text-xs text-gray-500 mb-1">Environ 1 mois de loyer/an</div>
                         <input type="number"
                                x-model="formData.property_tax"
                                @input="calculateLoan"
-                               class="block w-full pl-4 pr-16 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                               class="block w-full pl-4 pr-16 py-2 rounded-md border border-gray-200 bg-white transition duration-150 placeholder-gray-400 focus:outline-none focus:ring-amber-200">
                         <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 sm:text-sm">€/an</span>
+                            <span class="text-gray-500 text-sm">€/an</span>
                         </div>
                     </div>
 
                     <div class="relative">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Entretien</label>
-                        <div class="text-xs text-gray-500 mb-1">Environ 1% de la valeur du bien par an</div>
+                        <div class="text-xs text-gray-500 mb-1">Environ 1% de la valeur/an</div>
                         <input type="number"
                                x-model="formData.maintenance"
                                @input="calculateLoan"
-                               class="block w-full pl-4 pr-16 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
+                               class="block w-full pl-4 pr-16 py-2 rounded-md border border-gray-200 bg-white transition duration-150 placeholder-gray-400 focus:outline-none focus:ring-amber-200">
                         <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 sm:text-sm">€/mois</span>
+                            <span class="text-gray-500 text-sm">€/mois</span>
                         </div>
                     </div>
                 </div>
-                <!-- Ajout du récapitulatif des charges -->
-                <div class="mt-4 bg-sky-50 p-3 rounded-lg flex justify-between items-baseline">
+                <!-- Récapitulatif des charges -->
+                <div class="mt-4 bg-amber-50 p-2 rounded-md flex justify-between items-center">
                     <span class="text-gray-700 font-medium">Total des charges mensuelles</span>
-                    <span class="text-lg font-bold text-sky-600" x-text="results ? formatNumber(results.monthlyCharges) + ' €' : '-'"></span>
+                    <span class="text-lg font-bold text-amber-600" x-text="results ? formatNumber(results.monthlyCharges) + ' €' : '-'"></span>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Résultats sur toute la largeur -->
+    <div class="bg-amber-50 p-6 rounded-xl border-4 border-white shadow-sm mb-6">
+        <h2 class="text-2xl font-bold text-center mb-6">Analyse financière</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Coût mensuel -->
+            <div class="bg-white p-4 rounded-lg border border-gray-300 shadow-sm">
+                <h3 class="text-lg font-semibold mb-3 flex items-center text-gray-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-amber-500">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Coût mensuel
+                </h3>
+                
+                <template x-if="loanType === 'fixed_payment'">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-gray-600">Mensualité crédit</span>
+                            <span class="text-xl font-bold text-amber-600" x-text="results ? formatNumber(results.monthlyLoanPayment) + ' €' : '-'"></span>
+                        </div>
+                        <div class="flex justify-between items-baseline text-sm">
+                            <span class="text-gray-600">+ charges mensuelles</span>
+                            <span class="font-medium" x-text="results ? formatNumber(results.monthlyCharges) + ' €' : '-'"></span>
+                        </div>
+                        <div class="pt-2 border-t mt-2">
+                            <div class="flex justify-between items-baseline">
+                                <span class="text-gray-800 font-medium">Total mensuel</span>
+                                <span class="text-xl font-bold text-amber-600" x-text="results ? formatNumber(results.totalMonthlyPayment) + ' €' : '-'"></span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <template x-if="loanType === 'fixed_principal'">
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between items-baseline">
+                                <span class="text-gray-600">Mensualité initiale</span>
+                                <span class="text-2xl font-bold text-amber-600" x-text="results ? formatNumber(results.totalMonthlyPaymentStart) + ' €' : '-'"></span>
+                            </div>
+                            <div class="flex justify-between items-baseline mt-1">
+                                <span class="text-gray-600">Mensualité finale</span>
+                                <span class="text-xl font-semibold text-amber-600" x-text="results ? formatNumber(results.totalMonthlyPaymentEnd) + ' €' : '-'"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-baseline text-sm text-gray-500">
+                            <span>Dont charges</span>
+                            <span x-text="results ? formatNumber(results.monthlyCharges) + ' €' : '-'"></span>
+                        </div>
+
+                        <div class="pt-4 border-t">
+                            <div class="flex justify-between items-baseline">
+                                <span class="text-gray-600">Loyer équivalent</span>
+                                <span class="text-xl font-semibold" x-text="formatNumber(formData.rent_saved) + ' €'"></span>
+                            </div>
+                            
+                            <div class="flex justify-between items-baseline mt-2">
+                                <span class="text-gray-600">Différence initiale</span>
+                                <span class="text-xl font-semibold" 
+                                      :class="results && results.rentDifference > 0 ? 'text-green-600' : 'text-red-600'"
+                                      x-text="results ? (results.rentDifference > 0 ? '+' : '') + formatNumber(results.rentDifference) + ' €' : '-'">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
             </div>
 
             <!-- Comparaison location -->
-            <div class="bg-white p-4 rounded-lg shadow-sm mb-4">
-                <h3 class="text-lg font-semibold mb-3 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185zM9.75 9h.008v.008H9.75V9zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm4.125 4.5h.008v.008h-.008V13.5zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+            <div class="bg-white p-4 rounded-lg border border-gray-300 shadow-sm">
+                <h3 class="text-lg font-semibold mb-3 flex items-center text-gray-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-amber-500">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
                     </svg>
-                    Loyer économisé
+                    Comparaison location
                 </h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="relative">
-                        <label class="block text-sm font-medium text-gray-700">Loyer équivalent</label>
-                        <div class="text-xs text-gray-500 mb-2">Loyer mensuel d'un bien similaire</div>
-                        <input type="number"
-                               x-model="formData.rent_saved"
-                               @input="calculateLoan"
-                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
-                        <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 sm:text-sm">€/mois</span>
-                        </div>
-                    </div>
-
-                    <div class="relative">
-                        <label class="block text-sm font-medium text-gray-700">Inflation annuelle</label>
-                        <div class="text-xs text-gray-500 mb-2">Augmentation annuelle du loyer</div>
-                        <input type="number"
-                               x-model="formData.inflation_rate"
-                               @input="calculateLoan"
-                               step="0.1"
-                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:bg-white hover:border-gray-300">
-                        <div class="absolute inset-y-0 right-0 top-6 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 sm:text-sm">%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Colonne de droite - Résultats -->
-        <div class="space-y-6">
-            <div class="bg-sky-50 p-6 rounded-xl shadow-sm border-4 border-white">
-                <h2 class="text-2xl font-bold text-center mb-6"><span>Analyse financière</h2>
-                
-                <!-- Résultats mensuels -->
-                <div class="bg-white p-4 rounded-lg shadow-sm mb-4">
-                    <h3 class="text-lg font-semibold mb-3 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Coût mensuel
-                    </h3>
-                    
-                    <template x-if="loanType === 'fixed_payment'">
-                        <div class="space-y-2">
+                    <div class="bg-amber-50 p-3 rounded-lg">
+                        <div class="text-sm font-medium text-gray-800 mb-2">Aujourd'hui</div>
+                        <div class="space-y-1">
                             <div class="flex justify-between items-baseline">
-                                <span class="text-gray-600">Mensualité crédit</span>
-                                <span class="text-xl font-bold text-sky-600" x-text="results ? formatNumber(results.monthlyLoanPayment) + ' €' : '-'"></span>
-                            </div>
-                            <div class="flex justify-between items-baseline text-sm">
-                                <span class="text-gray-600">+ charges mensuelles</span>
-                                <span class="font-medium" x-text="results ? formatNumber(results.monthlyCharges) + ' €' : '-'"></span>
-                            </div>
-                            <div class="pt-2 border-t mt-2">
-                                <div class="flex justify-between items-baseline">
-                                    <span class="text-gray-800 font-medium">Total mensuel</span>
-                                    <span class="text-xl font-bold text-sky-600" x-text="results ? formatNumber(results.totalMonthlyPayment) + ' €' : '-'"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-
-                    <template x-if="loanType === 'fixed_principal'">
-                        <div class="space-y-4">
-                            <div>
-                                <div class="flex justify-between items-baseline">
-                                    <span class="text-gray-600">Mensualité initiale</span>
-                                    <span class="text-2xl font-bold text-sky-600" x-text="results ? formatNumber(results.totalMonthlyPaymentStart) + ' €' : '-'"></span>
-                                </div>
-                                <div class="flex justify-between items-baseline mt-1">
-                                    <span class="text-gray-600">Mensualité finale</span>
-                                    <span class="text-xl font-semibold text-sky-600" x-text="results ? formatNumber(results.totalMonthlyPaymentEnd) + ' €' : '-'"></span>
-                                </div>
-                            </div>
-                            
-                            <div class="flex justify-between items-baseline text-sm text-gray-500">
-                                <span>Dont charges</span>
-                                <span x-text="results ? formatNumber(results.monthlyCharges) + ' €' : '-'"></span>
-                            </div>
-
-                            <div class="pt-4 border-t">
-                                <div class="flex justify-between items-baseline">
-                                    <span class="text-gray-600">Loyer équivalent</span>
-                                    <span class="text-xl font-semibold" x-text="formatNumber(formData.rent_saved) + ' €'"></span>
-                                </div>
-                                
-                                <div class="flex justify-between items-baseline mt-2">
-                                    <span class="text-gray-600">Différence initiale</span>
-                                    <span class="text-xl font-semibold" 
-                                          :class="results && results.rentDifference > 0 ? 'text-green-600' : 'text-red-600'"
-                                          x-text="results ? (results.rentDifference > 0 ? '+' : '') + formatNumber(results.rentDifference) + ' €' : '-'">
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-
-                <!-- Comparaison avec la location -->
-                <div class="bg-white p-4 rounded-lg shadow-sm mb-4">
-                    <h3 class="text-lg font-semibold mb-3 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
-                        </svg>
-                        Comparaison location
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="bg-sky-50 p-3 rounded-lg">
-                            <div class="text-sm font-medium text-gray-800 mb-2">Aujourd'hui</div>
-                            <div class="space-y-1">
-                                <div class="flex justify-between items-baseline">
-                                    <span class="text-gray-600">Loyer</span>
-                                    <span class="font-medium" x-text="formatNumber(formData.rent_saved) + ' €'"></span>
-                                </div>
-                                <div class="flex justify-between items-baseline">
-                                    <span class="text-gray-600">Différence</span>
-                                    <span class="font-medium" :class="results && results.rentDifference > 0 ? 'text-green-600' : 'text-red-600'"
-                                          x-text="results ? (results.rentDifference > 0 ? '+' : '') + formatNumber(results.rentDifference) + ' €' : '-'"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-sky-50/50 p-3 rounded-lg">
-                            <div class="text-sm font-medium text-gray-800 mb-2">Fin de prêt (inflation)</div>
-                            <div class="flex justify-between items-baseline mt-1">
                                 <span class="text-gray-600">Loyer</span>
-                                <span class="font-medium text-sky-600" x-text="results ? formatNumber(results.finalRent) + ' €' : '-'"></span>
+                                <span class="font-medium" x-text="formatNumber(formData.rent_saved) + ' €'"></span>
                             </div>
-                            <div class="flex justify-between items-baseline mt-1">
-                                <span class="text-gray-600">Différence</span>
-                                <span class="font-medium" :class="results && results.finalRentDifference > 0 ? 'text-green-600' : 'text-red-600'"
-                                      x-text="results ? (results.finalRentDifference > 0 ? '+' : '') + formatNumber(results.finalRentDifference) + ' €' : '-'"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Coûts totaux -->
-                <div class="bg-white p-4 rounded-lg shadow-sm">
-                    <h3 class="text-lg font-semibold mb-3 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 01-2.031.352 5.988 5.988 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.97zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 01-2.031.352 5.989 5.989 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.97z" />
-                        </svg>
-                        Bilan financier
-                    </h3>
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-baseline">
-                            <span class="text-red-600 font-medium">Coût total</span>
-                            <span class="text-xl font-bold text-red-600" x-text="results ? formatNumber(results.totalCapital + formData.down_payment + results.totalInterest + results.totalCharges) + ' €' : '-'"></span>
-                        </div>
-                        <div class="ml-4">
-                            <div class="flex justify-between items-baseline text-sm">
-                                <span class="text-gray-600">Montant emprunté</span>
-                                <span class="font-medium" x-text="results ? formatNumber(results.totalCapital) + ' €' : '-'"></span>
-                            </div>
-                            <div class="flex justify-between items-baseline text-sm">
-                                <span class="text-gray-600">Apport personnel</span>
-                                <span class="font-medium" x-text="formatNumber(formData.down_payment) + ' €'"></span>
-                            </div>
-                            <div class="flex justify-between items-baseline text-sm">
-                                <span class="text-gray-600">Total des intérêts</span>
-                                <span class="font-medium" x-text="results ? formatNumber(results.totalInterest) + ' €' : '-'"></span>
-                            </div>
-                            <div class="flex justify-between items-baseline text-sm">
-                                <span class="text-gray-600">Total des charges</span>
-                                <span class="font-medium" x-text="results ? formatNumber(results.totalCharges) + ' €' : '-'"></span>
-                            </div>
-                        </div>
-                        <div class="pt-2 border-t">
                             <div class="flex justify-between items-baseline">
-                                <span class="text-green-600 font-medium">Loyers économisés</span>
-                                <span class="text-xl font-bold text-green-600" x-text="results ? formatNumber(results.totalRentSaved) + ' €' : '-'"></span>
+                                <span class="text-gray-600">Différence</span>
+                                <span class="font-medium" :class="results && results.rentDifference > 0 ? 'text-green-600' : 'text-red-600'"
+                                      x-text="results ? (results.rentDifference > 0 ? '+' : '') + formatNumber(results.rentDifference) + ' €' : '-'"></span>
                             </div>
-                            <div class="flex justify-between items-baseline mt-2">
-                                <span class="text-gray-800 font-medium">Coût net final</span>
-                                <span class="text-xl font-bold" x-text="results ? formatNumber(results.totalCapital + formData.down_payment + results.totalInterest + results.totalCharges - results.totalRentSaved) + ' €' : '-'"></span>
-                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-amber-50 p-3 rounded-lg">
+                        <div class="text-sm font-medium text-gray-800 mb-2">Fin de prêt (inflation)</div>
+                        <div class="flex justify-between items-baseline mt-1">
+                            <span class="text-gray-600">Loyer</span>
+                            <span class="font-medium text-amber-600" x-text="results ? formatNumber(results.finalRent) + ' €' : '-'"></span>
+                        </div>
+                        <div class="flex justify-between items-baseline mt-1">
+                            <span class="text-gray-600">Différence</span>
+                            <span class="font-medium" :class="results && results.finalRentDifference > 0 ? 'text-green-600' : 'text-red-600'"
+                                  x-text="results ? (results.finalRentDifference > 0 ? '+' : '') + formatNumber(results.finalRentDifference) + ' €' : '-'"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bilan financier -->
+            <div class="bg-white p-4 rounded-lg border border-gray-300 shadow-sm">
+                <h3 class="text-lg font-semibold mb-3 flex items-center text-gray-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-amber-500">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 01-2.031.352 5.988 5.988 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.97zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 01-2.031.352 5.989 5.989 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.97z" />
+                    </svg>
+                    Bilan financier
+                </h3>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-baseline">
+                        <span class="text-red-600 font-medium">Coût total</span>
+                        <span class="text-xl font-bold text-red-600" x-text="results ? formatNumber(results.totalCapital + formData.down_payment + results.totalInterest + results.totalCharges) + ' €' : '-'"></span>
+                    </div>
+                    <div class="ml-4">
+                        <div class="flex justify-between items-baseline text-sm">
+                            <span class="text-gray-600">Montant emprunté</span>
+                            <span class="font-medium" x-text="results ? formatNumber(results.totalCapital) + ' €' : '-'"></span>
+                        </div>
+                        <div class="flex justify-between items-baseline text-sm">
+                            <span class="text-gray-600">Apport personnel</span>
+                            <span class="font-medium" x-text="formatNumber(formData.down_payment) + ' €'"></span>
+                        </div>
+                        <div class="flex justify-between items-baseline text-sm">
+                            <span class="text-gray-600">Total des intérêts</span>
+                            <span class="font-medium" x-text="results ? formatNumber(results.totalInterest) + ' €' : '-'"></span>
+                        </div>
+                        <div class="flex justify-between items-baseline text-sm">
+                            <span class="text-gray-600">Total des charges</span>
+                            <span class="font-medium" x-text="results ? formatNumber(results.totalCharges) + ' €' : '-'"></span>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t">
+                        <div class="flex justify-between items-baseline">
+                            <span class="text-green-600 font-medium">Loyers économisés</span>
+                            <span class="text-xl font-bold text-green-600" x-text="results ? formatNumber(results.totalRentSaved) + ' €' : '-'"></span>
+                        </div>
+                        <div class="flex justify-between items-baseline mt-2">
+                            <span class="text-gray-800 font-medium">Coût net final</span>
+                            <span class="text-xl font-bold" x-text="results ? formatNumber(results.totalCapital + formData.down_payment + results.totalInterest + results.totalCharges - results.totalRentSaved) + ' €' : '-'"></span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="max-w-7xl mx-auto mt-12 px-4 sm:px-6 lg:px-8">
-    <!-- Section Principale : Guide et Analyse -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-        <!-- Carte 1: Points Clés -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-            <div class="flex items-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-sky-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-                <h2 class="text-xl font-bold">Comparaison Détaillée</h2>
+
+    <!-- Reste du contenu -->
+    <hr class="my-8 border-t border-gray-300">
+
+    <div class="max-w-8xl mx-auto mt-12 px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Pourquoi utiliser notre outil ?</h2>
+        <!-- Section Principale : Guide et Analyse -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            <!-- Carte 1: Points Clés -->
+
+            <div class="bg-white p-6 rounded-xl border border-gray-300 shadow-sm hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    <h2 class="text-xl font-bold text-gray-800">Comparaison détaillée</h2>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
+                            <span class="text-amber-600 font-semibold">1</span>
+                        </span>
+                        <span class="text-gray-600">Analyse coût total sur 25 ans</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
+                            <span class="text-amber-600 font-semibold">2</span>
+                        </span>
+                        <span class="text-gray-600">Impact de l'inflation des loyers</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
+                            <span class="text-amber-600 font-semibold">3</span>
+                        </span>
+                        <span class="text-gray-600">Charges et frais annexes</span>
+                    </div>
+                </div>
             </div>
-            <div class="space-y-3">
-                <div class="flex items-center space-x-2">
-                    <span class="flex-shrink-0 w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center">
-                        <span class="text-sky-600 font-semibold">1</span>
-                    </span>
-                    <span class="text-gray-600">Analyse coût total sur 25 ans</span>
+
+            <!-- Carte 2: Exemple Concret -->
+            <div class="bg-white p-6 rounded-xl border border-gray-300 shadow-sm hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    <h2 class="text-xl font-bold text-gray-800">Exemple type 2024</h2>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <span class="flex-shrink-0 w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center">
-                        <span class="text-sky-600 font-semibold">2</span>
-                    </span>
-                    <span class="text-gray-600">Impact de l'inflation des loyers</span>
+                <div class="space-y-3" itemscope itemtype="https://schema.org/FinancialProduct">
+                    <div class="flex justify-between py-2 border-b border-gray-300">
+                        <span class="text-gray-600">Prix du bien</span>
+                        <span class="font-semibold">450 000 €</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-gray-300">
+                        <span class="text-gray-600">Taux moyen</span>
+                        <span class="font-semibold">4,1 %</span>
+                    </div>
+                    <div class="flex justify-between py-2">
+                        <span class="text-gray-600">Durée optimale</span>
+                        <span class="font-semibold text-amber-600">25 ans</span>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <span class="flex-shrink-0 w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center">
-                        <span class="text-sky-600 font-semibold">3</span>
-                    </span>
-                    <span class="text-gray-600">Charges et frais annexes</span>
+            </div>
+
+            <!-- Carte 3: Statistiques -->
+            <div class="bg-white p-6 rounded-xl border border-gray-300 shadow-sm hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                    </svg>
+                    <h2 class="text-xl font-bold text-gray-800">Chiffres clés 2024</h2>
+                </div>
+                <div class="space-y-4">
+                    <div class="text-center p-3 bg-amber-50 rounded-lg">
+
+                        <span class="block text-sm text-gray-600">Seuil de rentabilité moyen</span>
+                        <span class="block text-2xl font-bold text-amber-600">14,8 ans</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center p-2 bg-gray-50 rounded-lg">
+                            <span class="block text-sm text-gray-600">Paris</span>
+                            <span class="block font-semibold">29 ans</span>
+                        </div>
+                        <div class="text-center p-2 bg-gray-50 rounded-lg">
+                            <span class="block text-sm text-gray-600">Province</span>
+                            <span class="block font-semibold">8-12 ans</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Carte 2: Exemple Concret -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-            <div class="flex items-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-sky-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
-                <h2 class="text-xl font-bold">Exemple Type 2024</h2>
-            </div>
-            <div class="space-y-3" itemscope itemtype="https://schema.org/FinancialProduct">
-                <div class="flex justify-between py-2 border-b">
-                    <span class="text-gray-600">Prix du bien</span>
-                    <span class="font-semibold">450 000 €</span>
-                </div>
-                <div class="flex justify-between py-2 border-b">
-                    <span class="text-gray-600">Taux moyen</span>
-                    <span class="font-semibold">4,1 %</span>
-                </div>
-                <div class="flex justify-between py-2">
-                    <span class="text-gray-600">Durée optimale</span>
-                    <span class="font-semibold text-sky-600">25 ans</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Carte 3: Statistiques -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-            <div class="flex items-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-sky-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-                </svg>
-                <h2 class="text-xl font-bold">Chiffres Clés 2024</h2>
-            </div>
+        <!-- Section FAQ -->
+        <div class="bg-white rounded-xl border border-gray-300 shadow-sm p-6 mb-12" itemscope itemtype="https://schema.org/FAQPage">
+            <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Questions fréquentes</h2>
             <div class="space-y-4">
-                <div class="text-center p-3 bg-sky-50 rounded-lg">
-                    <span class="block text-sm text-gray-600">Seuil de rentabilité moyen</span>
-                    <span class="block text-2xl font-bold text-sky-600">14,8 ans</span>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="text-center p-2 bg-gray-50 rounded-lg">
-                        <span class="block text-sm text-gray-600">Paris</span>
-                        <span class="block font-semibold">29 ans</span>
+
+                <details class="group" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-gray-50 p-4 text-lg font-medium text-gray-800 hover:bg-gray-100 transition-colors">
+                        <span itemprop="name">Quand devient-il plus intéressant d'acheter que de louer ?</span>
+                        <span class="ml-6 flex-shrink-0">
+                            <svg class="h-5 w-5 transform transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                    </summary>
+                    <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="mt-4 px-4">
+                        <div itemprop="text" class="prose max-w-none text-gray-600">
+                            <p>Le seuil de rentabilité dépend de plusieurs facteurs :</p>
+                            <ul class="list-disc pl-5 mt-2">
+                                <li>La localisation du bien (8-29 ans selon les villes)</li>
+                                <li>L'évolution des prix de l'immobilier</li>
+                                <li>Les conditions de financement obtenues</li>
+                                <li>Le montant des charges et travaux</li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="text-center p-2 bg-gray-50 rounded-lg">
-                        <span class="block text-sm text-gray-600">Province</span>
-                        <span class="block font-semibold">8-12 ans</span>
+                </details>
+
+                <details class="group" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-gray-50 p-4 text-lg font-medium text-gray-800 hover:bg-gray-100 transition-colors">
+                        <span itemprop="name">Comment optimiser son investissement immobilier en 2024 ?</span>
+                        <span class="ml-6 flex-shrink-0">
+                            <svg class="h-5 w-5 transform transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                    </summary>
+                    <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="mt-4 px-4">
+                        <div itemprop="text" class="prose max-w-none text-gray-600">
+                            <p>Stratégies recommandées :</p>
+                            <ul class="list-disc pl-5 mt-2">
+                                <li>Négocier le prix d'achat (marché favorable en 2024)</li>
+                                <li>Comparer plusieurs banques pour le financement</li>
+                                <li>Prévoir une enveloppe travaux réaliste</li>
+                                <li>Anticiper la revente dès l'achat</li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
+                </details>
             </div>
         </div>
-    </div>
-
-    <!-- Section FAQ -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-12" itemscope itemtype="https://schema.org/FAQPage">
-        <h2 class="text-2xl font-bold mb-6 text-center">Questions Fréquentes</h2>
-        <div class="space-y-4">
-            <details class="group" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-gray-50 p-4 text-lg font-medium">
-                    <span itemprop="name">Quand devient-il plus intéressant d'acheter que de louer ?</span>
-                    <span class="ml-6 flex-shrink-0">
-                        <svg class="h-5 w-5 transform transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
-                        </svg>
-                    </span>
-                </summary>
-                <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="mt-4 px-4">
-                    <div itemprop="text" class="prose max-w-none text-gray-600">
-                        <p>Le seuil de rentabilité dépend de plusieurs facteurs :</p>
-                        <ul class="list-disc pl-5 mt-2">
-                            <li>La localisation du bien (8-29 ans selon les villes)</li>
-                            <li>L'évolution des prix de l'immobilier</li>
-                            <li>Les conditions de financement obtenues</li>
-                            <li>Le montant des charges et travaux</li>
-                        </ul>
-                    </div>
-                </div>
-            </details>
-
-            <details class="group" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                <summary class="flex cursor-pointer items-center justify-between rounded-lg bg-gray-50 p-4 text-lg font-medium">
-                    <span itemprop="name">Comment optimiser son investissement immobilier en 2024 ?</span>
-                    <span class="ml-6 flex-shrink-0">
-                        <svg class="h-5 w-5 transform transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
-                        </svg>
-                    </span>
-                </summary>
-                <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer" class="mt-4 px-4">
-                    <div itemprop="text" class="prose max-w-none text-gray-600">
-                        <p>Stratégies recommandées :</p>
-                        <ul class="list-disc pl-5 mt-2">
-                            <li>Négocier le prix d'achat (marché favorable en 2024)</li>
-                            <li>Comparer plusieurs banques pour le financement</li>
-                            <li>Prévoir une enveloppe travaux réaliste</li>
-                            <li>Anticiper la revente dès l'achat</li>
-                        </ul>
-                    </div>
-                </div>
-            </details>
-        </div>
-    </div>
-    
+        
         <!-- Section : Tableau comparatif -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-12">
-        <h2 class="text-2xl font-bold mb-6 text-center">Achat vs Location : Les points clés</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-                <h3 class="text-lg font-semibold mb-4 text-sky-700">Acheter 🏠</h3>
-                <ul class="space-y-2">
-                    <li class="flex items-start">
-                        <span class="text-green-500 mr-2">✓</span>
-                        <span>Constitution d'un patrimoine</span>
-                    </li>
-                    <li class="flex items-start">
-                        <span class="text-green-500 mr-2">✓</span>
-                        <span>Protection contre l'inflation des loyers</span>
-                    </li>
-                    <li class="flex items-start">
-                        <span class="text-red-500 mr-2">×</span>
-                        <span>Frais importants (notaire, travaux)</span>
-                    </li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-lg font-semibold mb-4 text-sky-700">Louer 🔑</h3>
-                <ul class="space-y-2">
-                    <li class="flex items-start">
-                        <span class="text-green-500 mr-2">✓</span>
-                        <span>Flexibilité géographique</span>
-                    </li>
-                    <li class="flex items-start">
-                        <span class="text-green-500 mr-2">✓</span>
-                        <span>Capacité d'épargne</span>
-                    </li>
-                    <li class="flex items-start">
-                        <span class="text-red-500 mr-2">×</span>
-                        <span>Loyer à fonds perdus</span>
-                    </li>
-                </ul>
+        <div class="bg-white rounded-xl border border-gray-300 shadow-sm p-6 mb-12">
+            <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Achat vs Location : Les points clés</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-amber-700">Acheter 🏠</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <span class="text-green-600 mr-2">✓</span>
+                            <span>Constitution d'un patrimoine</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-green-600 mr-2">✓</span>
+                            <span>Protection contre l'inflation des loyers</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-red-600 mr-2">×</span>
+                            <span>Frais importants (notaire, travaux)</span>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-amber-700">Louer 🔑</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <span class="text-green-600 mr-2">✓</span>
+                            <span>Flexibilité géographique</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-green-600 mr-2">✓</span>
+                            <span>Capacité d'épargne</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-red-600 mr-2">×</span>
+                            <span>Loyer à fonds perdus</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

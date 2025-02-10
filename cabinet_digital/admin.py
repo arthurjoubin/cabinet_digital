@@ -1,11 +1,12 @@
 from django.contrib import admin
-from .models import Software, SoftwareCategory, Article, Actualites, Tag, Metier, AIModel, AITool, AIArticle
+from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI
 from django.db import models
 from django import forms
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 from django.contrib.auth.admin import UserAdmin
+
 from django.contrib.auth.models import User
 from unfold.contrib.forms.widgets import WysiwygWidget
 
@@ -31,10 +32,7 @@ class ActualitesInline(admin.TabularInline):
     extra = 1
     ordering = ('tag__name',)
 
-class ArticleInline(admin.TabularInline):
-    model = Article.tags.through
-    extra = 1
-    ordering = ('tag__name',)
+
 
 class SoftwareInline(admin.TabularInline):
     model = Software.category.through
@@ -109,31 +107,6 @@ class CategoryAdmin(ModelAdmin):
     warn_unsaved_form = True
     list_filter_sheet = True
 
-@admin.register(Article)
-class ArticleAdmin(ModelAdmin):
-    list_display = ('title', 'pub_date', 'is_published')
-    search_fields = ('title', 'content')
-    list_filter = ('tags', 'is_published', 'pub_date')
-    date_hierarchy = 'pub_date'
-    prepopulated_fields = {'slug': ('title',)}
-    fieldsets = (
-        (None, {
-            'fields': ('title', 'slug', 'content')
-        }),
-        ('Publication', {
-            'fields': ('pub_date', 'is_published', 'tags'),
-            'classes': ('collapse',)
-        }),
-    )
-
-    compressed_fields = True
-    warn_unsaved_form = True
-    list_filter_sheet = True
-    
-    formfield_overrides = {
-        models.TextField: {'widget': WysiwygWidget},
-    }
-
 @admin.register(Actualites)
 class ActualitesAdmin(ModelAdmin):
     list_display = ['title', 'pub_date', 'is_published']
@@ -160,7 +133,8 @@ class TagAdmin(ModelAdmin):
     list_display = ('name', 'slug', 'color', 'colored_tag')
     list_editable = ['slug']
     search_fields = ('name',)
-    inlines = [ActualitesInline, ArticleInline]
+    inlines = [ActualitesInline]
+
 
     def colored_tag(self, obj):
         return format_html(
@@ -170,6 +144,9 @@ class TagAdmin(ModelAdmin):
             obj.name
         )
     colored_tag.short_description = 'Tag'
+    verbose_name = 'Logiciels - Tags'
+    verbose_name_plural = 'Logiciels - Tags'
+
 
 @admin.register(Metier)
 class MetierAdmin(ModelAdmin):
@@ -183,19 +160,18 @@ class MetierAdmin(ModelAdmin):
         }),
     )
 
+    verbose_name = 'Logiciels - Métiers'
+    verbose_name_plural = 'Logiciels - Métiers'
 
 @admin.register(AIModel)
 class AIModelAdmin(ModelAdmin):
-    list_display = ['name', 'provider', 'is_published', 'is_top_pick', 'unique_views']
-    list_editable = ['is_top_pick']
+    list_display = ['name', 'excerpt', 'tags', 'price', 'is_published']
+    list_editable = ['excerpt', 'tags', 'price']
     search_fields = ['name', 'provider', 'description']
     list_filter = ['is_published', 'is_top_pick', 'provider']
-    readonly_fields = ['unique_views', 'slug']
-    prepopulated_fields = {'slug': ['name']}
-
     fieldsets = (
         (None, {
-            'fields': ('name', 'slug', 'provider', 'description', 'excerpt')
+            'fields': ('name', 'slug', 'provider', 'description', 'excerpt', 'tags')
         }),
         ('Media', {
             'fields': ('logo', 'site'),
@@ -215,13 +191,60 @@ class AIModelAdmin(ModelAdmin):
     warn_unsaved_form = True
     list_filter_sheet = True
 
+@admin.register(AIToolCategory)
+class AIToolCategoryAdmin(ModelAdmin):
+    list_display = ['name', 'slug']
+    search_fields = ['name']
+    
+    def __str__(self):
+        return self.name
+
 @admin.register(AITool)
-class AIToolAdmin(SoftwareAdmin):
-    list_display = ['name', 'is_published', 'is_top_pick', 'unique_views']
-    list_filter = ['name']
-    list_editable = ['is_top_pick', 'unique_views']
+class AIToolAdmin(ModelAdmin):
+    list_display = ['name', 'excerpt', 'categories_display', 'is_published']
+    list_editable = ['excerpt']
+    list_filter = ['name', 'category']
+    search_fields = ['name', 'description']
+    readonly_fields = ['unique_views']
+
+    def categories_display(self, obj):
+        return ", ".join([category.name for category in obj.category.all()])
+    categories_display.short_description = 'Catégories'
+
+    formfield_overrides = {
+        models.TextField: {'widget': WysiwygWidget},
+    }
+
+    compressed_fields = True
+    warn_unsaved_form = True
+    list_filter_sheet = True
 
 @admin.register(AIArticle)
-class AIArticleAdmin(ArticleAdmin):
-    pass
+class AIArticleAdmin(ModelAdmin):
+    list_display = ['title', 'excerpt', 'tags', 'site', 'pub_date', 'is_published']
+    list_editable = ['excerpt', 'tags', 'site']
+    search_fields = ['title', 'content']
+    list_filter = ['is_published', 'pub_date']
+    date_hierarchy = 'pub_date'
+    prepopulated_fields = {'slug': ('title',)}
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'slug', 'content', 'banner')
+        }),
+        ('Publication', {
+            'fields': ('is_published', 'related_ai_models', 'related_ai_tools')        }),
+    )
+    formfield_overrides = {
+        models.TextField: {'widget': WysiwygWidget},
+    }
+
+
+
+@admin.register(ProviderAI)
+class ProviderAIAdmin(ModelAdmin):
+    list_display = ['name', 'slug']
+    search_fields = ['name']
+    verbose_name = 'IA - Editeurs'
+    verbose_name_plural = 'IA - Editeurs'
+
 

@@ -1,0 +1,485 @@
+[
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 69,
+  "fields": {
+    "name": "Saisie automatisée (OCR)",
+    "description": "<h2 class=\"font-600 text-xl font-bold\">Un constat : la saisie manuelle, un frein &agrave; la productivit&eacute;</h2>\r\n<ul class=\"-mt-1 [li&gt;&amp;]:mt-2 list-disc space-y-2 pl-8\">\r\n<li class=\"whitespace-normal break-words\">La gestion et la saisie manuelle des factures fournisseurs sont chronophages</li>\r\n<li class=\"whitespace-normal break-words\">Ces t&acirc;ches r&eacute;p&eacute;titives augmentent les risques d'erreurs</li>\r\n<li class=\"whitespace-normal break-words\">Le temps pass&eacute; sur ces t&acirc;ches r&eacute;duit la disponibilit&eacute; pour des missions &agrave; plus forte valeur</li>\r\n</ul>\r\n<h2 class=\"font-600 text-xl font-bold\">L'OCR : une solution concr&egrave;te pour la num&eacute;risation comptable</h2>\r\n<h3 class=\"font-600 text-lg font-bold\">Fonctionnalit&eacute;s cl&eacute;s</h3>\r\n<ul class=\"-mt-1 [li&gt;&amp;]:mt-2 list-disc space-y-2 pl-8\">\r\n<li class=\"whitespace-normal break-words\">Reconnaissance automatique des donn&eacute;es essentielles :\r\n<ul class=\"-mt-1 [li&gt;&amp;]:mt-2 list-disc space-y-2 pl-8\">\r\n<li class=\"whitespace-normal break-words\">Montants HT et TVA</li>\r\n<li class=\"whitespace-normal break-words\">Dates</li>\r\n<li class=\"whitespace-normal break-words\">Num&eacute;ros de facture</li>\r\n<li class=\"whitespace-normal break-words\">Coordonn&eacute;es fournisseurs</li>\r\n</ul>\r\n</li>\r\n<li class=\"whitespace-normal break-words\">Int&eacute;gration directe dans le logiciel comptable</li>\r\n<li class=\"whitespace-normal break-words\">Apprentissage continu pour am&eacute;liorer la pr&eacute;cision</li>\r\n</ul>\r\n<h3 class=\"font-600 text-lg font-bold\">B&eacute;n&eacute;fices mesurables</h3>\r\n<ol class=\"-mt-1 [li&gt;&amp;]:mt-2 list-decimal space-y-2 pl-8\">\r\n<li class=\"whitespace-normal break-words\">Gain de temps significatif sur la saisie</li>\r\n<li class=\"whitespace-normal break-words\">R&eacute;duction des erreurs de transcription</li>\r\n<li class=\"whitespace-normal break-words\">Archivage num&eacute;rique automatique</li>\r\n<li class=\"whitespace-normal break-words\">Tra&ccedil;abilit&eacute; accrue des documents</li>\r\n</ol>\r\n<h2 class=\"font-600 text-xl font-bold\">Impact sur l'organisation du cabinet</h2>\r\n<h3 class=\"font-600 text-lg font-bold\">Pour les collaborateurs</h3>\r\n<ul class=\"-mt-1 [li&gt;&amp;]:mt-2 list-disc space-y-2 pl-8\">\r\n<li class=\"whitespace-normal break-words\">Lib&eacute;ration du temps pour des missions conseil</li>\r\n<li class=\"whitespace-normal break-words\">Mont&eacute;e en comp&eacute;tence sur des t&acirc;ches &agrave; valeur ajout&eacute;e</li>\r\n<li class=\"whitespace-normal break-words\">Utilisation d'outils modernes et attractifs</li>\r\n<li class=\"whitespace-normal break-words\">Focus sur l'analyse et le contr&ocirc;le plut&ocirc;t que la saisie</li>\r\n</ul>\r\n<h3 class=\"font-600 text-lg font-bold\">Pour le cabinet</h3>\r\n<ul class=\"-mt-1 [li&gt;&amp;]:mt-2 list-disc space-y-2 pl-8\">\r\n<li class=\"whitespace-normal break-words\">Modernisation des process</li>\r\n<li class=\"whitespace-normal break-words\">Attractivit&eacute; accrue pour les talents</li>\r\n<li class=\"whitespace-normal break-words\">Am&eacute;lioration de la rentabilit&eacute;</li>\r\n<li class=\"whitespace-normal break-words\">Meilleure satisfaction client</li>\r\n</ul>\r\n<h2 class=\"font-600 text-xl font-bold\">Pr&eacute;paration &agrave; la facture &eacute;lectronique</h2>\r\n<h3 class=\"font-600 text-lg font-bold\">Compl&eacute;mentarit&eacute; avec la r&eacute;forme</h3>\r\n<p class=\"whitespace-pre-wrap break-words\">L'OCR reste pertinent pour :</p>\r\n<ul class=\"-mt-1 [li&gt;&amp;]:mt-2 list-disc space-y-2 pl-8\">\r\n<li class=\"whitespace-normal break-words\">Les factures B2C</li>\r\n<li class=\"whitespace-normal break-words\">Les transactions internationales</li>\r\n<li class=\"whitespace-normal break-words\">Les notes de frais</li>\r\n<li class=\"whitespace-normal break-words\">Les documents annexes</li>\r\n</ul>\r\n<h3 class=\"font-600 text-lg font-bold\">Avantages de l'adoption pr&eacute;coce</h3>\r\n<ul class=\"-mt-1 [li&gt;&amp;]:mt-2 list-disc space-y-2 pl-8\">\r\n<li class=\"whitespace-normal break-words\">Anticipation de la transformation digitale</li>\r\n<li class=\"whitespace-normal break-words\">Adaptation progressive des &eacute;quipes</li>\r\n<li class=\"whitespace-normal break-words\">Optimisation des processus avant l'obligation l&eacute;gale</li>\r\n</ul>\r\n<h2 class=\"font-600 text-xl font-bold\">Conseils pour choisir son OCR</h2>\r\n<ol class=\"-mt-1 [li&gt;&amp;]:mt-2 list-decimal space-y-2 pl-8\">\r\n<li class=\"whitespace-normal break-words\">V&eacute;rifier la compatibilit&eacute; avec votre logiciel comptable</li>\r\n<li class=\"whitespace-normal break-words\">&Eacute;valuer la qualit&eacute; de reconnaissance sur vos documents types</li>\r\n<li class=\"whitespace-normal break-words\">Tester la facilit&eacute; de correction des erreurs</li>\r\n<li class=\"whitespace-normal break-words\">S'assurer de la pr&eacute;sence d'un support technique r&eacute;actif</li>\r\n</ol>",
+    "slug": "saisie_automatisee_ocr",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/scan-text.svg",
+    "last_modified": "2024-11-19T22:07:52.441Z",
+    "excerpt": "outils d'automatisation de saisie comptable et OCR pour experts comptables"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 71,
+  "fields": {
+    "name": "ERP",
+    "description": "",
+    "slug": "erp",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/workflow.svg",
+    "last_modified": "2024-11-19T22:08:05.537Z",
+    "excerpt": "solutions ERP pour les PMEs"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 74,
+  "fields": {
+    "name": "Communication",
+    "description": "<div data-test-render-count=\"3\">\r\n<div class=\"mb-1 mt-1\">\r\n<div class=\"group  relative  inline-flex  gap-2  bg-gradient-to-b  from-bg-300  from-50%  to-bg-400  rounded-xl  ml-px  pl-2.5  py-2.5  break-words  text-text-200  transition-all  max-w-[75ch]  flex-col  shadow-[0_2px_16px_rgba(0,0,0,0.025)] pr-6\">\r\n<div class=\"flex flex-row gap-2\">\r\n<div class=\"shrink-0\">\r\n<blockquote>\r\n<p>Cet article est inspir&eacute; de <a href=\"https://www.youtube.com/watch?v=pdyMspjURmM\">cet &eacute;change</a>&nbsp;entre <strong>Alexis Slama</strong> (<a href=\"https://www.boosterdigital.fr/\">Booster Digital</a>) et <strong>Nicolas Piatkowski</strong> (<a href=\"https://www.lesgeeksdeschiffres.com/\">Les Geeks Des Chiffres</a>).</p>\r\n</blockquote>\r\n<h2>Pourquoi une strat&eacute;gie marketing ?</h2>\r\n<p>Pour un expert-comptable comme pour toute entreprise, il est essentiel de mettre en place une strat&eacute;gie marketing pour votre cabinet afin de vous d&eacute;marquer de la concurrence et attirer de nouveaux prospects. Aujourd&rsquo;hui, il y a moyen de r&eacute;colter des fruits sans investir dans des campagnes de publicit&eacute;s, il faut ma&icirc;triser les bases de ce que nous propose la digitalisation de notre monde.</p>\r\n<p>Nous le savons tous, votre expertise est plus que jamais recherch&eacute;, encore faut-il la faire connaitre.</p>\r\n<p>La strat&eacute;gie doit permettre d'aller au contact des prospects &agrave; la recherche de vos services, mais aussi de pouvoir mettre en avant des services additionnels &agrave; vos clients existants.</p>\r\n<h2>Rester authentique</h2>\r\n<p>Restez authentique et ne faites pas comme tout le monde en automatisant ou externalisant vos communications. Comprenez les r&eacute;els besoins de vos clients actuels et cibles. En utilisant votre, alors vous durerez plus longtemps (cl&eacute; pour toute strat&eacute;gie) et vous attirerez les clients que vous appr&eacute;ciez.</p>\r\n<h2>Enqu&ecirc;te de satisfaction</h2>\r\n<p>Recueillez les retours de vos clients, via un simple Google Form de quelques questions pour ne pas d&eacute;courager les participants.. N'ayez pas peur de recevoir des retours n&eacute;gatifs, c'est justement l'objectif.</p>\r\n<p><strong>En cas de retour n&eacute;gatif :</strong> - Pr&eacute;f&eacute;rable de recevoir des avis n&eacute;gatifs sur votre Google Form que publiquement - Possibilit&eacute; de le transformer en positif en appelant le client - Apprenez de ces retours pour am&eacute;liorer votre service</p>\r\n<p><strong>En cas de retour positif</strong> - Leur demander de mettre un avis public (Google Maps, TrustPilot, etc) - Utiliser la verbatim utilis&eacute; par les clients pour votre communication (page d'accueil de site internet, r&eacute;seaux sociaux, etc) - Partager &agrave; votre &eacute;quipe ces retours. Naturellement, on fait plus de retours que &ccedil;a va mal que quand &ccedil;a va bien, l'enqu&ecirc;te permet d'avoir ces retours positifs, qui permettent de galvaniser votre cabinet.</p>\r\n<h2>R&eacute;f&eacute;rencement</h2>\r\n<p>Le r&eacute;f&eacute;rencement est un aspect crucial de toute strat&eacute;gie marketing digitale. Il est important de mettre en place un site web qui sort du lot et qui b&eacute;n&eacute;ficie d'un bon r&eacute;f&eacute;rencement SEO pour &ecirc;tre facilement trouv&eacute; par les internautes. Par bien faite, la base est d'utiliser des verbatims qui sont d&eacute;di&eacute;s &agrave; votre cible et utiliser des images pas g&eacute;n&eacute;rique. Le site doit faire ressortir votre identit&eacute; sans aller dans l'exc&egrave;s non plus. Il est &eacute;galement recommand&eacute; de cr&eacute;er une page GoogleMyBusiness compl&egrave;te et en r&eacute;pondant aux avis laiss&eacute;s par vos clients et en y publiant des photos de votre &eacute;quipe.</p>\r\n<h2>Trouver <strong>sa client&egrave;le recherch&eacute;e</strong></h2>\r\n<p>Il est essentiel de se demander avec qui vous souhaitez travailler et de d&eacute;finir une typologie de client&egrave;le cibl&eacute;e. Cela vous permettra de mettre en place des offres de services adapt&eacute;es &agrave; leurs besoins et de communiquer avec des mots cibl&eacute;s pour attirer leur attention. Le conseil d'Alexis, est de vous demander : \"si je dois manger 3 midis par semaine avec des clients d'une m&ecirc;me profession, quelle profession ce serait ?\". Si la profession et les personnes en faisant partie vous passionnent, alors naturellement vous leur apporterez &eacute;norm&eacute;ment de valeur et prendrez du plaisir au quotidien &agrave; travailler avec eux. Une fois que cette client&egrave;le cible est trouv&eacute;e, vos actions marketing doivent &ecirc;tre orient&eacute;es vers elle.</p>\r\n<h2><strong>Communication personnelle ou au nom du cabinet</strong></h2>\r\n<p>Ici, &ccedil;a d&eacute;pend principalement o&ugrave; vous souhaitez emmener votre cabinet. Si vous souhaitez rester ind&eacute;pendant, vous pouvez tourner votre communication sur les r&eacute;seaux autour de vous, si vous avec une strat&eacute;gie plus tourn&eacute;e autour du nom de votre cabinet, alors une communication plus orient&eacute;e vers votre marque cabinet serait pr&eacute;f&eacute;rable. Quoi qu&rsquo;il en soit, essayez de mettre en place un plan marketing pour votre cabinet avec une strat&eacute;gie de contenu et une valeur ajout&eacute;e pour votre client&egrave;le cible.</p>\r\n<h2><strong>Canaux de communication</strong></h2>\r\n<p>La pr&eacute;sence sur les r&eacute;seaux sociaux est un aspect important de la strat&eacute;gie marketing digitale. Il est recommand&eacute; de cr&eacute;er un profil LinkedIn travaill&eacute; (Description compl&egrave;te de votre situation, page de votre cabinet d&eacute;di&eacute;e) en mettant en avant votre expertise. N'utiliser pas LinkedIn pour faire des messages automatis&eacute;s, communiquez &agrave; votre image et style. Si vous l'utilisez, LinkedIn est un outil de grande valeur et gratuit. Il est &eacute;galement important d'avoir un site qui ne ressemble pas &agrave; une banque d'images mis au hasard. Le verbatim doit utiliser des mots cibl&eacute;s pour attirer l'attention de votre client&egrave;le souhait&eacute;e. Une newsletter peut &eacute;galement &ecirc;tre mise en place pour communiquer r&eacute;guli&egrave;rement sur vos services et votre expertise. Attention, quoi qu'il arrive une Newsletter ou des articles de blog ne doivent pas &ecirc;tre g&eacute;n&eacute;rique et bien r&eacute;pondre &agrave; des questions de vos clients.</p>\r\n<h2>Communication pour le recrutement</h2>\r\n<p>Plus les ann&eacute;es passent, plus Booster Digital est sollicit&eacute; pour aider les cabinets dans leur capacit&eacute; de recrutement. On le sait, la profession comptable a des difficult&eacute;s de recrutement de collaborateurs. Dans ce cas, une image de marque forte et modern travaill&eacute;e dans votre strat&eacute;gie digitale ci-dessus est essentielle. Votre lieu de travail devra aussi permettre l'&eacute;panouissement de vos &eacute;quipes et &ecirc;tre excitant pour de nouvelles recrues potentielles. Et pourquoi pas r&eacute;fl&eacute;chir &agrave; recruter un responsable marketing d&eacute;di&eacute; &agrave; toutes ces actions &agrave; mettre en place.</p>\r\n</div>\r\n</div>\r\n</div>\r\n</div>\r\n</div>",
+    "slug": "communication",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/speech.svg",
+    "last_modified": "2024-11-19T22:07:52.440Z",
+    "excerpt": "solutions de communication pour experts comptables"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 75,
+  "fields": {
+    "name": "Comptabilité expert-comptable",
+    "description": "<p>Bienvenue sur votre ressource fiable pour choisir le logiciel de production comptable id&eacute;al pour les experts-comptables. Dans cette cat&eacute;gorie, nous d&eacute;taillons les avantages des divers logiciels disponibles, les nuances entre les solutions SaaS et sur serveur, et les crit&egrave;res cruciaux &agrave; consid&eacute;rer lors de votre s&eacute;lection.</p>\r\n<h2><strong>Avantages cl&eacute;s des logiciels de production comptable</strong></h2>\r\n<ul>\r\n<li><strong>Automatisation</strong> : Minimisez les efforts manuels en automatisant les processus comptables r&eacute;currents.</li>\r\n<li><strong>Qualit&eacute; des donn&eacute;es</strong> : Assurez une pr&eacute;cision impeccable, r&eacute;duisez les erreurs de saisie et facilitez la r&eacute;vision comptable.</li>\r\n<li><strong>Collaboration</strong> : Renforcez la collaboration et la communication avec les clients gr&acirc;ce &agrave; des fonctionnalit&eacute;s intuitives.</li>\r\n</ul>\r\n<h2><strong>SaaS vs sur Serveur : Lequel choisir ?</strong></h2>\r\n<p>Comprendre les sp&eacute;cificit&eacute;s de chaque option vous aidera &agrave; faire un choix &eacute;clair&eacute; :</p>\r\n<ul>\r\n<li><strong>Accessibilit&eacute;</strong> : Les solutions SaaS favorisent le travail &agrave; distance, tandis que les options sur serveur peuvent offrir une stabilit&eacute; accrue.</li>\r\n<li><strong>Mises &agrave; jour</strong> : Profitez des mises &agrave; jour automatiques avec SaaS, tandis que l'option sur serveur pourrait n&eacute;cessiter des interventions manuelles.</li>\r\n<li><strong>Co&ucirc;t</strong> : SaaS propose des plans d'abonnement flexibles, mais peut s'av&eacute;rer plus co&ucirc;teux sur le long terme.</li>\r\n<li><strong>S&eacute;curit&eacute;</strong> : Bien que les deux options offrent des mesures de s&eacute;curit&eacute; robustes, les solutions SaaS sont souvent per&ccedil;ues comme plus s&eacute;curis&eacute;es gr&acirc;ce &agrave; des mises &agrave; jour fr&eacute;quentes et une infrastructure cloud solide.</li>\r\n<li><strong>&Eacute;volutivit&eacute;</strong> : Les logiciels bas&eacute;s sur le cloud sont plus flexibles et &eacute;volutifs comparativement aux solutions sur serveur.</li>\r\n<li><strong>Support technique</strong> : Veillez &agrave; choisir une solution avec un support technique r&eacute;actif et accessible, qu'il soit inclus dans l'offre ou &agrave; travers un contrat s&eacute;par&eacute;.</li>\r\n<li><strong>Int&eacute;gration de l'&eacute;cosyst&egrave;me</strong> : Les solutions SaaS facilitent l'int&eacute;gration avec divers outils et services, offrant une exp&eacute;rience plus fluide et connect&eacute;e.</li>\r\n</ul>\r\n<h2><strong>Crit&egrave;res de s&eacute;lection</strong></h2>\r\n<p>Alors que vous explorez les options, gardez &agrave; l'esprit les &eacute;l&eacute;ments suivants :</p>\r\n<ul>\r\n<li><strong>Fonctionnalit&eacute;s sp&eacute;cifiques</strong> n&eacute;cessaires pour votre cabinet</li>\r\n<li><strong>Conformit&eacute; r&eacute;glementaire</strong> et mise &agrave; jour l&eacute;gale</li>\r\n<li><strong>Facilit&eacute; d'utilisation</strong> et interface utilisateur intuitive</li>\r\n<li><strong>Avis des clients</strong> et r&eacute;putation du fournisseur</li>\r\n</ul>\r\n<blockquote>Nous sommes l&agrave; pour vous aider &agrave; naviguer dans cette s&eacute;lection cruciale. <strong>Explorez chaque fiche produit</strong> pour obtenir des d&eacute;tails complets et faire un choix &eacute;clair&eacute; !</blockquote>",
+    "slug": "comptabilite_expert_comptable",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/circuit-board.svg",
+    "last_modified": "2024-11-19T22:14:11.087Z",
+    "excerpt": "solutions de comptabilité pour experts comptables"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 76,
+  "fields": {
+    "name": "Audit",
+    "description": "<p>L'&eacute;volution constante du monde de l'audit et du commissariat aux comptes a rendu indispensable l'adoption de solutions technologiques sophistiqu&eacute;es pour g&eacute;rer efficacement les processus d'audit. Pour rester comp&eacute;titifs, les commissaires aux comptes ont aujourd'hui &agrave; leur disposition une panoplie de logiciels d&eacute;di&eacute;s qui offrent une gamme vari&eacute;e de fonctionnalit&eacute;s, con&ccedil;us pour faciliter, automatiser et optimiser les op&eacute;rations d'audit.</p>\r\n<h2><strong>Caract&eacute;ristiques Essentielles</strong></h2>\r\n<p>Un bon logiciel d'audit doit d'abord et avant tout permettre la conformit&eacute; aux r&eacute;glementations et normes en vigueur. De nombreux logiciels offrent des modules sp&eacute;cifiques permettant d'assurer que toutes les &eacute;tapes de l'audit sont conformes aux normes d&rsquo;exercice professionnel (NEP) et aux lois en vigueur.</p>\r\n<p>Les logiciels d'audit actuels offrent souvent des solutions int&eacute;gr&eacute;es pour la gestion des donn&eacute;es, telles que l'importation de fichiers FEC, de balances comptables, ou d'autres donn&eacute;es financi&egrave;res. Ils permettent &eacute;galement de stocker et d'analyser des volumes importants de donn&eacute;es, facilitant ainsi l'identification d'anomalies ou de tendances probl&eacute;matiques.</p>\r\n<p>Les fonctionnalit&eacute;s de reporting sont &eacute;galement primordiales. Un tableau de bord intuitif, permettant de visualiser en temps r&eacute;el l'avancement des missions d'audit, les anomalies d&eacute;tect&eacute;es, ou m&ecirc;me les indicateurs de performance cl&eacute;s, peut &ecirc;tre un v&eacute;ritable atout.</p>\r\n<p>De plus en plus, ces logiciels adoptent une approche collaborative, permettant &agrave; plusieurs auditeurs de travailler en simultan&eacute; sur une m&ecirc;me mission. Le stockage dans le cloud est &eacute;galement une tendance forte, permettant un acc&egrave;s aux donn&eacute;es et aux fonctionnalit&eacute;s de l'outil, quel que soit le lieu ou le moment.</p>\r\n<h2><strong>Int&eacute;r&ecirc;ts et Avantages</strong></h2>\r\n<p>Un des avantages majeurs des logiciels d'audit est sans doute le gain de temps et l'efficacit&eacute; qu'ils offrent. Les t&acirc;ches r&eacute;p&eacute;titives et chronophages sont automatis&eacute;es, lib&eacute;rant les auditeurs pour se concentrer sur des t&acirc;ches &agrave; valeur ajout&eacute;e.</p>\r\n<p>L'automatisation et les contr&ocirc;les int&eacute;gr&eacute;s r&eacute;duisent &eacute;galement le risque d'erreur humaine, permettant ainsi d'augmenter la fiabilit&eacute; et la qualit&eacute; des audits r&eacute;alis&eacute;s.</p>\r\n<p>Les solutions logicielles modernes offrent des fonctionnalit&eacute;s avanc&eacute;es pour garantir la s&eacute;curit&eacute; et l'int&eacute;grit&eacute; des donn&eacute;es, un enjeu de plus en plus crucial dans un monde de plus en plus connect&eacute;.</p>\r\n<h2><strong>Tendances &agrave; Suivre</strong></h2>\r\n<p>L'intelligence artificielle et l'analytique avanc&eacute;e sont en train de r&eacute;volutionner le domaine de l'audit. L'IA permet, par exemple, d'automatiser l'analyse de donn&eacute;es &agrave; grande &eacute;chelle et de d&eacute;tecter des anomalies qui auraient pu passer inaper&ccedil;ues.</p>\r\n<p>La prise en compte des crit&egrave;res environnementaux, sociaux et de gouvernance (ESG) dans les audits est &eacute;galement une tendance montante, et de plus en plus de logiciels commencent &agrave; int&eacute;grer des modules d&eacute;di&eacute;s &agrave; cet effet.</p>\r\n<p>La tendance vers des solutions mobiles permettant d'acc&eacute;der &agrave; son environnement de travail audit depuis n'importe o&ugrave; est &eacute;galement &agrave; noter. Cela est d'autant plus pertinent dans le contexte actuel, o&ugrave; le t&eacute;l&eacute;travail et la mobilit&eacute; sont devenus la norme plut&ocirc;t que l'exception.</p>",
+    "slug": "audit",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/folder-search.svg",
+    "last_modified": "2024-11-19T22:14:11.086Z",
+    "excerpt": "solutions d'audit pour commissaires aux comptes"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 77,
+  "fields": {
+    "name": "Ressources Humaines",
+    "description": "<p>Dans le monde dynamique et en constante &eacute;volution des ressources humaines, choisir le bon logiciel RH est devenu une priorit&eacute; pour les entreprises de toutes tailles. Le SIRH, ou Syst&egrave;me d'Information de Gestion des Ressources Humaines, centralise les donn&eacute;es RH et automatise les processus administratifs, permettant ainsi de gagner du temps et d'optimiser la gestion du personnel. Qu'il s'agisse de la gestion de la paie, du recrutement, de la gestion des talents ou du temps de travail, les meilleurs logiciels RH offrent une panoplie de fonctionnalit&eacute;s pour r&eacute;pondre aux besoins sp&eacute;cifiques du service RH. Dans cet article, nous explorerons les logiciels incontournables, chacun avec ses propres avantages, pour vous aider &agrave; choisir le type de logiciel le plus adapt&eacute; &agrave; vos besoins en gestion des ressources humaines.</p>\r\n<h2><strong>Fonctionnalit&eacute;s attendues :</strong></h2>\r\n<ol>\r\n<li><strong>Gestion de la paie</strong> : Automatisation du calcul et de la distribution des fiches de paie en respectant les r&eacute;gulations en vigueur.</li>\r\n<li><strong>Gestion des temps et activit&eacute;s</strong> : Suivi des heures de travail, des pauses, et de la planification du personnel.</li>\r\n<li><strong>Gestion des talents</strong> : Soutien des processus li&eacute;s au d&eacute;veloppement des talents, y compris la formation, les &eacute;valuations et la gestion des carri&egrave;res.</li>\r\n<li><strong>Gestion des cong&eacute;s et absences</strong> : Syst&egrave;me de demande et d'approbation des cong&eacute;s, ainsi que le suivi des absences pour raisons diverses.</li>\r\n<li><strong>D&eacute;mat&eacute;rialisation RH</strong> : Digitalisation des processus RH tels que les contrats, les bulletins de paie et les notes de frais.</li>\r\n<li><strong>Conformit&eacute; r&egrave;glementaire</strong> : Assurer la conformit&eacute; aux lois et r&egrave;glements locaux, nationaux et internationaux.</li>\r\n<li><strong>Portails employ&eacute;s et managers</strong> : Des interfaces sp&eacute;cifiques pour diff&eacute;rents niveaux de personnel pour acc&eacute;der et g&eacute;rer les informations pertinentes.</li>\r\n<li><strong>Gestion des notes de frais</strong> : Simplification et automatisation de la soumission et du remboursement des d&eacute;penses professionnelles.</li>\r\n<li><strong>Analyse et reporting</strong> : Fonctionnalit&eacute;s de Business Intelligence pour suivre et analyser des KPIs pertinents.</li>\r\n</ol>\r\n<h2><strong>Points d'int&eacute;r&ecirc;t d'un bon logiciel de ressources humaines</strong></h2>\r\n<ol>\r\n<li><strong>Int&eacute;gration avec d'autres syst&egrave;mes</strong> : La capacit&eacute; &agrave; s'int&eacute;grer facilement avec d'autres logiciels de l'entreprise, tels que la comptabilit&eacute; ou la paie.</li>\r\n<li><strong>Ergonomie de l'interface</strong> : Une interface utilisateur intuitive et facile &agrave; naviguer pour tous les niveaux d'utilisateurs.</li>\r\n<li><strong>Personnalisation</strong> : La possibilit&eacute; de personnaliser les workflows, les rapports et les indicateurs en fonction des besoins sp&eacute;cifiques de l'entreprise.</li>\r\n<li><strong>S&eacute;curit&eacute; des donn&eacute;es</strong> : Protocoles de s&eacute;curit&eacute; robustes pour prot&eacute;ger les donn&eacute;es sensibles.</li>\r\n<li><strong>&Eacute;volutivit&eacute;</strong> : La capacit&eacute; du logiciel &agrave; &eacute;voluer en fonction de la croissance de l'entreprise.</li>\r\n<li><strong>Support et formation</strong> : Disponibilit&eacute; d'un support technique r&eacute;actif et d'options de formation pour les utilisateurs.</li>\r\n<li><strong>Conformit&eacute; l&eacute;gale</strong> : Mise &agrave; jour r&eacute;guli&egrave;re du logiciel pour assurer la conformit&eacute; avec les changements l&eacute;gislatifs et r&eacute;glementaires.</li>\r\n</ol>",
+    "slug": "ressources_humaines",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/thumbs-up.svg",
+    "last_modified": "2024-11-19T22:07:52.438Z",
+    "excerpt": "solutions de ressources humaines pour experts comptables et PME"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 78,
+  "fields": {
+    "name": "Achats & Dépenses",
+    "description": "",
+    "slug": "achats_et_depenses",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/badge-euro.svg",
+    "last_modified": "2024-11-19T22:14:11.084Z",
+    "excerpt": "solutions de gestion des achats et des dépenses pour PME"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 79,
+  "fields": {
+    "name": "Gestion interne",
+    "description": "<p>Le choix d'un bon <strong>logiciel de gestion interne</strong> pour les experts-comptables est crucial car il permet de centraliser et de g&eacute;rer efficacement les informations clients, d'automatiser des processus tels que la facturation, de piloter d'autres outils. La <strong>digitalisation de la profession comptable</strong> rend n&eacute;cessaire une bonne gestion des donn&eacute;es du cabinet.</p>\r\n<p>Dans cet article, nous allons explorer les fonctionnalit&eacute;s cl&eacute;s &agrave; rechercher, les questions &agrave; se poser lors de la s&eacute;lection et pr&eacute;senter une liste de logiciels populaires pour faciliter votre choix.</p>\r\n<h2>Quelles sont les fonctionnalit&eacute;s attendues ?</h2>\r\n<p>Les fonctionnalit&eacute;s de l'outil devront permettre de g&eacute;rer la relation avec votre client de bout en bout :</p>\r\n<ol>\r\n<li><strong>Gestion commerciale des prospects</strong> pour anticiper et d&eacute;velopper votre croissance.</li>\r\n<li><strong>Devis en ligne</strong> pour acc&eacute;l&eacute;rer la transformation de vos prospects en clients et &eacute;viter les pertes.</li>\r\n<li><strong>G&eacute;n&eacute;ration automatique de la lettre de mission</strong> avec l'ajout d'une signature &eacute;lectronique pour digitaliser le process.</li>\r\n<li><strong>Facturation de vos clients</strong> sous format factur-X pour montrer l'exemple &agrave; vos clients !</li>\r\n<li><strong>Suivi des encaissements</strong> pour alerter des &eacute;carts et retards de paiement.</li>\r\n<li><strong>Suivi du temps r&eacute;el</strong> pass&eacute; par vos &eacute;quipes sur les missions et remont&eacute;es d'indicateurs de pilotage pour d&eacute;tecter les missions non rentables et avoir un plan de charge.</li>\r\n<li><strong>Gestion de la relation client</strong> par e-mail en faisant des communications en masse cibl&eacute;es et personnalis&eacute;es, ou envoyer des rappels automatiques.</li>\r\n</ol>\r\n<p>Il pourra venir s'adosser &agrave; un logiciel de CRM pour la partie prospection pour <strong>s&eacute;curiser votre chiffre d'affaires</strong> pr&eacute;sent et futur.</p>\r\n<h2>Quelles questions se poser lors de la s&eacute;lection ?</h2>\r\n<h3>Accessibilit&eacute;</h3>\r\n<p>Il est important que le logiciel soit <strong>facile de prise en main pour les utilisateurs</strong> du cabinet, afin que les collaborateurs du cabinet puissent profiter de toutes les fonctionnalit&eacute;s propos&eacute;es sans avoir &agrave; consacrer beaucoup de temps &agrave; la formation, et que les process r&eacute;fl&eacute;chis soient r&eacute;ellement appliqu&eacute;s par les &eacute;quipes.</p>\r\n<p>La saisie des temps ou la gestion des notes de frais sont des t&acirc;ches peu appr&eacute;ci&eacute;es par vos collaborateurs.</p>\r\n<p>Un outil moderne, ayant des fonctionnalit&eacute;s permettant d&rsquo;automatiser certaines de ces t&acirc;ches et agr&eacute;able &agrave; utiliser pour vos &eacute;quipes, permettra de rendre&nbsp;<strong>plus efficaces vos &eacute;quipes</strong>.</p>\r\n<p>De plus, vos collaborateurs sont aussi de plus en plus en t&eacute;l&eacute;travail, les donn&eacute;es se doivent d&rsquo;&ecirc;tre facilement accessible. L&rsquo;outil permet aux collaborateurs de communiquer efficacement et optimiser leur planning.</p>\r\n<h3>Ouverture aux autre logiciels</h3>\r\n<p>La solution doit &ecirc;tre <strong>ouverte aux solutions du march&eacute;</strong> pour ne pas vous enfermer sur l&rsquo;&eacute;cosyst&egrave;me de l&rsquo;&eacute;diteur. Privil&eacute;giez une solution proposant de riches interconnexions. Si votre gestion interne devient centrale, alors elle devra &ecirc;tre interconnect&eacute;e &agrave; vos autres outils d&rsquo;aujourd&rsquo;hui et demain.</p>\r\n<p>La&nbsp;<strong>s&eacute;curit&eacute; des donn&eacute;es</strong> est un enjeu crucial, il est donc central que la solution soit capable de prot&eacute;ger les donn&eacute;es sensibles de vos clients qui seront centralis&eacute;s dans cet outil.</p>\r\n<h3>Contr&ocirc;le de vos donn&eacute;es</h3>\r\n<p>Le cabinet d'expertise comptable doit <strong>maitriser tous les processus administratifs</strong> et de gestion interne, de mani&egrave;re directe ou indirecte.</p>\r\n<p>Mais la question de savoir si l'ensemble des fonctionnalit&eacute;s doivent &ecirc;tre unifi&eacute; dans une m&ecirc;me solution est un choix qui vous appartient. Il y a des avantages et inconv&eacute;nients &agrave; chaque choix.</p>\r\n<p>Il faut se poser la question de la souverainet&eacute; que vous avez sur les donn&eacute;es. Que se passe-t-il si demain vous souhaitez changer de solution de gestion interne ? Permet-elle de migrer vos donn&eacute;es rapidement et sans surco&ucirc;t ?</p>\r\n<p>L&rsquo;outil doit rendre plus efficace vos process de gestion de votre cabinet et am&eacute;liorer son pilotage donc, mais vous devez&nbsp;<strong>garder le contr&ocirc;le sur vos donn&eacute;es</strong>.</p>\r\n<h3>Automatisation</h3>\r\n<p>L&rsquo;outil doit <strong>automatiser votre facturation</strong>, avec la g&eacute;n&eacute;ration de factur-x, pour que l'expert comptable montre l&rsquo;exemple &agrave; ses clients dans cette transition vers la facture &eacute;lectronique.</p>\r\n<p>Il doit aussi permettre de g&eacute;rer et allouer automatiquement les ressources de votre cabinet vers les bonnes missions (avec des tableaux de bord par exemple), afin en&nbsp;<strong>gagner en rentabilit&eacute;</strong> et d'avoir une r&eacute;elle gestion des temps.</p>\r\n<p>Ainsi, votre solution doit avoir l&rsquo;adh&eacute;sion, &ecirc;tre interconnect&eacute; &agrave; vos outils m&eacute;tier actuels ou futurs, et automatiser au maximum la gestion de votre cabinet pour gagner en productivit&eacute;.</p>\r\n<h2>Comment le choisir et d&eacute;ployer dans le cabinet ?</h2>\r\n<h3>Recueillir le besoin</h3>\r\n<p>Votre processus de recherche et s&eacute;lection d'un outil de gestion interne doit &ecirc;tre cadr&eacute;, le choix ne doit pas &ecirc;tre al&eacute;atoire et se baser sur des fait arbitraires.</p>\r\n<p>On pourrait vous recommander de bien suivre ces &eacute;tapes :</p>\r\n<ol>\r\n<li><strong>Renseignez-vous sur les meilleures solutions du march&eacute;.</strong> Pour &ccedil;a vous pouvez utiliser <a href=\"https://www.cabinetdigital.fr/liste-logiciels-experts-comptables\" target=\"_blank\" rel=\"noopener\"><strong>notre liste d&eacute;di&eacute;e aux experts comptables.</strong></a></li>\r\n<li>&Eacute;tablir une <strong>liste des fonctionnalit&eacute;s</strong> n&eacute;cessaires et des t&acirc;ches &agrave; automatiser</li>\r\n<li>&Eacute;valuer les <strong>co&ucirc;ts</strong> associ&eacute;s &agrave; la mise en place et &agrave; l'utilisation du logiciel (formation de vos &eacute;quipes, migration des donn&eacute;es, interconnexion avec l'existant)</li>\r\n<li>V&eacute;rifier la <strong>compatibilit&eacute;</strong> du logiciel avec les autres outils utilis&eacute;s par le cabinet</li>\r\n<li>S'assurer que le logiciel est <strong>facile &agrave; utiliser</strong> et &agrave; apprendre pour les utilisateurs : demandez &agrave; avoir un acc&egrave;s pour tester l'outil !</li>\r\n<li>Prendre en compte la <strong>s&eacute;curit&eacute; des donn&eacute;es</strong> et la possibilit&eacute; de r&eacute;cup&eacute;ration en cas de probl&egrave;me</li>\r\n</ol>\r\n<h3>Mise en place au sein du cabinet</h3>\r\n<p>La mise en place d'un peut n&eacute;cessiter un <strong>investissement initial cons&eacute;quent.</strong> Surtout pour ce type de logiciel o&ugrave; il sera important de <strong>former les &eacute;quipes</strong> avec des t&acirc;ches administratives &agrave; bien l'utiliser et le mettre &agrave; jour.</p>\r\n<p>Mettez en place aussi des bonnes pratiques quant &agrave; la gestion des donn&eacute;es et leur importance, ainsi que de faire ressortir des indicateurs d'utilisation pour d&eacute;couvrir l'usage.</p>\r\n<p>Avoir un&nbsp;<strong>r&eacute;f&eacute;rent digital</strong> dans votre &eacute;quipe serait un plus, qui pourrait &ecirc;tre impliqu&eacute; et responsabilis&eacute; dans le processus de s&eacute;lection, apporterait un gage d'une utilisation efficace.</p>\r\n<h2>Points cl&eacute;s &agrave; retenir</h2>\r\n<ul>\r\n<li><strong>Les fonctionnalit&eacute;s attendues :</strong> gestion de la relation client, automatisation de la facturation, suivi du temps pass&eacute; par les &eacute;quipes, interconnexion avec un logiciel de CRM.</li>\r\n<li><strong>Les questions &agrave; se poser lors de la s&eacute;lection :</strong> accessibilit&eacute;, compatibilit&eacute; avec d'autres logiciels, contr&ocirc;le des donn&eacute;es, automatisation et s&eacute;curit&eacute; des donn&eacute;es.</li>\r\n<li><strong>Comment choisir et d&eacute;ployer un logiciel de gestion interne :</strong> recueillir les besoins, &eacute;valuer les co&ucirc;ts, v&eacute;rifier la compatibilit&eacute;, s'assurer de la facilit&eacute; d'utilisation et de la s&eacute;curit&eacute;, et mettre en place des bonnes pratiques pour l'utilisation du logiciel.</li>\r\n</ul>",
+    "slug": "gestion_interne",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/file-user.svg",
+    "last_modified": "2024-11-19T22:14:11.083Z",
+    "excerpt": "solutions de gestion interne pour experts comptables"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 80,
+  "fields": {
+    "name": "CRM",
+    "description": "",
+    "slug": "crm",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/book-user.svg",
+    "last_modified": "2024-11-19T22:14:11.082Z",
+    "excerpt": "solutions de CRM pour experts comptables et PME"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 81,
+  "fields": {
+    "name": "Hébergement",
+    "description": "<p class=\"whitespace-pre-wrap break-words\">Dans l'&egrave;re num&eacute;rique actuelle, les experts-comptables font face &agrave; des d&eacute;fis croissants en mati&egrave;re de gestion et de s&eacute;curisation des donn&eacute;es. Le choix d'un h&eacute;bergeur informatique est devenu une d&eacute;cision strat&eacute;gique cruciale pour assurer la p&eacute;rennit&eacute; et l'efficacit&eacute; des cabinets.</p>\r\n<h2 class=\"font-600 text-xl font-bold\">Les diff&eacute;rentes cat&eacute;gories d'h&eacute;bergeurs</h2>\r\n<p class=\"whitespace-pre-wrap break-words\">Le march&eacute; propose plusieurs types d'h&eacute;bergeurs sp&eacute;cialis&eacute;s, chacun r&eacute;pondant &agrave; des besoins sp&eacute;cifiques :</p>\r\n<h3 class=\"font-600 text-lg font-bold\">Les h&eacute;bergeurs &agrave; taille humaine</h3>\r\n<p class=\"whitespace-pre-wrap break-words\">Ces structures privil&eacute;gient une approche personnalis&eacute;e avec un accompagnement sur mesure. Leur force r&eacute;side dans leur capacit&eacute; &agrave; d&eacute;velopper des solutions adapt&eacute;es aux besoins particuliers de chaque cabinet, avec un support technique de proximit&eacute;.</p>\r\n<h3 class=\"font-600 text-lg font-bold\">Les h&eacute;bergeurs officiels</h3>\r\n<p class=\"whitespace-pre-wrap break-words\">Partenaires directs des grands &eacute;diteurs de logiciels comptables, ils offrent une expertise approfondie des solutions qu'ils h&eacute;bergent. Leur valeur ajout&eacute;e repose sur une parfaite ma&icirc;trise des outils et une int&eacute;gration optimale.</p>\r\n<h3 class=\"font-600 text-lg font-bold\">Les h&eacute;bergeurs multi-services</h3>\r\n<p class=\"whitespace-pre-wrap break-words\">Ces acteurs proposent une gamme compl&egrave;te de services, de l'h&eacute;bergement &agrave; la maintenance, en passant par la messagerie collaborative. Leur approche globale permet aux cabinets de centraliser leurs besoins informatiques.</p>\r\n<h3 class=\"font-600 text-lg font-bold\">Les h&eacute;bergeurs ind&eacute;pendants</h3>\r\n<p class=\"whitespace-pre-wrap break-words\">Non li&eacute;s &agrave; des &eacute;diteurs sp&eacute;cifiques, ils offrent une plus grande flexibilit&eacute; dans le choix des solutions. Cette ind&eacute;pendance permet aux cabinets de construire un environnement informatique sur mesure.</p>\r\n<h3 class=\"font-600 text-lg font-bold\">Les solutions de cloud priv&eacute;</h3>\r\n<p class=\"whitespace-pre-wrap break-words\">Ces h&eacute;bergeurs proposent des environnements cloud d&eacute;di&eacute;s, permettant aux cabinets de se concentrer sur leur c&oelig;ur de m&eacute;tier tout en b&eacute;n&eacute;ficiant d'une infrastructure moderne et s&eacute;curis&eacute;e.</p>\r\n<h2 class=\"font-600 text-xl font-bold\">Les crit&egrave;res de choix essentiels</h2>\r\n<p class=\"whitespace-pre-wrap break-words\">Plusieurs facteurs cl&eacute;s doivent guider le choix d'un h&eacute;bergeur :</p>\r\n<ul class=\"-mt-1 [li&gt;&amp;]:mt-2 list-disc space-y-2 pl-8\">\r\n<li class=\"whitespace-normal break-words\">L'expertise dans le domaine comptable</li>\r\n<li class=\"whitespace-normal break-words\">La conformit&eacute; aux normes de s&eacute;curit&eacute; et RGPD</li>\r\n<li class=\"whitespace-normal break-words\">La qualit&eacute; du support technique</li>\r\n<li class=\"whitespace-normal break-words\">La flexibilit&eacute; des solutions</li>\r\n<li class=\"whitespace-normal break-words\">L'&eacute;volutivit&eacute; des services propos&eacute;s</li>\r\n</ul>\r\n<p class=\"whitespace-pre-wrap break-words\">En conclusion, le choix d'un h&eacute;bergeur doit s'aligner sur la strat&eacute;gie num&eacute;rique du cabinet, ses besoins sp&eacute;cifiques et ses objectifs de croissance. La diversit&eacute; des offres permet &agrave; chaque cabinet de trouver la solution la plus adapt&eacute;e &agrave; sa situation.</p>",
+    "slug": "hebergement",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/server.svg",
+    "last_modified": "2024-11-19T22:07:52.434Z",
+    "excerpt": "solutions d'hébergement pour experts comptables"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 82,
+  "fields": {
+    "name": "Analyse de données",
+    "description": "<h2>Qu'est-ce qu'une analyse compl&egrave;te de FEC ?</h2>\r\n<p>L'analyse des donn&eacute;es du FEC est un processus audit essentiel pour tous les syst&egrave;mes d'information comptables. Le FEC est un fichier qui comprend tous les champs de donn&eacute;es d'&eacute;critures comptables pour une ann&eacute;e comptable.</p>\r\n<p>L'analyse de donn&eacute;es FEC offre de nombreux avantages, comme permettre aux comptables de v&eacute;rifier la coh&eacute;rence et l&rsquo;int&eacute;gralit&eacute; des donn&eacute;es comptables , faciliter la t&acirc;che des auditeurs internes et externes et contribuer &agrave; une meilleures gestion des flux financiers.</p>\r\n<p>Il permet aussi de faire des analyses sur les donn&eacute;es des clients, d'avoir des alertes, de les conseiller dessus et de leur offrir des tableaux de bord personnalis&eacute;s.</p>\r\n<h2>Les logiciels d'analyse du FEC</h2>\r\n<p>Il existe un ensemble d'outils d'analyse de donn&eacute;es offrant des capacit&eacute;s de navigation interactives et de g&eacute;n&eacute;ration de rapports. Ils permettent la manipulation et l'analyse de grandes quantit&eacute;s de donn&eacute;es du FEC. Il aide les experts-comptables dans l'automatisation de leur travail en cr&eacute;ant des tableaux de bord personnalisables qui facilitent le suivi des diverses &eacute;critures comptable&nbsp;avec la possibilit&eacute; de cr&eacute;er des visualisations interactives et permet une analyse de donn&eacute;es plus approfondie et accessible que des logiciels tels que Excel. En permettant notamment de donner acc&egrave;s &agrave; vos clients &agrave; ces analyses.</p>\r\n<p>Certains logiciels permettent de d&eacute;tecter automatiquement les anomalies dans le FEC, ce qui permet d'am&eacute;liorer la conformit&eacute; fiscale et donc d'&eacute;viter de potentielles sanctions fiscales.</p>\r\n<p>Le choix du bon logiciel pour l'analyse de FEC doit tenir compte des besoins sp&eacute;cifiques du cabinet comptable. Certains pourraient pr&eacute;f&eacute;rer une puissante navigation des donn&eacute;es tandis que d'autres peuvent chercher un outil avec une interface conviviale.</p>\r\n<p>La comparaison des outils en ligne est essentielle pour choisir le logiciel qui r&eacute;pond le mieux aux besoins de l'entreprise. L'&eacute;valuation devrait porter sur des facteurs tels que les fonctionnalit&eacute;s, la facilit&eacute; d'utilisation et le co&ucirc;t.</p>",
+    "slug": "analyse_de_donnees",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/chart-line.svg",
+    "last_modified": "2024-11-19T22:14:11.080Z",
+    "excerpt": "solutions d'analyse de données pour experts comptables"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 83,
+  "fields": {
+    "name": "Coffre fort",
+    "description": "",
+    "slug": "coffre_fort",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/folder-key.svg",
+    "last_modified": "2024-11-19T22:07:52.431Z",
+    "excerpt": "solutions de coffre fort numérique pour experts comptables et PME"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 84,
+  "fields": {
+    "name": "Production sociale",
+    "description": "<p class=\"whitespace-pre-wrap break-words\">La digitalisation de la gestion des ressources humaines et de la paie est devenue incontournable pour les experts-comptables face &agrave; une l&eacute;gislation en constante &eacute;volution. Les besoins croissants en solutions num&eacute;riques efficaces n&eacute;cessitent une adaptation continue des outils et des pratiques.</p>\r\n<h3 class=\"font-600 text-lg font-bold\">La sous-traitance de la paie</h3>\r\n<p class=\"whitespace-pre-wrap break-words\">Cette option permet aux cabinets comptables de d&eacute;l&eacute;guer enti&egrave;rement la gestion de la paie &agrave; des prestataires sp&eacute;cialis&eacute;s. Les avantages incluent :</p>\r\n<ul class=\"-mt-1 [li&gt;&amp;]:mt-2 list-disc space-y-2 pl-8\">\r\n<li class=\"whitespace-normal break-words\">R&eacute;duction des risques techniques</li>\r\n<li class=\"whitespace-normal break-words\">Gain de temps significatif</li>\r\n<li class=\"whitespace-normal break-words\">Expertise d&eacute;di&eacute;e</li>\r\n<li class=\"whitespace-normal break-words\">Services personnalisables</li>\r\n</ul>\r\n<h3 class=\"font-600 text-lg font-bold\">Les solutions SaaS</h3>\r\n<p class=\"whitespace-pre-wrap break-words\">Les logiciels en mode cloud offrent :</p>\r\n<ul class=\"-mt-1 [li&gt;&amp;]:mt-2 list-disc space-y-2 pl-8\">\r\n<li class=\"whitespace-normal break-words\">Acc&egrave;s &agrave; distance</li>\r\n<li class=\"whitespace-normal break-words\">Mises &agrave; jour automatiques</li>\r\n<li class=\"whitespace-normal break-words\">Conformit&eacute; l&eacute;gale continue</li>\r\n<li class=\"whitespace-normal break-words\">Gestion simplifi&eacute;e des bulletins de paie</li>\r\n<li class=\"whitespace-normal break-words\">Productivit&eacute; accrue</li>\r\n</ul>\r\n<h3 class=\"font-600 text-lg font-bold\">Les logiciels sp&eacute;cialis&eacute;s</h3>\r\n<p class=\"whitespace-pre-wrap break-words\">Ces outils d&eacute;di&eacute;s proposent :</p>\r\n<ul class=\"-mt-1 [li&gt;&amp;]:mt-2 list-disc space-y-2 pl-8\">\r\n<li class=\"whitespace-normal break-words\">Gestion des fiches de paie</li>\r\n<li class=\"whitespace-normal break-words\">Suivi des d&eacute;clarations sociales</li>\r\n<li class=\"whitespace-normal break-words\">D&eacute;mat&eacute;rialisation des documents</li>\r\n<li class=\"whitespace-normal break-words\">Interface utilisateur intuitive</li>\r\n<li class=\"whitespace-normal break-words\">Adaptation aux diff&eacute;rentes tailles d'entreprise</li>\r\n</ul>\r\n<h3 class=\"font-600 text-lg font-bold\">Les plateformes RH compl&egrave;tes</h3>\r\n<p class=\"whitespace-pre-wrap break-words\">Ces solutions globales int&egrave;grent :</p>\r\n<ul class=\"-mt-1 [li&gt;&amp;]:mt-2 list-disc space-y-2 pl-8\">\r\n<li class=\"whitespace-normal break-words\">Gestion des contrats</li>\r\n<li class=\"whitespace-normal break-words\">Suivi des entretiens</li>\r\n<li class=\"whitespace-normal break-words\">Variables de paie</li>\r\n<li class=\"whitespace-normal break-words\">Stockage documentaire</li>\r\n<li class=\"whitespace-normal break-words\">Pr&eacute;vention des risques professionnels</li>\r\n</ul>\r\n<p class=\"whitespace-pre-wrap break-words\">La transition num&eacute;rique de la gestion sociale repr&eacute;sente un investissement strat&eacute;gique pour les cabinets d'expertise comptable, leur permettant de r&eacute;pondre efficacement aux exigences modernes de leurs clients.</p>",
+    "slug": "production_sociale",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/hand-coins.svg",
+    "last_modified": "2024-11-19T22:07:52.430Z",
+    "excerpt": "outils de production sociale pour experts comptables et PME"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 85,
+  "fields": {
+    "name": "Portail client",
+    "description": "<h2><strong>Qu'est-ce qu'un portail client ?</strong></h2>\r\n<p><strong>Le portail client d'un cabinet comptable a pour vocation &agrave; &ecirc;tre le point d'entr&eacute;e digital de l'entreprise vers son cabinet.</strong> Il permet de centraliser et fluidifier les &eacute;changes et de renforcer la relation client.</p>\r\n<p>Il est donc pens&eacute; pour l'utilisateur final avant tout, mais aussi pour se connecter avec tout l'&eacute;cosyst&egrave;me du cabinet ou des solutions que vous poss&eacute;dez. Il doit permettre d'&agrave; la fois s&eacute;curiser la restitution des informations que vous produisez &agrave; votre client, et collecter en temps r&eacute;el ce qu'il doit vous transmettre.</p>\r\n<p>L'&eacute;cosyst&egrave;me de tous les outils que vous proposez &agrave; votre client s'enrichit (et va s'enrichir avec la facture &eacute;lectronique), et votre cabinet automatise ses processus. C'est l&agrave; que prend tout l'int&eacute;r&ecirc;t de cette plateforme : <strong>g&eacute;rer en un espace l'ensemble des services propos&eacute;s au client, adapt&eacute; &agrave; son profil, et que soit transparent pour lui vos processus et solutions internes.</strong></p>\r\n<h2><strong>Fonctionnalit&eacute;s attendues</strong></h2>\r\n<p>La plateforme devra &ecirc;tre en marque blanche aux couleurs du cabinet, et ind&eacute;pendante pour pouvoir s&rsquo;interconnecter avec les solutions que vous poss&eacute;dez aujourd&rsquo;hui, mais surtout penser &agrave; votre &eacute;cosyst&egrave;me de demain.</p>\r\n<p>Pour pouvoir proposer ces services aux utilisateurs de la solution de mani&egrave;re efficace, il faut que la solution apporte de la valeur et facilite la vie de vos clients :</p>\r\n<ul>\r\n<li>d&eacute;poser et r&eacute;cup&eacute;rer es documents sous toutes ses formes (application mobile, mail, lien avec les Drive)</li>\r\n<li>afficher des donn&eacute;es (tableaux de bord, indicateurs, communication cibl&eacute;e)</li>\r\n<li>faciliter les &eacute;changes avec le cabinet</li>\r\n<li>rediriger simplement vers les autres solutions propos&eacute;es (notes de frais, RH, administratif, facturation, plateforme de d&eacute;mat&eacute;rialisation).</li>\r\n</ul>\r\n<p>Un espace collaborateur complet pour administrer et automatiser les processus du cabinet est essentielle.</p>\r\n<h2><strong>Arriv&eacute;e de la facture &eacute;lectronique</strong></h2>\r\n<p>Votre portail client pourrait &ecirc;tre un outil essentiel pour faciliter la transition vers la facture &eacute;lectronique de vos clients et de votre cabinet.</p>\r\n<p>En s'interconnectant &agrave; d'autres solutions, et notamment celle qui vont &eacute;marger avec la facture &eacute;lectronique, il va permettre au cabinet de proposer &agrave; ses clients un ensemble de solutions pr&ecirc;t &agrave; l'emploi. Cela permettrait notamment de faciliter la transition vers la facture &eacute;lectronique pour leurs clients en leur offrant un acc&egrave;s facile &agrave; des outils de facturation en ligne. Le portail client pourra aussi se connecter aux plateformes de facturation en utilisant des APIs, ce qui permet aux experts comptables de g&eacute;rer les factures de leurs clients de mani&egrave;re efficace et organis&eacute;e, mais surtout centralis&eacute;e. Il y aura un nombre tr&egrave;s importants de solutions et de plateforme, et le portail vous permettra de centraliser l&rsquo;acc&egrave;s aux donn&eacute;es et solutions.</p>\r\n<h2><strong>Strat&eacute;gie autour d'une plateforme de services</strong></h2>\r\n<p>Un portail collaboratif performant vous permettra demain de proposer &agrave; votre client des services &agrave; forte valeur ajout&eacute;e, en se transformant en plateforme de services.</p>\r\n<p>Une strat&eacute;gie pour offrir des services &agrave; forte valeur ajout&eacute;e &agrave; ses clients par l'interm&eacute;diaire d'un portail client pourrait inclure plusieurs &eacute;l&eacute;ments. Par exemple, il pourrait &ecirc;tre utile de proposer des services de consultation en ligne pour aider les clients &agrave; prendre des d&eacute;cisions financi&egrave;res importantes. Il pourrait &eacute;galement aussi offrir des outils en ligne pour permettre aux clients de suivre leur situation financi&egrave;re en temps r&eacute;el avec des alertes personnalis&eacute;es pour les informer de toute &eacute;volution importante. Enfin, on pourrait aussi imaginer de proposer des services de formation en ligne ou de conseil pour aider les clients &agrave; comprendre les diff&eacute;rents aspects de la gestion financi&egrave;re de leur entreprise.</p>\r\n<p>En mettant en avant vos domaines d'expertises, qui s'&eacute;largiront de vos missions historiques, votre client saura qu'il peut compter sur son expert comptable pour l'accompagner dans sa transformation digitale et ses missions &agrave; hautes valeurs ajout&eacute;es.</p>",
+    "slug": "portail_client",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/log-in.svg",
+    "last_modified": "2024-11-19T22:14:11.079Z",
+    "excerpt": "solutions de portail client pour experts comptables"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 86,
+  "fields": {
+    "name": "Signature électronique",
+    "description": "<h2><strong>Signature &eacute;lectronique pour un expert-comptable : signer, faire signer et sceller</strong></h2>\r\n<p>La signature &eacute;lectronique permet &agrave; une personne d'apposer son accord sur un document de mani&egrave;re &eacute;lectronique. Elle diff&egrave;re de la signature num&eacute;ris&eacute;e, qui consiste simplement &agrave; scanner une signature manuscrite.</p>\r\n<p>Pour les experts-comptables, la signature &eacute;lectronique est devenue un outil indispensable pour la gestion des documents &eacute;lectroniques. Elle garantit l'authenticit&eacute; et l'identit&eacute; du signataire, ainsi que l'int&eacute;grit&eacute; et la non-r&eacute;pudiation du document sign&eacute;. De plus, elle facilite l'int&eacute;gration dans les processus digitaux et l'automatisation de l'envoi et du suivi des documents. Elle est notamment utilis&eacute;e pour faire signer et sceller les lettres de mission ou les bulletins de paie, mais elle peut (et doit) &ecirc;tre utilis&eacute;e pour tout type de document n&eacute;cessitant une signature.</p>\r\n<p>Les tarifs de signature &eacute;lectronique couvrent g&eacute;n&eacute;ralement largement les frais d'envoi et les processus plus lourds associ&eacute;s au format papier. Le client est alert&eacute; par email lorsque l'action est requise. Int&eacute;gr&eacute;e aux principaux outils m&eacute;tiers du cabinet, la signature &eacute;lectronique permet &eacute;galement de d&eacute;mat&eacute;rialiser et d'automatiser ce flux. Du point de vue du client, l'utilisation de ce proc&eacute;d&eacute; est devenue un standard, et il est donc attendu que ce processus soit en place.</p>\r\n<p><strong>Recours &agrave; un prestataire qualifi&eacute;</strong></p>\r\n<p>Il est imp&eacute;ratif de faire appel &agrave; un prestataire de services de confiance qualifi&eacute;, r&eacute;f&eacute;renc&eacute; par l'Agence nationale de la s&eacute;curit&eacute; des syst&egrave;mes d'information (ANSSI). Le certificat de signature qualifi&eacute;, con&ccedil;u par une autorit&eacute; de certification, est d&eacute;livr&eacute; par une autorit&eacute; d'enregistrement.</p>\r\n<p><strong>Proc&eacute;dure g&eacute;n&eacute;rale de signature &eacute;lectronique</strong></p>\r\n<p>Pour signer un document &eacute;lectronique, voici les &eacute;tapes &agrave; suivre :</p>\r\n<ol>\r\n<li>Ouvrir son logiciel et s&eacute;lectionner le format de signature d&eacute;sir&eacute;.</li>\r\n<li>S&eacute;lectionner le document &agrave; signer.</li>\r\n<li>Choisir son certificat de signature.</li>\r\n<li>Saisir le mot de passe de son certificat &eacute;lectronique et valider.</li>\r\n</ol>\r\n<p>Les exigences et proc&eacute;dures de contr&ocirc;le varient selon l&rsquo;utilisation. Dans le cadre du march&eacute; public, la signature &eacute;lectronique doit &ecirc;tre conforme aux exigences du r&egrave;glement eIDAS et reposer sur un certificat qualifi&eacute;.</p>\r\n<p><strong>Formats de signature</strong></p>\r\n<p>Les experts-comptables peuvent choisir parmi plusieurs formats de signature &eacute;lectronique, selon leurs besoins :</p>\r\n<ul>\r\n<li><strong>PAdES</strong> : utilis&eacute; pour les documents PDF.</li>\r\n<li><strong>XAdES</strong> : destin&eacute; aux documents XML.</li>\r\n<li><strong>CAdES</strong> : utilis&eacute; pour des cas avanc&eacute;s de donn&eacute;es.</li>\r\n</ul>\r\n<p><strong>Information importante :</strong><br>La signature &eacute;lectronique n'est pas n&eacute;cessairement visible dans le document sign&eacute;. Bien que les &eacute;diteurs continuent parfois de l'ajouter au bas du document pour ne pas perturber l'utilisateur, cela n&rsquo;a pas de v&eacute;ritable int&eacute;r&ecirc;t, car la signature &eacute;lectronique reste valide et s&eacute;curis&eacute;e, m&ecirc;me sans cette indication visible.</p>",
+    "slug": "signature_electronique",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/signature.svg",
+    "last_modified": "2024-11-19T22:14:11.077Z",
+    "excerpt": "solutions de signature électronique pour experts comptables et PME"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 87,
+  "fields": {
+    "name": "Mission juridique",
+    "description": "<p><strong>Les d&eacute;fis actuels:</strong></p>\r\n<ul>\r\n<li class=\"\">Complexit&eacute; croissante des exigences l&eacute;gales</li>\r\n<li class=\"\">&Eacute;volution constante du cadre fiscal</li>\r\n<li class=\"\">N&eacute;cessit&eacute; de digitaliser les processus</li>\r\n</ul>\r\n<p><strong>Les missions principales :</strong></p>\r\n<ul>\r\n<li class=\"\">R&eacute;daction d'actes et formalit&eacute;s juridiques</li>\r\n<li class=\"\">Gestion des assembl&eacute;es g&eacute;n&eacute;rales</li>\r\n<li class=\"\">Suivi des obligations l&eacute;gales et fiscales</li>\r\n<li class=\"\">Archivage s&eacute;curis&eacute; des documents</li>\r\n<li class=\"\">Publication d'annonces l&eacute;gales</li>\r\n<li class=\"\">Veille juridique et r&eacute;glementaire</li>\r\n</ul>\r\n<p><strong>Les bonnes pratiques :</strong></p>\r\n<ul>\r\n<li class=\"\">Automatiser les t&acirc;ches administratives r&eacute;p&eacute;titives</li>\r\n<li class=\"\">Centraliser les documents de mani&egrave;re s&eacute;curis&eacute;e</li>\r\n<li class=\"\">Suivre rigoureusement les &eacute;ch&eacute;ances r&eacute;glementaires</li>\r\n<li class=\"\">Utiliser des mod&egrave;les de documents valid&eacute;s</li>\r\n<li class=\"\">Se tenir inform&eacute; des &eacute;volutions juridiques</li>\r\n<li class=\"\">S&eacute;curiser les &eacute;changes de documents sensibles</li>\r\n</ul>",
+    "slug": "mission_juridique",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/scale.svg",
+    "last_modified": "2024-11-19T22:14:11.076Z",
+    "excerpt": "solutions de missions juridiques pour experts comptables"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 88,
+  "fields": {
+    "name": "GED cabinet",
+    "description": "<h2><strong>Quel est l'int&eacute;r&ecirc;t d'une GED pour un expert-comptable ?</strong></h2>\r\n<h3><strong>Besoin du cabinet d'expert comptable</strong></h3>\r\n<ul>\r\n<li>La gestion des documents est une t&acirc;che <strong>essentielle</strong> pour les experts comptables. Ils doivent souvent traiter de nombreux types de documents pour un grand nombre de clients et les conserver de mani&egrave;re <strong>organis&eacute;e et s&eacute;curis&eacute;e</strong>. Le cabinet conserve les documents de sa production comptable, mais aussi des documents juridiques, sociaux ou de gestion. Ces documents sont sensibles, nombreux, complexes et peuvent &ecirc;tre utilis&eacute;s &agrave; tout moment par les collaborateurs du cabinet.</li>\r\n<li>C'est l&agrave; qu'un outil de Gestion &Eacute;lectronique de Documents (GED) prend tout son int&eacute;r&ecirc;t en modernisant <strong>l&rsquo;exploitation des documents au sein du cabinet.</strong></li>\r\n</ul>\r\n<h3><strong>Usage de la GED au cabinet</strong></h3>\r\n<ul>\r\n<li>Cette solution GED permet de <strong>num&eacute;riser, de classer et de stocker</strong> tous les documents du cabinet d'expert-comptable dans un logiciel collaboratif. Cela signifie qu'il est possible pour un collaborateur de retrouver facilement n'importe quel document. Qu'il s'agisse d'un document comptable, d'un contrat ou d'une facture, il retrouve le fichier en tapant quelques mots-cl&eacute;s dans la barre de recherche ou en filtrant par un attribut. Cela peut non seulement aider &agrave; gagner du temps, mais &eacute;galement &agrave; &eacute;viter les erreurs et &agrave; am&eacute;liorer la productivit&eacute; de l'expert-comptable, tout en garantissant un archivage digital dans le temps.</li>\r\n</ul>\r\n<h2><strong>Quelles sont les fonctionnalit&eacute;s attendues d'une GED ?</strong></h2>\r\n<h3><strong>Fonctionnalit&eacute;s</strong></h3>\r\n<p>Voici une liste de ce qui est attendu d'une GED moderne :</p>\r\n<ol>\r\n<li><strong>Num&eacute;risation et archivage de documents :</strong> C'est &eacute;vident mais elle doit permettre d'int&eacute;grer et archiver tous vos documents de mani&egrave;re centralis&eacute;e et s&eacute;curis&eacute;e.</li>\r\n<li><strong>Recherche de documents :</strong> Retrouver facilement un document en utilisant des mots-cl&eacute;s de recherche, mais surtout via une recherche Full Text qui doit permettre de chercher dans le contenu et les m&eacute;tadonn&eacute;es du document.</li>\r\n<li><strong>Gestion des versions :</strong> Suivre les diff&eacute;rentes versions d'un document et de conserver un historique des modifications apport&eacute;es (horodatage, collaborateur concern&eacute; et possibilit&eacute; de revenir en arri&egrave;re).</li>\r\n<li><strong>Partage de documents :</strong> Partager des documents avec avec des tiers, en leur donnant acc&egrave;s &agrave; des documents ou sections sp&eacute;cifiques. Le partage peut se faire via un portail d&eacute;di&eacute;.</li>\r\n<li><strong>Gestion des droits d'acc&egrave;s :</strong> G&eacute;rer les droits d'acc&egrave;s des utilisateurs avec des r&egrave;gles &agrave; la fois globales mais qui peuvent &ecirc;tre adapt&eacute;es selon les dossiers.</li>\r\n<li><strong>Notification :</strong> Envoyer des notifications aux utilisateurs lorsqu'un nouveau document est ajout&eacute; ou modifi&eacute; selon des r&egrave;gles param&eacute;trables.</li>\r\n<li><strong>Collaboration en temps r&eacute;el :</strong> Collaborer sur des documents en temps r&eacute;el, ce qui permet de travailler de mani&egrave;re plus efficace et de r&eacute;duire les erreurs. On pense notamment au document Word ou Excel, ou l&rsquo;annotation et le partage.</li>\r\n<li><strong>Int&eacute;gration avec d'autres outils :</strong> L'alimenter avec les productions de votre outils comptables, juridiques ou de paie. La piloter avec votre outil de Gestion Interne. Tout d&eacute;pend de votre &eacute;cosyst&egrave;me de logiciels, mais c'est un point fondamental.</li>\r\n<li><strong>Mise &agrave; disposition pour vos clients :</strong> Soit la GED permet de donner un acc&egrave;s &agrave; vos clients, soit elle s&rsquo;interconnecte avec votre portail client (<a href=\"https://www.cabinetdigital.fr/blog/portail-client-expert-comptable\" target=\"_blank\" rel=\"noopener\">notre guide sur les portails clients pour experts comptables</a>), pour que vos clients y acc&egrave;dent de mani&egrave;re s&eacute;curis&eacute;e et claire.</li>\r\n<li><strong>S&eacute;curit&eacute; :</strong> S&eacute;curiser vos donn&eacute;es et respecter les r&eacute;glementations en mati&egrave;re de protection des donn&eacute;es. Elle doit pouvoir &ecirc;tre configur&eacute;e pour prot&eacute;ger les donn&eacute;es sensibles gr&acirc;ce &agrave; des contr&ocirc;les d'acc&egrave;s et &agrave; du chiffrement.</li>\r\n</ol>\r\n<p>Il est important de noter que les fonctionnalit&eacute;s attendues d&eacute;pendront de vos besoins et donc n&eacute;cessaire que vous r&eacute;fl&eacute;chissiez en amont &agrave; vos besoins m&eacute;tiers lors de votre recherche.</p>\r\n<h3><strong>Logiciel en SaaS ou serveur</strong></h3>\r\n<p>Il existe deux principaux types de solutions de GED : en mode <strong>SAAS</strong> (Software as a Service) ou sur <strong>serveur</strong>.</p>\r\n<ul>\r\n<li class=\"ql-indent-1\">Les solutions en mode <strong>SAAS</strong> sont h&eacute;berg&eacute;es en ligne et peuvent &ecirc;tre accessibles depuis n'importe quel ordinateur ou appareil mobile avec une connexion Internet. Elles sont g&eacute;n&eacute;ralement plus faciles &agrave; mettre en place et &agrave; utiliser, mais elles peuvent &ecirc;tre moins flexibles et vous avez moins de contr&ocirc;le sur vos donn&eacute;es que les solutions sur serveur.</li>\r\n<li class=\"ql-indent-1\">Les solutions sur <strong>serveur</strong>, quant &agrave; elles, sont install&eacute;es sur un serveur interne (ou chez votre h&eacute;bergeur) de l'entreprise et sont g&eacute;n&eacute;ralement plus co&ucirc;teuses &agrave; mettre en place et &agrave; entretenir. Elles offrent cependant une plus grande flexibilit&eacute; et vous restez en contr&ocirc;le vos donn&eacute;es, ce qui est un point important &eacute;tant donn&eacute; les donn&eacute;es sensibles trait&eacute;es.</li>\r\n</ul>\r\n<h2><strong>Comment choisir et d&eacute;ployer sa GED au sein du cabinet ?</strong></h2>\r\n<h3><strong>Proc&eacute;dure de s&eacute;lection</strong></h3>\r\n<p>Il est important de choisir un logiciel qui r&eacute;pond aux besoins de l'expert-comptable et de son entreprise. Voici quelques bonnes pratiques &agrave; avoir en t&ecirc;te lors de la recherche :</p>\r\n<ol>\r\n<li><strong>D&eacute;couvrir les solutions du march&eacute; :</strong> Renseignez-vous sur les meilleures solutions du march&eacute;. Pour &ccedil;a vous pouvez utiliser <a href=\"https://www.cabinetdigital.fr/liste-logiciels-experts-comptables\" target=\"_blank\" rel=\"noopener\"><strong>notre liste d&eacute;di&eacute;e aux experts comptables.</strong></a></li>\r\n<li><strong>Exprimer votre besoin :</strong> Faites une <strong>liste des fonctionnalit&eacute;s</strong> dont vous avez besoin et assurez-vous que le logiciel y r&eacute;ponde.</li>\r\n<li><strong>Tester la solution :</strong> Mettez-vous &agrave; la place de vos <strong>collaborateurs</strong>. Cette liste de possibilit&eacute; peut &ecirc;tre belle sur le papier, mais le principal est qu'elles soient utilis&eacute;es (et utiles) par vos collaborateurs. L'outil doit &ecirc;tre simple et moderne d'utilisation.</li>\r\n<li><strong>Budgetiser le d&eacute;ploiement :</strong> Estimez et comparez <strong>les co&ucirc;ts &agrave; long terme</strong>, notamment les frais de mise en place (aussi bien les co&ucirc;ts directs de l&rsquo;&eacute;diteur mais aussi les moyens humains en interne &agrave; allouer) et les co&ucirc;ts d'entretien. Estimez-vos frais de stockage et le co&ucirc;t par collaborateur, ce qui peut cependant &ecirc;tre plus compliqu&eacute; &agrave; estimer sur une solution h&eacute;berg&eacute;e chez vous.</li>\r\n<li><strong>Consulter les avis :</strong> Retrouvez les avis et t&eacute;moignages d'autres utilisateurs pour avoir une id&eacute;e de la <strong>qualit&eacute; du logiciel</strong>. Demandez &agrave; l&rsquo;&eacute;diteur des r&eacute;f&eacute;rences d&rsquo;autres cabinets similaires aux votre utilisant la solution.</li>\r\n</ol>",
+    "slug": "ged_cabinet",
+    "metier": null,
+    "is_published": false,
+    "icon": "icons/file-stack.svg",
+    "last_modified": "2024-11-19T22:07:52.425Z",
+    "excerpt": "solutions de GED pour experts comptables"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 90,
+  "fields": {
+    "name": "Comptabilité entreprise",
+    "description": "<h2><strong>Les meilleurs logiciels de comptabilit&eacute; : un outil essentiel pour les TPE et PME</strong></h2>\r\n<p>Un logiciel de comptabilit&eacute; est devenu un facteur diff&eacute;rentiant pour les entreprises de toutes tailles. Il permet d'optimiser la gestion comptable et financi&egrave;re, en automatisant de nombreuses t&acirc;ches chronophages. Il permet aussi de permettre d'avoir une meilleure visibilit&eacute; sur son activit&eacute; et attirer des collaborateurs comptables attir&eacute;s par des outils modernes et efficaces.</p>\r\n<h3><strong>Pourquoi choisir un logiciel de comptabilit&eacute; ?</strong></h3>\r\n<p>&bull; Gain de temps sur les t&acirc;ches r&eacute;p&eacute;titives<br>&bull; R&eacute;duction des erreurs dans la saisie des &eacute;critures comptables<br>&bull; Meilleure organisation des donn&eacute;es comptables<br>&bull; Facilite la collaboration avec les experts-comptables</p>\r\n<h3><strong>Crit&egrave;res de s&eacute;lection pour un logiciel comptable :</strong></h3>\r\n<ol>\r\n<li class=\"\"><strong>Fonctionnalit&eacute;s adapt&eacute;es</strong>&nbsp;&agrave; votre activit&eacute; (TPE, PME, ind&eacute;pendants)</li>\r\n<li class=\"\"><strong>Facilit&eacute; d'utilisation</strong>&nbsp;pour les non-comptables</li>\r\n<li class=\"\"><strong>Conformit&eacute; aux normes fiscales</strong>&nbsp;en vigueur</li>\r\n<li class=\"\"><strong>Int&eacute;gration avec d'autres logiciels</strong>&nbsp;(facturation, gestion)</li>\r\n<li class=\"\"><strong>Support technique</strong>&nbsp;disponible</li>\r\n</ol>\r\n<h3>Un bon logiciel de comptabilit&eacute; doit couvrir les besoins essentiels :</h3>\r\n<p>&bull; Saisie des &eacute;critures comptables<br>&bull; Gestion des factures clients et fournisseurs<br>&bull; Suivi de tr&eacute;sorerie<br>&bull; Comptabilit&eacute; analytique<br>&bull; G&eacute;n&eacute;ration de documents comptables (bilan, compte de r&eacute;sultat)</p>\r\n<p>Pour les TPE et PME, le choix du meilleur logiciel de comptabilit&eacute; d&eacute;pendra de leurs besoins sp&eacute;cifiques et de leur budget. Certains pr&eacute;f&egrave;reront une solution de comptabilit&eacute; en ligne, tandis que d'autres opteront pour un logiciel install&eacute; localement.</p>",
+    "slug": "comptabilite_entreprise",
+    "metier": 2,
+    "is_published": true,
+    "icon": "icons/file-input.svg",
+    "last_modified": "2024-11-19T22:14:11.074Z",
+    "excerpt": "solutions de comptabilité pour PME"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 91,
+  "fields": {
+    "name": "Gestion de projet",
+    "description": "<p>Un logiciel de gestion de projet est devenu indispensable pour les &eacute;quipes souhaitant optimiser leur productivit&eacute; et leur efficacit&eacute;. Ces outils permettent de :</p>\r\n<p>&bull;&nbsp;<strong>Centraliser les t&acirc;ches</strong>&nbsp;et suivre leur avancement<br>&bull;&nbsp;<strong>Collaborer en temps r&eacute;el</strong>&nbsp;entre les membres de l'&eacute;quipe<br>&bull;&nbsp;<strong>Visualiser l'&eacute;tat global des projets</strong>&nbsp;via des tableaux de bord</p>\r\n<h2><strong>Pourquoi utiliser un logiciel de gestion de projet ?</strong></h2>\r\n<p>Les logiciels de gestion de projet offrent de nombreux avantages :</p>\r\n<p>&bull; Meilleure organisation et suivi des t&acirc;ches<br>&bull; Optimisation de la gestion des ressources<br>&bull; Am&eacute;lioration de la communication entre les collaborateurs<br>&bull; Vue d'ensemble sur l'avancement des projets<br>&bull; Automatisation de certaines t&acirc;ches r&eacute;p&eacute;titives</p>\r\n<h2><strong>Fonctionnalit&eacute;s cl&eacute;s &agrave; rechercher :</strong></h2>\r\n<p>&bull;&nbsp;<strong>Gestion des t&acirc;ches</strong>&nbsp;: cr&eacute;ation, assignation, suivi<br>&bull;&nbsp;<strong>Diagramme de Gantt</strong>&nbsp;pour planifier les d&eacute;lais<br>&bull;&nbsp;<strong>Tableaux Kanban</strong>&nbsp;pour visualiser le workflow<br>&bull;&nbsp;<strong>Gestion des ressources</strong>&nbsp;humaines et mat&eacute;rielles<br>&bull;&nbsp;<strong>Rapports et tableaux de bord</strong>&nbsp;personnalisables<br>&bull;&nbsp;<strong>Int&eacute;grations</strong>&nbsp;avec d'autres outils (ex: Slack, Google Drive)</p>\r\n<h2><strong>Crit&egrave;res de s&eacute;lection d'un outil de gestion de projet :</strong></h2>\r\n<ol>\r\n<li class=\"\">Facilit&eacute; d'utilisation et prise en main rapide</li>\r\n<li class=\"\">Fonctionnalit&eacute;s adapt&eacute;es aux besoins de l'&eacute;quipe</li>\r\n<li class=\"\">Niveau de personnalisation possible</li>\r\n<li class=\"\">Qualit&eacute; du support client</li>\r\n<li class=\"\">Rapport qualit&eacute;/prix</li>\r\n</ol>",
+    "slug": "gestion_de_projet",
+    "metier": 3,
+    "is_published": true,
+    "icon": "icons/list-checks.svg",
+    "last_modified": "2024-11-19T22:14:11.073Z",
+    "excerpt": "solutions de gestion de projet pour PME"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 93,
+  "fields": {
+    "name": "Ventes & Facturation",
+    "description": "",
+    "slug": "ventes_et_facturation",
+    "metier": 2,
+    "is_published": true,
+    "icon": "icons/receipt-euro.svg",
+    "last_modified": "2024-11-19T22:14:11.071Z",
+    "excerpt": "solutions de ventes et facturation pour PME"
+  }
+},
+{
+  "model": "cabinet_digital.softwarecategory",
+  "pk": 94,
+  "fields": {
+    "name": "Gestion financière",
+    "description": "<p><strong>Les logiciels de gestion financi&egrave;re : une solution tout-en-un pour vos paiements et votre facturation</strong></p>\r\n<p>La gestion financi&egrave;re d'une entreprise comprend diverses t&acirc;ches quotidiennes allant de la facturation des clients aux paiements des fournisseurs. Aujourd'hui, les solutions modernes de gestion financi&egrave;re permettent de centraliser toutes ces op&eacute;rations dans un seul outil, offrant une vue d'ensemble unifi&eacute;e et un contr&ocirc;le total sur les flux financiers.</p>\r\n<h3>Un hub central pour vos flux financiers</h3>\r\n<p>Ces logiciels tout-en-un permettent de :</p>\r\n<ul>\r\n<li>G&eacute;rer l'ensemble du processus de facturation client.</li>\r\n<li>Effectuer les paiements fournisseurs directement depuis l'interface.</li>\r\n<li>Suivre les encaissements en temps r&eacute;el.</li>\r\n<li>Automatiser les relances clients.</li>\r\n<li>Centraliser toutes les pi&egrave;ces comptables.</li>\r\n<li>Piloter la tr&eacute;sorerie &agrave; partir d'un tableau de bord unique.</li>\r\n</ul>\r\n<h3>Simplification des paiements</h3>\r\n<p>Ces solutions se distinguent notamment par leur capacit&eacute; &agrave; simplifier les paiements :</p>\r\n<ul>\r\n<li>Paiement en masse des factures fournisseurs.</li>\r\n<li>Validation des paiements selon les processus internes.</li>\r\n<li>Suivi des &eacute;ch&eacute;ances de paiement.</li>\r\n<li>Alertes automatiques pour les dates importantes.</li>\r\n<li>Acc&egrave;s &agrave; l'historique complet des transactions.</li>\r\n</ul>\r\n<h3>Gestion optimis&eacute;e de la facturation client</h3>\r\n<p>Pour la facturation client, ces outils proposent :</p>\r\n<ul>\r\n<li>Cr&eacute;ation et envoi automatis&eacute;s des factures.</li>\r\n<li>Suivi des statuts de paiement en temps r&eacute;el.</li>\r\n<li>Mod&egrave;les de factures personnalisables.</li>\r\n<li>Gestion des devis et conversion en factures.</li>\r\n<li>Relance intelligente et automatis&eacute;e.</li>\r\n<li>Conformit&eacute; avec les normes de facturation &eacute;lectronique.</li>\r\n</ul>\r\n<h3>Les avantages d'une solution unifi&eacute;e</h3>\r\n<p>Opter pour un outil unique de gestion de la facturation et des paiements pr&eacute;sente de nombreux avantages :</p>\r\n<ul>\r\n<li>&Eacute;limination des doubles saisies.</li>\r\n<li>R&eacute;duction des erreurs de traitement.</li>\r\n<li>Gain de temps significatif.</li>\r\n<li>Meilleure visibilit&eacute; sur les flux de tr&eacute;sorerie.</li>\r\n<li>Collaboration facilit&eacute;e entre &eacute;quipes.</li>\r\n<li>Synchronisation automatique avec la comptabilit&eacute;.</li>\r\n</ul>\r\n<h3>Les fonctionnalit&eacute;s essentielles d&rsquo;un logiciel tout-en-un</h3>\r\n<p>Un logiciel de gestion financi&egrave;re performant doit int&eacute;grer :</p>\r\n<ul>\r\n<li><strong>Gestion des paiements</strong> : virements bancaires int&eacute;gr&eacute;s et workflow de validation.</li>\r\n<li><strong>Pr&eacute;vision de tr&eacute;sorerie</strong> : vue d'ensemble des entr&eacute;es et sorties.</li>\r\n<li><strong>Facturation client</strong> : cr&eacute;ation et envoi des factures, suivi des encaissements, et syst&egrave;me de relance.</li>\r\n<li><strong>Tableau de bord unifi&eacute;</strong> : vue globale des flux financiers, indicateurs de performance et alertes personnalisables.</li>\r\n<li><strong>Automatisation et int&eacute;gration</strong> : connexion bancaire, import automatique des factures, synchronisation comptable.</li>\r\n</ul>\r\n<h3>Pr&eacute;parer l'avenir</h3>\r\n<p>Avec l'obligation de la facturation &eacute;lectronique pr&eacute;vue pour 2026, ces solutions tout-en-un deviennent essentielles. Elles permettent non seulement de se conformer aux futures exigences l&eacute;gales, mais aussi d'optimiser l'ensemble des processus financiers de l'entreprise.</p>",
+    "slug": "gestion_financiere",
+    "metier": 2,
+    "is_published": true,
+    "icon": "icons/wallet.svg",
+    "last_modified": "2024-11-19T22:14:11.062Z",
+    "excerpt": "solutions de gestion financière pour PME"
+  }
+},
+{
+  "model": "cabinet_digital.tag",
+  "pk": 1,
+  "fields": {
+    "name": "Acquisition",
+    "slug": "acquisitions",
+    "color": "#a17e1b"
+  }
+},
+{
+  "model": "cabinet_digital.tag",
+  "pk": 2,
+  "fields": {
+    "name": "Levée de fonds",
+    "slug": "levees_de_fonds",
+    "color": "#3da985"
+  }
+},
+{
+  "model": "cabinet_digital.tag",
+  "pk": 3,
+  "fields": {
+    "name": "Annonce",
+    "slug": "annonces",
+    "color": "#ff5c5c"
+  }
+},
+{
+  "model": "cabinet_digital.tag",
+  "pk": 4,
+  "fields": {
+    "name": "Comparatif",
+    "slug": "comparatifs",
+    "color": "#5183b8"
+  }
+},
+{
+  "model": "cabinet_digital.tag",
+  "pk": 5,
+  "fields": {
+    "name": "Guide",
+    "slug": "guides",
+    "color": "#4c9447"
+  }
+},
+{
+  "model": "cabinet_digital.software",
+  "pk": 595,
+  "fields": {
+    "name": "1min30",
+    "slug": "1min30",
+    "description": "<p><strong>Agence de marketing, leader de l&rsquo;Inbound Marketing et du Revenue Enablement.</strong></p>\r\n<p>1min30 aide les dirigeants &agrave; identifier les points de blocage de leur entreprise et &agrave; mettre en place des solutions p&eacute;rennes en alignant, formant et outillant leurs &eacute;quipes au contact des clients.</p>\r\n<p>L'agence propose une gamme de services digitaux pour aider les cabinets d'Experts-Comptables &agrave; am&eacute;liorer leur visibilit&eacute; en ligne, d&eacute;velopper leur notori&eacute;t&eacute; et fid&eacute;liser leur client&egrave;le.</p>\r\n<h3>Services propos&eacute;s</h3>\r\n<p>Cr&eacute;ation d'un site internet</p>\r\n<ul>\r\n<li>Audit de votre site web existant pour une meilleure ergonomie et attractivit&eacute;</li>\r\n<li>Campagnes de r&eacute;f&eacute;rencement (SEO-SMO) pour une meilleure visibilit&eacute; en ligne</li>\r\n</ul>\r\n<p>Cr&eacute;ation de contenus</p>\r\n<ul>\r\n<li>D&eacute;finition d'une ligne &eacute;ditoriale pour des contenus de qualit&eacute; tels que des articles de blog, des vid&eacute;os, des infographies, des ebooks et des newsletters</li>\r\n<li>&Eacute;dition de contenus pour une valeur ajout&eacute;e</li>\r\n</ul>\r\n<p>Campagne de communication digitale sur les r&eacute;seaux sociaux</p>\r\n<ul>\r\n<li>Strat&eacute;gie de communication sur les r&eacute;seaux sociaux pour d&eacute;velopper votre image et votre notori&eacute;t&eacute;</li>\r\n<li>Animation de communaut&eacute;s online pour &eacute;tablir une relation forte et durable avec vos parties prenantes</li>\r\n</ul>\r\n<p>Organisation de campagnes de relations publiques digitales et traditionnelles</p>\r\n<ul>\r\n<li>Prise en charge de vos campagnes de communication aupr&egrave;s des m&eacute;dias traditionnels et digitaux pour assurer votre image de marque</li>\r\n</ul>\r\n<p>Gestion de la relation client</p>\r\n<ul>\r\n<li>Outils pour optimiser vos relations clients et g&eacute;n&eacute;rer des recommandations de nouveaux clients</li>\r\n<li>Assistance dans la mise en &oelig;uvre d'une strat&eacute;gie de prospection et s&eacute;lection de vos prospects</li>\r\n</ul>\r\n<p>Marketing automatis&eacute;</p>\r\n<ul>\r\n<li>S&eacute;lection et mise en &oelig;uvre d'outils marketing pour captiver l'attention de vos visiteurs et obtenir de nouveaux clients</li>\r\n</ul>\r\n<h3>Avantages pour les cabinets d'experts-comptables</h3>\r\n<ul>\r\n<li>Am&eacute;lioration du trafic sur votre site internet</li>\r\n<li>Acquisition de nouveaux prospects et conversion en clients</li>\r\n<li>Am&eacute;lioration de votre chiffre d'affaire</li>\r\n</ul>",
+    "excerpt": "Agence de marketing, leader de l’Inbound Marketing et du Revenue Enablement.",
+    "logo": "logos\\1min30.webp",
+    "is_published": true,
+    "image_principale": "",
+    "site": "https://www.1min30.com/cabinet-expert-comptable",
+    "video": "https://www.youtube.com/watch?v=R6LR8CYj1_k",
+    "is_top_pick": false,
+    "unique_views": 83,
+    "metier": null,
+    "last_modified": "2024-12-07T15:22:10.226Z",
+    "preview_gif": "software_previews/1min30_preview_wfHJwnH.gif",
+    "category": [
+      74
+    ]
+  }
+},
+{
+  "model": "cabinet_digital.software",
+  "pk": 596,
+  "fields": {
+    "name": "Abby",
+    "slug": "abby",
+    "description": "<p>Plateforme qui permet aux autoentrepreneurs de g&eacute;rer simplement leur activit&eacute;. Avec Abby, les ind&eacute;pendants peuvent d&eacute;sormais g&eacute;rer leur facturation, leur comptabilit&eacute;, le suivi de leurs clients et toutes leurs t&acirc;ches administratives en toute transparence.</p>\r\n<h3>Liste des fonctionnalit&eacute;s de la solution :</h3>\r\n<ul>\r\n<li>Facturation facile, personnalisation de factures et devis en un temps record ;</li>\r\n<li>D&eacute;claration automatique du chiffre d&rsquo;affaires aupr&egrave;s des services de l'&Eacute;tat ;</li>\r\n<li>Gestion facile et rapide de la comptabilit&eacute; en se basant sur la synchronisation de votre compte bancaire et abonnement ;</li>\r\n<li>Pilotage avanc&eacute; : gestion du temps, suivi des t&acirc;ches et synchronisation d&rsquo;applications pr&eacute;f&eacute;r&eacute;es.</li>\r\n</ul>\r\n<h3>Liste des avantages apport&eacute;s par la solution :</h3>\r\n<ul>\r\n<li>Simplification de la comptabilit&eacute; avec une synchronisation bancaire, un livre de recettes automatis&eacute; et une d&eacute;claration de chiffre d&rsquo;affaires aupr&egrave;s des services de l&rsquo;&Eacute;tat ;</li>\r\n<li>Gestion optimale des clients avec l&rsquo;outil de r&eacute;pertoire clients, la facturation, la synchronisation bancaire et les relances automatiques ;</li>\r\n<li>S&eacute;curit&eacute; des paiements avec le paiement en ligne, la signature &eacute;lectronique et la relance automatique pour une gestion facile et rapide de son activit&eacute;.</li>\r\n</ul>",
+    "excerpt": "Plateforme qui permet aux autoentrepreneurs de gérer simplement leur activité.",
+    "logo": "logos\\abby.webp",
+    "is_published": true,
+    "image_principale": "",
+    "site": "https://abby.fr/",
+    "video": "https://www.youtube.com/watch?v=-COxqAPp1uk",
+    "is_top_pick": false,
+    "unique_views": 77,
+    "metier": null,
+    "last_modified": "2024-12-07T15:22:47.404Z",
+    "preview_gif": "software_previews/abby_preview_HTFhuA2.gif",
+    "category": [
+      90
+    ]
+  }
+},
+{
+  "model": "cabinet_digital.software",
+  "pk": 597,
+  "fields": {
+    "name": "Acropole Expert CAC",
+    "slug": "acropole_expert_cac",
+    "description": "<p>Logiciel de Commissaires Aux Comptes b&eacute;n&eacute;ficiant d&rsquo;une solide r&eacute;putation. Il a &eacute;t&eacute; cr&eacute;&eacute; pour r&eacute;pondre aux besoins des experts m&eacute;tier et est utilis&eacute; par plus de 500 Commissaires Aux Comptes, ainsi que par 2000 utilisateurs.</p>\r\n<h3>Fonctionnalit&eacute;s cl&eacute;s :</h3>\r\n<ul>\r\n<li>Import facile de fichiers FEC et de balances ou grand livre sans param&eacute;trage</li>\r\n<li>Formulaires int&eacute;gr&eacute;s pour r&eacute;pondre &agrave; toutes les obligations r&eacute;glementaires et normatives</li>\r\n<li>Int&eacute;gration de la gestion &eacute;lectronique de documents pour une gestion pratique de toutes les donn&eacute;es collect&eacute;es aupr&egrave;s des clients</li>\r\n<li>Documents pr&ecirc;ts &agrave; l'emploi pour la pr&eacute;paration et l'&eacute;laboration de la mission de CAC</li>\r\n<li>R&eacute;sum&eacute; automatique des &eacute;l&eacute;ments de travail devant &ecirc;tre pris en compte et mise en &eacute;vidence des seuils d'alerte &agrave; surveiller</li>\r\n<li>R&eacute;cup&eacute;ration ais&eacute;e des donn&eacute;es de l&rsquo;exercice pr&eacute;c&eacute;dent pour &eacute;viter les risques d'erreurs et de ressaisies</li>\r\n</ul>\r\n<h3>Avantages cl&eacute;s :</h3>\r\n<ul>\r\n<li>Am&eacute;lioration de la productivit&eacute; gr&acirc;ce &agrave; l'ensemble des fonctionnalit&eacute;s du logiciel</li>\r\n<li>R&eacute;cup&eacute;ration instantan&eacute;e des donn&eacute;es clients avec des fonctionnalit&eacute;s de reprise de donn&eacute;es</li>\r\n<li>Optimisation de l'accompagnement client par l'int&eacute;gration de questionnaires d'assistance et d&rsquo;outils facilitant les communications</li>\r\n<li>Solution accessible de n'importe o&ugrave; gr&acirc;ce &agrave; une conception en mode collaboratif et accessible sur le cloud</li>\r\n<li>Excellente qualit&eacute; de support avec une prise en charge rapide et efficace de toutes les demandes techniques et fonctionnelles</li>\r\n</ul>\r\n<h3>Les contacter</h3>\r\n<ul>\r\n<li>Formulaire de contact : <a href=\"https://acropole-expert.com/\">https://acropole-expert.com/</a></li>\r\n<li>Appelez les ; Nicolas Duhar : 06 86 36 76 04</li>\r\n</ul>",
+    "excerpt": "Logiciel de Commissaires Aux Comptes bénéficiant d’une solide réputation.",
+    "logo": "logos\\acropole_expert_cac.webp",
+    "is_published": true,
+    "image_principale": "",
+    "site": "https://acropole-expert.com/",
+    "video": "https://www.youtube.com/watch?v=Zx1QDxN3n24",
+    "is_top_pick": false,
+    "unique_views": 163,
+    "metier": null,
+    "last_modified": "2024-12-07T15:23:07.267Z",
+    "preview_gif": "software_previews/acropole_expert_cac_preview_dqdPfJm.gif",
+    "category": [
+      76
+    ]
+  }
+},
+{
+  "model": "cabinet_digital.software",
+  "pk": 598,
+  "fields": {
+    "name": "Agicap",
+    "slug": "agicap",
+    "description": "<p><strong>Logiciel de gestion de tr&eacute;sorerie et de paiement de fournisseurs.</strong></p>\r\n<p>Agicap est une solution compl&egrave;te de gestion de tr&eacute;sorerie qui permet de piloter, anticiper et analyser la tr&eacute;sorerie de l'entreprise en temps r&eacute;el. Elle offre une plateforme unique pour centraliser et automatiser la gestion des factures fournisseurs, relancer et encaisser les clients.</p>\r\n<h3>Modules :</h3>\r\n<ul>\r\n<li><strong>Suivi du plan de tr&eacute;sorerie :</strong> Analyse des transactions pass&eacute;es et pr&eacute;visionnel avec des connecteurs bancaires et aux logiciels de gestion. Pour optimiser ses emprunts et investissements.</li>\r\n<li><strong>Paiement fournisseur :</strong> Centraliser le paiement de ses factures - EBICS TS - et g&eacute;n&eacute;rez votre pr&eacute;comptabilit&eacute;.</li>\r\n<li><strong>Suivi des factures client :</strong> Relancer ces clients et analyser ses capacit&eacute;s &agrave; &ecirc;tre pay&eacute;.</li>\r\n<li><strong>Gestion des d&eacute;penses :</strong> Solution compl&egrave;te de gestion des d&eacute;penses pour l'entreprise - cartes digitales et physique; plafonds; pilotage - int&eacute;gr&eacute;e &agrave; l'&eacute;cosyst&egrave;me Agicap</li>\r\n</ul>\r\n<h3>Fonctionnalit&eacute;s :</h3>\r\n<ul>\r\n<li>Visualisation en temps r&eacute;el de la tr&eacute;sorerie de l'entreprise sur une seule interface</li>\r\n<li>Centralisation automatis&eacute;e de toutes les donn&eacute;es utiles &agrave; la gestion de tr&eacute;sorerie : donn&eacute;es bancaires, factures, encours de gestion, etc.</li>\r\n<li>Planification automatis&eacute;e et ex&eacute;cution des paiements fournisseurs</li>\r\n<li>Cr&eacute;ation de plans de relance personnalis&eacute;s et automatis&eacute;s pour acc&eacute;l&eacute;rer les encaissements et diminuer les retards clients</li>\r\n<li>Pr&eacute;paration des justificatifs de paiement fournisseurs et des comptes comptables</li>\r\n<li>Pr&eacute;visionnel dynamique de tr&eacute;sorerie pour anticiper les difficult&eacute;s potentielles</li>\r\n<li>Mod&eacute;lisation et test de diff&eacute;rents sc&eacute;narios de d&eacute;veloppement</li>\r\n<li>Analyse des principaux indicateurs de suivi (balance &acirc;g&eacute;e, d&eacute;lais de r&egrave;glement, etc.)</li>\r\n<li>Reporting personnalis&eacute; et exportable pour une meilleure communication interne (notamment avec les coll&egrave;gues et partenaires)</li>\r\n</ul>\r\n<h3>Avantages :</h3>\r\n<ul>\r\n<li>Offre une vision consolid&eacute;e et fiable de tous les comptes bancaires et de toutes les soci&eacute;t&eacute;s de l'entreprise</li>\r\n<li>Vous aide &agrave; anticiper et &agrave; &eacute;viter les difficult&eacute;s de tr&eacute;sorerie</li>\r\n<li>Automatise et centralise la gestion de votre tr&eacute;sorerie pour vous faire gagner du temps</li>\r\n<li>Optimise la gestion de vos relances clients, de vos paiements fournisseurs et la planification de votre tr&eacute;sorerie</li>\r\n<li>Vous permet de prendre les bonnes d&eacute;cisions gr&acirc;ce &agrave; une analyse pr&eacute;cise et en temps r&eacute;el de vos donn&eacute;es strat&eacute;giques</li>\r\n<li>Vous offre un accompagnement personnalis&eacute; pour le d&eacute;ploiement et la formation sur l'utilisation de la solution</li>\r\n<li>Possibilit&eacute; de devenir Expert-Comptable partenaire pour adresser des missions additionnelles &agrave; vos clients actuels et/ou futurs</li>\r\n</ul>\r\n<h3>Les contacter :</h3>\r\n<ul>\r\n<li>Devenir partenaire : <a href=\"https://agicap.com/fr/devenez-partenaire/\">https://agicap.com/fr/devenez-partenaire/</a></li>\r\n</ul>",
+    "excerpt": "Logiciel de gestion de trésorerie et de paiement de fournisseurs.",
+    "logo": "logos\\agicap.webp",
+    "is_published": true,
+    "image_principale": "",
+    "site": "https://agicap.com/fr/",
+    "video": "https://www.youtube.com/watch?v=jLcHlf3h3aM",
+    "is_top_pick": true,
+    "unique_views": 6298,
+    "metier": 2,
+    "last_modified": "2024-12-07T15:17:02.533Z",
+    "preview_gif": "software_previews/agicap_preview_zCWz4UM.gif",
+    "category": [
+      94
+    ]
+  }
+},
+{
+  "model": "cabinet_digital.software",
+  "pk": 599,
+  "fields": {
+    "name": "Airtable",
+    "slug": "airtable",
+    "description": "<p>Solution qui permet de cr&eacute;er, partager et g&eacute;rer facilement des bases de donn&eacute;es. Airtable facilite la cr&eacute;ation et le partage de bases de donn&eacute;es personnalis&eacute;es pour am&eacute;liorer la productivit&eacute;, la collaboration, la flexibilit&eacute; et la personnalisation dans de nombreux secteurs d'activit&eacute;.</p>\r\n<h3>Liste des fonctionnalit&eacute;s de Airtable</h3>\r\n<ul>\r\n<li>Cr&eacute;ation et personnalisation de bases de donn&eacute;es relationnelles, ainsi que des bases de donn&eacute;es non relationnelles.</li>\r\n<li>Possibilit&eacute; pour plusieurs membres de travailler ensemble sur la m&ecirc;me base de donn&eacute;es en temps r&eacute;el.</li>\r\n<li>Permet d'int&eacute;grer ais&eacute;ment des applications tierces comme Slack, Zapier ou encore Gmail afin de faciliter l'automatisation des t&acirc;ches.</li>\r\n<li>De nombreux mod&egrave;les de base de donn&eacute;es pr&eacute;d&eacute;finit pour diff&eacute;rentes industries (marketing, finances, RH etc.)</li>\r\n<li>Collaboration en temps r&eacute;el avec une &eacute;quipe sur une base de donn&eacute;es.</li>\r\n</ul>\r\n<h3>Les avantages de Airtable</h3>\r\n<ul>\r\n<li>Interface intuitive qui facilite la cr&eacute;ation et la gestion des bases de donn&eacute;es, ce qui permet de gagner du temps et d'am&eacute;liorer la productivit&eacute;.</li>\r\n<li>Les multiples int&eacute;grations automatisent de multiples t&acirc;ches r&eacute;p&eacute;titives.</li>\r\n<li>Adaptabilit&eacute; et flexibilit&eacute; : Airtable convient &agrave; une grande vari&eacute;t&eacute; de secteurs d'activit&eacute;, des services juridiques aux agences marketing en passant par les domaines cr&eacute;atifs, les RH ou encore les finances.</li>\r\n<li>Collaboration et partage facilit&eacute;s.</li>\r\n<li>Nombreuses options de personnalisation pour r&eacute;pondre aux diff&eacute;rents besoins de chaque utilisateur.</li>\r\n</ul>\r\n<h3>Tarifs</h3>\r\n<ul>\r\n<li>Airtable propose une version gratuite pour les petits projets</li>\r\n<li>Plus : 10$/utilisateur/mois pour les &eacute;quipes et projets plus avanc&eacute;s</li>\r\n<li>Pro : 20$/utilisateur/mois pour les entreprises et les projets haut de gamme</li>\r\n<li>Entreprise : tarifs personnalis&eacute;s avec options de s&eacute;curit&eacute; avanc&eacute;es, de service client d&eacute;di&eacute;, et de personnalisation compl&egrave;te.</li>\r\n</ul>",
+    "excerpt": "Solution qui permet de créer, partager et gérer facilement des bases de données.",
+    "logo": "logos\\airtable.webp",
+    "is_published": true,
+    "image_principale": "",
+    "site": "https://www.airtable.com/",
+    "video": "https://www.youtube.com/watch?v=8LrmNfQRNsw",
+    "is_top_pick": false,
+    "unique_views": 112,
+    "metier": null,
+    "last_modified": "2024-12-07T15:28:07.419Z",
+    "preview_gif": "software_previews/airtable_preview_MypzRaU.gif",
+    "category": [
+      91
+    ]
+  }
+},
+{
+  "model": "cabinet_digital.software",
+  "pk": 600,
+  "fields": {
+    "name": "Akuiteo",
+    "slug": "akuiteo",
+    "description": "<p><strong>Logiciel de gestion interne pens&eacute;e pour les cabinets d'expertise comptable.</strong></p>\r\n<p>Akuiteo est un logiciel de gestion interne, m&ecirc;lant gestion commerciale, op&eacute;rationnelle et financi&egrave;re.</p>\r\n<p>Vous b&eacute;n&eacute;ficiez d'une vision globale de votre activit&eacute;, de vos d&eacute;penses et vos besoins. Vous pouvez suivre et anticiper la planification de vos missions, automatiser votre facturation, unifier vos processus internes et mesurer la rentabilit&eacute; de votre cabinet en temps r&eacute;el.</p>\r\n<p>Des fonctionnalit&eacute;s m&eacute;tiers pens&eacute;es pour les experts-comptables :</p>\r\n<ul>\r\n<li>Planification multi-collaborateurs &amp; multi-soci&eacute;t&eacute;s</li>\r\n<li>Gestion des missions r&eacute;currentes par mill&eacute;sime</li>\r\n<li>Facturation au forfait, &agrave; la prestation, en r&eacute;gie</li>\r\n<li>Calcul des Bonis Malis directement int&eacute;gr&eacute; dans votre outil</li>\r\n<li>Calcul de rentabilit&eacute; par mission, activit&eacute;, soci&eacute;t&eacute;...</li>\r\n</ul>",
+    "excerpt": "Logiciel de gestion interne pensée pour les cabinets d'expertise comptable.",
+    "logo": "logos\\akuiteo.webp",
+    "is_published": true,
+    "image_principale": "",
+    "site": "https://www.akuiteo.com/erp-dedie/cabinets-comptables",
+    "video": "https://www.youtube.com/watch?v=xlEJq3vV43U",
+    "is_top_pick": false,
+    "unique_views": 125,
+    "metier": null,
+    "last_modified": "2024-12-07T15:28:44.762Z",
+    "preview_gif": "software_previews/akuiteo_preview_rmlp9Nh.gif",
+    "category": [
+      79
+    ]
+  }
+},
+{
+  "model": "cabinet_digital.software",
+  "pk": 601,
+  "fields": {
+    "name": "Ami Compta",
+    "slug": "ami_compta",
+    "description": 
