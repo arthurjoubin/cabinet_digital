@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 
 # Media files
+media/
 CACHE/
 
 # Collected static files
