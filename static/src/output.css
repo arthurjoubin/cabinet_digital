@@ -3890,6 +3890,10 @@ video {
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
 
+.text-emerald-600\/75 {
+  color: rgb(5 150 105 / 0.75);
+}
+
 .underline {
   text-decoration-line: underline;
 }
