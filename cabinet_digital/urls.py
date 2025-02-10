@@ -29,7 +29,10 @@ from django.contrib.sitemaps.views import sitemap
 from django.shortcuts import redirect
 from django.utils.text import slugify
 import unidecode
-from cabinet_digital.sitemaps import SoftwareSitemap, CategorySitemap, ActualitesSitemap, StaticViewSitemap
+from cabinet_digital.sitemaps import (
+    SoftwareSitemap, CategorySitemap, ActualitesSitemap, StaticViewSitemap,
+    AIModelSitemap, AIToolSitemap, AIArticleSitemap
+)
 from django.views.generic import TemplateView
 
 def custom_redirect(request, old_path, slug, r_id=None):
@@ -67,6 +70,9 @@ sitemaps = {
     'categories': CategorySitemap,
     'actualites': ActualitesSitemap,
     'static': StaticViewSitemap,
+    'ai_models': AIModelSitemap,
+    'ai_tools': AIToolSitemap,
+    'ai_articles': AIArticleSitemap,
 }
 
 # Modifiez ces lignes au début du fichier
