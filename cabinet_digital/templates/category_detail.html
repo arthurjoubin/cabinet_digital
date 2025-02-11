@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}
+Les {{ softwares|length }} meilleures {{ category.excerpt }}
+{% endblock %}
+
 {% block meta_description %}
-<title>Les {{ softwares|length }} meilleures {{ category.excerpt }}</title>
 <meta name="description" content="Découvrez les {{ softwares|length }} meilleures {{ category.excerpt }}. Découvrir et trouver la solution qui répond à vos besoins parmis la liste.">
 <meta property="og:title" content="Les {{ softwares|length }} meilleures {{ category.excerpt }}">
 <meta property="og:description" content="Nous avons répertorié les meilleures {{ category.excerpt }}. Trouver la solution qui répond à vos besoins parmis la liste.">

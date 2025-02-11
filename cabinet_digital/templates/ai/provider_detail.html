@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}
+{{ provider.name }} | Éditeur d'IA - Cabinet Digital
+{% endblock %}
+
 {% block meta_description %}
-<title>{{ provider.name }} | Éditeur d'IA - Cabinet Digital</title>
 <meta name="description" content="{{ provider.description|striptags|truncatewords:30 }}">
 <meta property="og:title" content="{{ provider.name }} - Éditeur d'IA - Cabinet Digital">
 <meta property="og:description" content="{{ provider.description|striptags|truncatewords:30 }}">

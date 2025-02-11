@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}
+{{ tool.name }} | Découvrir la fiche de cette solution d'IA
+{% endblock %}
+
 {% block meta_description %}
-<title>{{ tool.name }} | Découvrir la fiche de cette solution d'IA</title>
 <meta name="description" content="Découvrez notre fiche sur {{ tool.name }}. {{ tool.excerpt }}">
 <meta property="og:title" content="{{ tool.name }} - Découvrir la fiche de l'outil d'IA">
 <meta property="og:description" content="Découvrez notre fiche sur {{ tool.name }}. {{ tool.excerpt }} | Catégories : {% for category in tool.category.all %}{{ category.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">

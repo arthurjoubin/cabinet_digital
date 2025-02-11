@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
+
+{% block title %}
+{{ software.name }} | Découvrir la fiche de la solution
+{% endblock %}
+
 {% block meta_description %}
-<title>{{ software.name }} | Découvrir la fiche de la solution</title>
 <meta name="description" content="Découvrez notre fiche sur {{ software.name }}. {{ software.excerpt }}">
 <meta property="og:title" content="{{ software.name }} - Découvrir la fiche de la solution">
 <meta property="og:description" content="Découvrez notre fiche sur {{ software.name }}. {{ software.excerpt }} | Catégories : {% for category in software.category.all %}{{ category.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">

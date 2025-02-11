@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}   
+{{ article.title }} - Cabinet Digital
+{% endblock %}
+
 {% block meta_description %}
-<title>{{ article.title }} - Cabinet Digital</title>
 <meta name="description" content="{{ article.excerpt }}">
 <meta property="og:title" content="{{ article.title }} - Cabinet Digital">
 <meta property="og:description" content="{{ article.excerpt }}">

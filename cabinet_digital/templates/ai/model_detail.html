@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}
+{{ model.name }} | Découvrir la fiche du modèle LLM
+{% endblock %}
+
 {% block meta_description %}
-<title>{{ model.name }} | Découvrir la fiche du modèle LLM</title>
 <meta name="description" content="Découvrez notre fiche sur {{ model.name }}. {{ model.excerpt }}">
 <meta property="og:title" content="{{ model.name }} - Découvrir la fiche du modèle LLM">
 <meta property="og:description" content="Découvrez notre fiche sur {{ model.name }}. {{ model.excerpt }}">
