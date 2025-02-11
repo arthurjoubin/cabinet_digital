@@ -156,7 +156,6 @@ def alternative_detail(request, slug):
     context = {
         'software': software,
         'alternatives': alternatives,
-        'canonical_url': request.build_absolute_uri(software.get_absolute_url()),
     }
     return render(request, 'alternative_detail.html', context)
 
