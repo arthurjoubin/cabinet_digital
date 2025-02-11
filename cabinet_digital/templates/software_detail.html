@@ -12,6 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
 <meta property="og:site_name" content="Cabinet Digital">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
 {% endblock %}
 
 {% block content %}
@@ -50,7 +51,7 @@
       </div>
       {% endif %}
       <div class="flex-grow text-center md:text-left">
-        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">{{ software.name }}</h1>
+          <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">{{ software.name }}</h1>
 
         <p class="text-gray-700 text-base leading-relaxed">{{ software.excerpt|safe }}</p>
         {% if software.category.all %}
