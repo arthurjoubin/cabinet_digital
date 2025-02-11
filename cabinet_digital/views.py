@@ -72,6 +72,7 @@ class CategoryDetailView(DetailView):
         context['category'] = category
         context['count'] = Software.objects.filter(category=category).count()
         context['softwares'] = Software.objects.filter(category=category)
+        context['canonical_url'] = self.request.build_absolute_uri(self.object.get_absolute_url())
         return context
 
 class SoftwareListView(ListView):
@@ -155,6 +156,7 @@ def alternative_detail(request, slug):
     context = {
         'software': software,
         'alternatives': alternatives,
+        'canonical_url': request.build_absolute_uri(software.get_absolute_url()),
     }
     return render(request, 'alternative_detail.html', context)
 

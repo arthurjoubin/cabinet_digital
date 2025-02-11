@@ -2,5 +2,5 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 
-Sitemap: https://sansdistraction.pythonanywhere.com/sitemap.xml
+Sitemap: https://www.cabinetdigital.fr/sitemap.xml
 
