@@ -269,7 +269,10 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
         }
      }">
     <div class="text-center mb-6">
-        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Calculateur de <span class="bg-amber-500 text-gray-900 px-3 py-1 rounded-lg border-2 border-gray-800/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]">ROI d'un logiciel</span></h1>
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 flex flex-col sm:block items-center justify-center gap-2">
+            Calculateur de 
+            <span class="bg-amber-500 text-gray-900 px-3 py-1 rounded-lg border-2 border-gray-800/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] inline-block sm:inline">ROI d'un logiciel</span>
+        </h1>
         <p class="mt-2 text-lg text-gray-600">Estimez le retour sur investissement de votre logiciel</p>
         <button @click="shareCalculation()" 
                 class="mt-4 inline-flex items-center px-4 py-2 text-sm bg-black text-white rounded-lg border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:bg-amber-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-200 focus:ring-offset-2">
@@ -503,7 +506,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
             <div id="roiSummary" 
                  class="mb-4"
                  x-show="!isLoading">
-                <div class="grid grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- ROI Net -->
                     <div class="bg-indigo-50 p-4 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
                         <div class="flex justify-between items-center mb-1">

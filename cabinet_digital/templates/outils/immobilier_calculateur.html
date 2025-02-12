@@ -136,9 +136,12 @@ Comparer la location à l'achat d'un bien immobilier - outil gratuit et moderne
 
 {% block content %}
 <div class="max-w-8xl mx-auto px-2 sm:px-6 lg:px-8 py-4" x-data="immobilierCalculator">
-    <div class="text-center mb-8">
-        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Simulateur <span class="bg-amber-500 text-gray-900 px-3 py-1 rounded-lg border-2 border-gray-800/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]">investissement immobilier</span></h1>
-        <p class="mt-4 text-lg text-gray-600">Comparez l'achat et la location en prenant en compte tous les paramètres</p>
+    <div class="text-center mb-6">
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 flex flex-col sm:block items-center justify-center gap-2">
+            Calculateur 
+            <span class="bg-amber-500 text-gray-900 px-3 py-1 rounded-lg border-2 border-gray-800/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] inline-block sm:inline">d'investissement immobilier</span>
+        </h1>
+        <p class="mt-2 text-lg text-gray-600">Simulez la rentabilité de votre investissement immobilier</p>
         <button @click="shareCalculation()" 
                 class="mt-4 inline-flex items-center px-4 py-2 text-sm bg-black text-white rounded-lg border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:bg-amber-600 transition-all duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
