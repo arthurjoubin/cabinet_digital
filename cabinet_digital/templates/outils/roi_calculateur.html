@@ -269,10 +269,10 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
         }
      }">
     <div class="text-center mb-6">
-        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Calculateur de <span class="bg-amber-500 text-gray-900 px-3 py-1 rounded-lg">ROI d'un logiciel</span></h1>
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Calculateur de <span class="bg-amber-500 text-gray-900 px-3 py-1 rounded-lg border-2 border-gray-800/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]">ROI d'un logiciel</span></h1>
         <p class="mt-2 text-lg text-gray-600">Estimez le retour sur investissement de votre logiciel</p>
         <button @click="shareCalculation()" 
-                class="mt-4 inline-flex items-center px-4 py-2 text-sm bg-black text-white rounded-lg hover:bg-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-200 focus:ring-offset-2">
+                class="mt-4 inline-flex items-center px-4 py-2 text-sm bg-black text-white rounded-lg border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:bg-amber-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-200 focus:ring-offset-2">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
 
                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
@@ -287,7 +287,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
                 {% csrf_token %}
                 <input type="hidden" name="months_projection" :value="formData.months_projection">
                 <!-- Section Coûts -->
-                <div class="space-y-2 bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                <div class="space-y-2 bg-white rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 p-4">
                     <div class="flex items-center justify-center gap-1 mb-2">
 
                         <h2 class="text-xl font-semibold text-center text-gray-800 flex items-center">
@@ -304,7 +304,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
                     
                     <div class="grid grid-cols-1 gap-4">
                         <!-- Encadré Logiciel -->
-                        <div class="bg-gray-50/50 backdrop-blur-sm border border-gray-200 rounded-xl p-2">
+                        <div class="bg-gray-50/50 backdrop-blur-sm border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 rounded-xl p-2">
                             <h3 class="text-sm font-medium text-gray-700 mb-1 text-center">Logiciel</h3>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
@@ -314,7 +314,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
                                         <input type="text"
                                                x-on:input="handleInput($event, 'monthly_cost_saas')"
                                                :value="formData.monthly_cost_saas"
-                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border-2 border-gray-800/10 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                             <span class="text-gray-400 sm:text-sm">€</span>
                                         </div>
@@ -328,7 +328,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
                                                x-on:input="handleInput($event, 'one_time_cost_saas')"
                                                 :value="formData.one_time_cost_saas"
 
-                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border-2 border-gray-800/10 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                             <span class="text-gray-400 sm:text-sm">€</span>
                                         </div>
@@ -338,7 +338,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
                         </div>
 
                         <!-- Encadré Intégrateur -->
-                        <div class="bg-gray-50/50 backdrop-blur-sm border border-gray-200 rounded-xl p-2">
+                        <div class="bg-gray-50/50 backdrop-blur-sm border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 rounded-xl p-2">
                             <h3 class="text-sm font-medium text-gray-700 mb-2 text-center">Intégrateur</h3>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
@@ -349,7 +349,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
                                         <input type="text"
                                                x-on:input="handleInput($event, 'integrator_cost_implementation')"
                                                :value="formData.integrator_cost_implementation"
-                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border-2 border-gray-800/10 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                             <span class="text-gray-400 sm:text-sm">€</span>
                                         </div>
@@ -362,7 +362,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
                                         <input type="text"
                                                x-on:input="handleInput($event, 'integrator_maintenance')"
                                                :value="formData.integrator_maintenance"
-                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border-2 border-gray-800/10 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                             <span class="text-gray-400 sm:text-sm">€</span>
                                         </div>
@@ -372,7 +372,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
                         </div>
 
                         <!-- Encadré Internes -->
-                        <div class="bg-gray-50/50 backdrop-blur-sm border border-gray-200 rounded-xl p-2">
+                        <div class="bg-gray-50/50 backdrop-blur-sm border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 rounded-xl p-2">
                             <h3 class="text-sm font-medium text-gray-700 mb-2 text-center">Internes</h3>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
@@ -383,7 +383,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
                                                x-on:input="handleInput($event, 'internal_hours_internal_implementation')"
 
                                                :value="formatHours(formData.internal_hours_internal_implementation)"
-                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border-2 border-gray-800/10 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                             <span class="text-gray-400 sm:text-sm">h</span>
                                         </div>
@@ -397,7 +397,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
 
                                                x-on:input="handleInput($event, 'cost_per_hour_internal_implementation')"
                                                :value="formData.cost_per_hour_internal_implementation"
-                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
+                                               class="block w-full pl-4 pr-12 py-2.5 rounded-lg border-2 border-gray-800/10 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                             <span class="text-gray-400 sm:text-sm">€</span>
                                         </div>
@@ -413,7 +413,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
 
         <!-- Section Gains -->
         <div class="space-y-6">
-            <div class="space-y-4 bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+            <div class="space-y-4 bg-white rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 p-4">
                 <div class="flex items-center justify-center gap-2 mb-2">
                     <h2 class="text-xl font-semibold text-center text-gray-800 flex items-center">
 
@@ -429,7 +429,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
                 
                 <div class="grid grid-cols-1 gap-4">
                     <!-- Encadré Gains -->
-                    <div class="bg-gray-50/50 backdrop-blur-sm border border-gray-200 rounded-xl p-4">
+                    <div class="bg-gray-50/50 backdrop-blur-sm border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 rounded-xl p-4">
                         <h3 class="text-sm font-medium text-gray-700 mb-2 text-center">Gains mensuels</h3>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
@@ -440,7 +440,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
                                            x-on:input="handleInput($event, 'employee_hours_per_week_gained')"
 
                                            :value="formatHours(formData.employee_hours_per_week_gained)"
-                                           class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
+                                           class="block w-full pl-4 pr-12 py-2.5 rounded-lg border-2 border-gray-800/10 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                         <span class="text-gray-400 sm:text-sm">h</span>
                                     </div>
@@ -454,7 +454,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
                                            x-on:input="handleInput($event, 'cost_of_employee_hour')"
 
                                            :value="formData.cost_of_employee_hour"
-                                           class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
+                                           class="block w-full pl-4 pr-12 py-2.5 rounded-lg border-2 border-gray-800/10 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                         <span class="text-gray-400 sm:text-sm">€</span>
                                     </div>
@@ -464,7 +464,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
                     </div>
 
                     <!-- Encadré Autres gains -->
-                    <div class="bg-gray-50/50 backdrop-blur-sm border border-gray-200 rounded-xl p-4">
+                    <div class="bg-gray-50/50 backdrop-blur-sm border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 rounded-xl p-4">
                         <h3 class="text-sm font-medium text-gray-700 mb-2 text-center">Autres gains</h3>
                         <div class="p-1.5 rounded-lg shadow-sm">
 
@@ -474,7 +474,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
                                        x-on:input="handleInput($event, 'other_savings')"
 
                                        :value="formData.other_savings"
-                                       class="block w-full pl-4 pr-12 py-2.5 rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
+                                       class="block w-full pl-4 pr-12 py-2.5 rounded-lg border-2 border-gray-800/10 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.05)] transition-all duration-200 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 hover:border-gray-300">
                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                     <span class="text-gray-400 sm:text-sm">€</span>
                                 </div>
@@ -497,57 +497,66 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
 
     <!-- Résultats (maintenant en pleine largeur sous les formulaires) -->
     <div class="mt-6">
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="bg-white p-6 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
             <h2 class="text-2xl font-bold text-gray-900 text-center mb-4">Projection du retour sur investissement</h2>
             <!-- Résumé des résultats -->
             <div id="roiSummary" 
                  class="mb-4"
                  x-show="!isLoading">
-                <div class="flex flex-col gap-3">
-                    <div class="grid grid-cols-3 gap-3">
-                        <div class="p-3 bg-white/80 rounded-lg border border-gray-100 shadow-sm hover:shadow transition-all duration-200">
-                            <div class="flex items-center gap-2 mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-                                </svg>
-                                <h3 class="text-xs font-medium text-gray-500">Investissement initial</h3>
+                <div class="grid grid-cols-4 gap-4">
+                    <!-- ROI Net -->
+                    <div class="bg-indigo-50 p-4 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm text-indigo-600 font-medium">ROI Net (36 mois)</span>
+                            <div class="bg-white px-2 py-1 rounded-lg border border-indigo-100">
+                                <span class="text-xs text-indigo-600 font-medium flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                    </svg>
+                                </span>
                             </div>
-                            <p id="initialInvestment" class="text-lg font-semibold text-red-600">-</p>
                         </div>
-                        <div class="p-3 bg-white/80 rounded-lg border border-gray-100 shadow-sm hover:shadow transition-all duration-200">
-                            <div class="flex items-center gap-2 mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2" />
-                                </svg>
-                                <h3 class="text-xs font-medium text-gray-500">Coût mensuel</h3>
-                            </div>
-                            <p id="monthlyCost" class="text-lg font-semibold text-red-600">-</p>
-                        </div>
-                        <div class="p-3 bg-white/80 rounded-lg border border-gray-100 shadow-sm hover:shadow transition-all duration-200">
-                            <div class="flex items-center gap-2 mb-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                                </svg>
-                                <h3 class="text-xs font-medium text-gray-500">Économies mensuelles</h3>
-                            </div>
-                            <p id="monthlySavings" class="text-lg font-semibold text-green-600">-</p>
-                        </div>
+                        <p id="initialInvestment" class="text-2xl font-semibold text-indigo-700" x-text="chartData ? formatCurrency(chartData.net[chartData.net.length - 1]) : '0 €'"></p>
                     </div>
-                    <div class="flex items-center justify-center gap-2 py-2 px-4 bg-amber-50 rounded-lg border border-amber-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                        <span class="text-xs font-bold text-amber-800">Point d'équilibre au</span>
-                        <span id="breakEvenText" class="border-2 border-amber-200 rounded-lg px-2 py-1 text-sm font-bold text-amber-900">-</span>
+
+                    <!-- Coût au démarrage -->
+                    <div class="bg-amber-50 p-4 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm text-amber-600 font-medium">Coût au démarrage</span>
+                            <div class="bg-white px-2 py-1 rounded-lg border border-amber-100">
+                                <div class="w-2 h-2 bg-amber-400 rounded-full"></div>
+                            </div>
+                        </div>
+                        <p id="startupCost" class="text-2xl font-semibold text-amber-700" 
+                           x-text="formatCurrency(formData.one_time_cost_saas + formData.integrator_cost_implementation + (formData.internal_hours_internal_implementation * formData.cost_per_hour_internal_implementation))"></p>
+                    </div>
+
+                    <!-- Coûts mensuels -->
+                    <div class="bg-red-50 p-4 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm text-red-600 font-medium">Coût mensuel</span>
+                            <div class="bg-white px-2 py-1 rounded-lg border border-red-100">
+                                <div class="w-2 h-2 bg-red-400 rounded-full"></div>
+                            </div>
+                        </div>
+                        <p id="monthlyCost" class="text-2xl font-semibold text-red-700"></p>
+                    </div>
+
+                    <!-- Gains mensuels -->
+                    <div class="bg-emerald-50 p-4 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm text-emerald-600 font-medium">Gain mensuel</span>
+                            <div class="bg-white px-2 py-1 rounded-lg border border-emerald-100">
+                                <div class="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                            </div>
+                        </div>
+                        <p id="monthlySavings" class="text-2xl font-semibold text-emerald-700"></p>
                     </div>
                 </div>
-
-
-
             </div>
 
             <!-- Graphique (section modifiée) -->
-            <div id="roiChartContainer" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div id="roiChartContainer" class="bg-white p-6 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-semibold text-gray-900">Évolution du ROI sur 36 mois</h3>
                 </div>
@@ -636,7 +645,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
 <div class="max-w-7xl mx-auto mt-12 px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <!-- Première section -->
-        <div class="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200">
+        <div class="bg-white/50 backdrop-blur-sm p-6 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
             <h2 class="text-xl font-bold mb-4">Un simulateur complet pour votre ROI</h2>
             <p class="text-gray-600 mb-4">Notre calculateur analyse tous les aspects financiers de votre investissement :</p>
             <ul class="space-y-2 text-gray-600">
@@ -674,7 +683,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
         </div>
 
         <!-- Deuxième section -->
-        <div class="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200">
+        <div class="bg-white/50 backdrop-blur-sm p-6 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
             <h2 class="text-xl font-bold mb-4">Pourquoi calculer le ROI ?</h2>
             <p class="text-gray-600 mb-4">Le calcul du ROI est essentiel pour :</p>
             <ul class="space-y-2 text-gray-600">
@@ -706,7 +715,7 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
         </div>
 
         <!-- Troisième section -->
-        <div class="bg-white/50 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200">
+        <div class="bg-white/50 backdrop-blur-sm p-6 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
             <h2 class="text-xl font-bold mb-4">Exemple concret de ROI</h2>
             <p class="text-gray-600 mb-4">Pour un logiciel avec les paramètres suivants :</p>
             <ul class="space-y-2 text-gray-600">
@@ -734,22 +743,22 @@ Calculer le ROI d'un logiciel - outil gratuit et moderne pour PME
         </div>
     </div>
 
-    <div class="mt-12 bg-white/50 backdrop-blur-sm p-8 rounded-xl border border-gray-200 shadow-sm">
+    <div class="mt-12 bg-white/50 backdrop-blur-sm p-8 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
         <h2 class="text-xl font-bold mb-6">Comment utiliser le calculateur de ROI ?</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="flex items-center p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
+            <div class="flex items-center p-4 bg-white/80 backdrop-blur-sm rounded-lg border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
                 <span class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold mr-3">1</span>
                 <span class="text-gray-600">Renseignez les coûts initiaux et mensuels</span>
             </div>
-            <div class="flex items-center p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
+            <div class="flex items-center p-4 bg-white/80 backdrop-blur-sm rounded-lg border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
                 <span class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold mr-3">2</span>
                 <span class="text-gray-600">Estimez les gains de temps et économies</span>
             </div>
-            <div class="flex items-center p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
+            <div class="flex items-center p-4 bg-white/80 backdrop-blur-sm rounded-lg border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
                 <span class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold mr-3">3</span>
                 <span class="text-gray-600">Choisissez la durée de projection</span>
             </div>
-            <div class="flex items-center p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
+            <div class="flex items-center p-4 bg-white/80 backdrop-blur-sm rounded-lg border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
                 <span class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold mr-3">4</span>
                 <span class="text-gray-600">Analysez les résultats et graphiques</span>
             </div>

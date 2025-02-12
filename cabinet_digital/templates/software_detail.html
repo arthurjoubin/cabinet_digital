@@ -44,25 +44,62 @@
   </div>
 
   <div class="p-4 sm:p-8 max-w-4xl mx-auto">
-    <div class="flex flex-col md:flex-row items-center md:items-start mb-8">
-      {% if software.logo %}
-      <div class="w-24 h-24 mb-4 md:mb-0 md:mr-6 flex-shrink-0">
-        <img src="{{ MEDIA_URL }}{{ software.logo.url }}" alt="{{ software.name }}" class="w-full h-full object-contain">
-      </div>
-      {% endif %}
-      <div class="flex-grow text-center md:text-left">
-          <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">{{ software.name }}</h1>
-
-        <p class="text-gray-700 text-base leading-relaxed">{{ software.excerpt|safe }}</p>
-        {% if software.category.all %}
-        <div class="flex flex-wrap justify-center md:justify-start mt-2">
-          {% for category in software.category.all|dictsort:"name" %}
-          <a href="{% url 'category_detail' category.slug %}" class="inline-block px-2 py-1 text-xs font-medium bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors duration-300 mr-1 mb-2">
-            {{ category.name }}
-          </a>
-          {% endfor %}
+    <div class="flex flex-col md:flex-row items-start justify-between gap-6 mb-8">
+      <div class="flex flex-col md:flex-row items-center md:items-start flex-grow">
+        {% if software.logo %}
+        <div class="w-24 h-24 mb-4 md:mb-0 md:mr-6 flex-shrink-0">
+          <img src="{{ MEDIA_URL }}{{ software.logo.url }}" alt="{{ software.name }}" class="w-full h-full object-contain">
         </div>
         {% endif %}
+        <div class="flex-grow text-center md:text-left">
+          <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">{{ software.name }}</h1>
+          <p class="text-gray-700 text-base leading-relaxed">{{ software.excerpt|safe }}</p>
+          {% if software.category.all %}
+          <div class="flex flex-wrap justify-center md:justify-start mt-2">
+            {% for category in software.category.all|dictsort:"name" %}
+            <a href="{% url 'category_detail' category.slug %}" class="inline-block px-2 py-1 text-xs font-medium bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors duration-300 mr-1 mb-2">
+              {{ category.name }}
+            </a>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- ROI Calculator Card -->
+      <div class="w-full md:w-64 flex-shrink-0 bg-white border-2 border-black transform transition-transform hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative mx-auto md:mx-0 mt-4 md:mt-0">
+        <div class="absolute -top-2 -right-2 bg-black text-white text-xs md:text-[10px] font-bold px-2 py-0.5 rounded-full shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]">
+          NOUVEAU
+        </div>
+        <div class="p-3 md:p-2">
+          <div class="flex items-center gap-2 mb-3 md:mb-2 justify-center md:justify-start">
+            <svg class="w-5 h-5 md:w-4 md:h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            <h2 class="text-base md:text-sm font-bold text-black">Notre simulateur ROI</h2>
+          </div>
+          <p class="text-gray-600 text-sm md:text-[11px] mb-4 md:mb-3 text-center md:text-left">Calculez le retour sur investissement de {{ software.name }}</p>
+          <div class="flex items-center gap-2 mb-4 md:mb-3 justify-center md:justify-start flex-wrap">
+            <span class="inline-flex items-center text-xs md:text-[10px] bg-gray-100 px-2 md:px-1.5 py-1 md:py-0.5 rounded-full">
+              <svg class="w-3 md:w-2.5 h-3 md:h-2.5 mr-1 md:mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              Graphiques
+            </span>
+            <span class="inline-flex items-center text-xs md:text-[10px] bg-gray-100 px-2 md:px-1.5 py-1 md:py-0.5 rounded-full">
+              <svg class="w-3 md:w-2.5 h-3 md:h-2.5 mr-1 md:mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              ROI 36 mois
+            </span>
+          </div>
+          <a href="{% url 'roi_calculateur' %}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center px-3 md:px-2 py-2 md:py-1.5 bg-black text-white text-sm md:text-[11px] font-medium rounded hover:bg-gray-800 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]">
+            Calculer mon ROI
+            <svg class="w-3 md:w-2.5 h-3 md:h-2.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+            </svg>
+          </a>
+        </div>
       </div>
     </div>
 

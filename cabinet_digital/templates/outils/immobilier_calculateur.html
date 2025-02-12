@@ -135,13 +135,13 @@ Comparer la location à l'achat d'un bien immobilier - outil gratuit et moderne
 {% endblock %}
 
 {% block content %}
-<div class="max-w-8xl mx-auto px-2 sm:px-6 lg:px-8 py-4"    x-data="immobilierCalculator">
+<div class="max-w-8xl mx-auto px-2 sm:px-6 lg:px-8 py-4" x-data="immobilierCalculator">
     <div class="text-center mb-8">
-        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Simulateur <span class="bg-amber-500 text-gray-900 px-3 py-1 rounded-lg">investissement immobilier</span></h1>
-        <p class="mt-2 text-base sm:text-lg text-gray-600">Comparez l'achat et la location en prenant en compte tous les paramètres</p>
-        <button @click="shareCalculation()" class="mt-4 inline-flex items-center px-4 py-2 text-sm bg-black text-white rounded-lg hover:bg-amber-500 hover:text-black transition-colors focus:outline-none focus:ring focus:ring-amber-200">
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Simulateur <span class="bg-amber-500 text-gray-900 px-3 py-1 rounded-lg border-2 border-gray-800/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]">investissement immobilier</span></h1>
+        <p class="mt-4 text-lg text-gray-600">Comparez l'achat et la location en prenant en compte tous les paramètres</p>
+        <button @click="shareCalculation()" 
+                class="mt-4 inline-flex items-center px-4 py-2 text-sm bg-black text-white rounded-lg border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:bg-amber-600 transition-all duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-
                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
             </svg>
             Partager votre simulation
@@ -149,7 +149,7 @@ Comparer la location à l'achat d'un bien immobilier - outil gratuit et moderne
     </div>
 
     <!-- Formulaire sur toute la largeur -->
-    <div class="bg-white p-6 rounded-md border border-gray-200 shadow-sm mb-6">
+    <div class="bg-white/50 backdrop-blur-sm rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 p-6 mb-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Le bien -->
             <div class="border-b md:border-b-0 md:border-r border-gray-400 pb-4 md:pb-0 md:pr-4">
@@ -323,12 +323,12 @@ Comparer la location à l'achat d'un bien immobilier - outil gratuit et moderne
     </div>
 
     <!-- Résultats sur toute la largeur -->
-    <div class="bg-amber-50 p-6 rounded-xl border-4 border-white shadow-sm mb-6">
+    <div class="bg-amber-50/50 backdrop-blur-sm p-6 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 mb-6">
         <h2 class="text-2xl font-bold text-center mb-6">Analyse financière</h2>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Coût mensuel -->
-            <div class="bg-white p-4 rounded-lg border border-gray-300 shadow-sm">
+            <div class="bg-white/80 backdrop-blur-sm p-4 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
                 <h3 class="text-lg font-semibold mb-3 flex items-center text-gray-800">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-amber-500">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -392,7 +392,7 @@ Comparer la location à l'achat d'un bien immobilier - outil gratuit et moderne
             </div>
 
             <!-- Comparaison location -->
-            <div class="bg-white p-4 rounded-lg border border-gray-300 shadow-sm">
+            <div class="bg-white/80 backdrop-blur-sm p-4 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
                 <h3 class="text-lg font-semibold mb-3 flex items-center text-gray-800">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-amber-500">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
@@ -430,7 +430,7 @@ Comparer la location à l'achat d'un bien immobilier - outil gratuit et moderne
             </div>
 
             <!-- Bilan financier -->
-            <div class="bg-white p-4 rounded-lg border border-gray-300 shadow-sm">
+            <div class="bg-white/80 backdrop-blur-sm p-4 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
                 <h3 class="text-lg font-semibold mb-3 flex items-center text-gray-800">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-amber-500">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 01-2.031.352 5.988 5.988 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.97zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0l2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 01-2.031.352 5.989 5.989 0 01-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.97z" />
@@ -475,16 +475,11 @@ Comparer la location à l'achat d'un bien immobilier - outil gratuit et moderne
         </div>
     </div>
 
-    <!-- Reste du contenu -->
-    <hr class="my-8 border-t border-gray-300">
-
+    <!-- Sections informatives -->
     <div class="max-w-8xl mx-auto mt-12 px-4 sm:px-6 lg:px-8">
-        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Pourquoi utiliser notre outil ?</h2>
-        <!-- Section Principale : Guide et Analyse -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
             <!-- Carte 1: Points Clés -->
-
-            <div class="bg-white p-6 rounded-xl border border-gray-300 shadow-sm hover:shadow-lg transition-shadow">
+            <div class="bg-white/50 backdrop-blur-sm p-6 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
                 <div class="flex items-center mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -514,7 +509,7 @@ Comparer la location à l'achat d'un bien immobilier - outil gratuit et moderne
             </div>
 
             <!-- Carte 2: Exemple Concret -->
-            <div class="bg-white p-6 rounded-xl border border-gray-300 shadow-sm hover:shadow-lg transition-shadow">
+            <div class="bg-white/50 backdrop-blur-sm p-6 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
                 <div class="flex items-center mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -538,7 +533,7 @@ Comparer la location à l'achat d'un bien immobilier - outil gratuit et moderne
             </div>
 
             <!-- Carte 3: Statistiques -->
-            <div class="bg-white p-6 rounded-xl border border-gray-300 shadow-sm hover:shadow-lg transition-shadow">
+            <div class="bg-white/50 backdrop-blur-sm p-6 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
                 <div class="flex items-center mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
@@ -566,7 +561,7 @@ Comparer la location à l'achat d'un bien immobilier - outil gratuit et moderne
         </div>
 
         <!-- Section FAQ -->
-        <div class="bg-white rounded-xl border border-gray-300 shadow-sm p-6 mb-12" itemscope itemtype="https://schema.org/FAQPage">
+        <div class="bg-white/50 backdrop-blur-sm rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 p-6 mb-12">
             <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Questions fréquentes</h2>
             <div class="space-y-4">
 
@@ -617,7 +612,7 @@ Comparer la location à l'achat d'un bien immobilier - outil gratuit et moderne
         </div>
         
         <!-- Section : Tableau comparatif -->
-        <div class="bg-white rounded-xl border border-gray-300 shadow-sm p-6 mb-12">
+        <div class="bg-white/50 backdrop-blur-sm rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 p-6 mb-12">
             <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Achat vs Location : Les points clés</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
