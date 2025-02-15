@@ -83,7 +83,7 @@
                             @click.away="close()"
                             type="button"
                             class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2"
-                            :class="{ 'bg-sky-50 text-sky-600': currentPath.startsWith('/metiers/') or currentPath.startsWith('/logiciels/') }">
+                            :class="{ 'bg-sky-50 text-sky-600': currentPath.startsWith('/metiers/') || currentPath.startsWith('/logiciels/') || currentPath.startsWith('/categories/') || currentPath.startsWith('/actualites/') || currentPath === '/logiciels' || currentPath === '/categories' || currentPath === '/actualites' }">
                         <span>Logiciels experts comptables et PME</span>
                         <svg class="w-4 h-4" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -205,7 +205,7 @@
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open"
                             class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600"
-                            :class="{ 'bg-sky-50 text-sky-600': currentPath.startsWith('/metiers/') }">
+                            :class="{ 'bg-sky-50 text-sky-600': currentPath.startsWith('/metiers/') || currentPath.startsWith('/logiciels/') || currentPath.startsWith('/categories/') || currentPath.startsWith('/actualites/') || currentPath === '/logiciels' || currentPath === '/categories' || currentPath === '/actualites' }">
                         <span>Logiciels experts comptables et PME</span>
                         <svg class="w-5 h-5 transition-transform duration-200" 
                              :class="{'rotate-180': open}"
