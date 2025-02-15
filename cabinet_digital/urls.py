@@ -87,6 +87,7 @@ urlpatterns = [
     path('logiciels/<str:slug>/', SoftwareDetailView.as_view(), name='software_detail'),
    path('categories/', CategoryListView.as_view(), name='category_list'),
     path('categories/<str:slug>/', CategoryDetailView.as_view(), name='category_detail'),
+    path('metiers/<slug:slug>/', views.MetierDetailView.as_view(), name='metier_detail'),
     path('contact/', views.contact, name='contact'),
     path('actualites/', views.actualites, name='actualites'),
     path('actualites/<slug:slug>/', ActualitesDetailView.as_view(), name='actualite_detail'),

@@ -13,6 +13,7 @@ from django.shortcuts import render
 from datetime import date
 import unidecode
 from urllib.parse import unquote
+from django.core.paginator import Paginator
 
 
 logger = logging.getLogger(__name__)
@@ -70,8 +71,8 @@ class CategoryDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         category = self.object
         context['category'] = category
-        context['count'] = Software.objects.filter(category=category).count()
-        context['softwares'] = Software.objects.filter(category=category)
+        context['count'] = Software.objects.filter(category=category, is_published=True).count()
+        context['softwares'] = Software.objects.filter(category=category, is_published=True)
         context['canonical_url'] = self.request.build_absolute_uri(self.object.get_absolute_url())
         return context
 
@@ -777,4 +778,49 @@ class ProviderDetailView(DetailView):
             provider=self.object,
             is_published=True
         ).order_by('-is_top_pick', 'name')
+        return context
+
+class MetierDetailView(DetailView):
+    model = Metier
+    template_name = 'metier_detail.html'
+    context_object_name = 'metier'
+    paginate_by = 12
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        
+        slug = self.kwargs.get('slug')
+        decoded_slug = unidecode.unidecode(slug)
+        clean_slug = slugify(decoded_slug)[:49]
+        
+        return get_object_or_404(queryset, slug=clean_slug)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        metier = self.object
+        
+        # Récupérer les catégories liées à ce métier
+        context['categories'] = SoftwareCategory.objects.filter(
+            metier=metier,
+            is_published=True
+        ).annotate(
+            software_count=Count('categories_softwares_link', 
+                filter=Q(categories_softwares_link__is_published=True))
+        ).filter(software_count__gt=0).order_by('name')
+        
+        # Récupérer les logiciels liés à ce métier (directement ou via catégories)
+        softwares = Software.objects.filter(
+            Q(metier=metier) | Q(category__metier=metier),
+            is_published=True
+        ).distinct().order_by('-is_top_pick', 'name')
+        
+        # Pagination des logiciels
+        paginator = Paginator(softwares, self.paginate_by)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+        context['softwares'] = page_obj
+        context['page_obj'] = page_obj
+        
         return context

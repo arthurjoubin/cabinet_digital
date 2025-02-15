@@ -82,7 +82,7 @@ class SoftwareAdmin(ModelAdmin):
 
 @admin.register(SoftwareCategory)
 class CategoryAdmin(ModelAdmin):
-    list_display = ('name', 'software_count', 'excerpt', 'metier', 'is_published')
+    list_display = ('name', 'software_count', 'excerpt', 'content_length', 'metier', 'is_published')
     list_editable = ['excerpt', 'metier', 'is_published']
     search_fields = ('name',)
     inlines = [SoftwareInline]
@@ -99,6 +99,10 @@ class CategoryAdmin(ModelAdmin):
     def software_count(self, obj):
         return Software.objects.filter(category=obj).count()
     software_count.short_description = 'Nombre de logiciels'
+
+    def content_length(self, obj):
+        return f"{len(obj.description)} caractères"
+    content_length.short_description = 'Longueur description'
 
     formfield_overrides = {
         models.TextField: {'widget': WysiwygWidget},
@@ -194,8 +198,12 @@ class AIModelAdmin(ModelAdmin):
 
 @admin.register(AIToolCategory)
 class AIToolCategoryAdmin(ModelAdmin):
-    list_display = ['name', 'slug']
+    list_display = ['name', 'slug', 'content_length']
     search_fields = ['name']
+    
+    def content_length(self, obj):
+        return f"{len(obj.description)} caractères"
+    content_length.short_description = 'Longueur description'
     
     def __str__(self):
         return self.name
