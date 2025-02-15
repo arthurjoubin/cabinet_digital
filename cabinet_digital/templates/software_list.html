@@ -18,17 +18,18 @@ Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital
 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200" x-data="{
     searchQuery: '{{ search_query }}',
     selectedCategory: '{{ selected_category }}',
+    selectedMetier: '{{ selected_metier }}',
     currentSort: '{{ current_sort|default:'alpha' }}',
     isLoading: false,
     
     submitForm() {
         this.isLoading = true;
-        window.location.href = `{% url 'software_list' %}?categorie=${this.selectedCategory}&search=${this.searchQuery}&sort=${this.currentSort}`;
+        window.location.href = `{% url 'software_list' %}?categorie=${this.selectedCategory}&metier=${this.selectedMetier}&search=${this.searchQuery}&sort=${this.currentSort}`;
     }
 }">
     <h1 class="custom-header">Liste des logiciels</h1>
-    <div class="flex flex-col space-y-4 md:space-y-0 md:flex-row md:justify-between md:items-start mb-8">
-     
+
+    <div class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:gap-3 mb-8">
         <!-- Tri -->
         <div class="w-auto">
             <button 
@@ -56,6 +57,30 @@ Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital
             </button>
         </div>
 
+        <!-- Filtre par métier -->
+        <div class="w-auto">
+            <div class="relative">
+                <label for="metier-filter" class="sr-only">Filtrer par métier</label>
+                <select 
+                    id="metier-filter" 
+                    x-model="selectedMetier"
+                    @change="submitForm()"
+                    class="hover:cursor-pointer w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-100 appearance-none transition-all duration-300 hover:border-sky-100">
+                    <option value="" class="text-sky-700 bg-sky-50 font-medium">Tous les métiers</option>
+                    {% for metier in metiers %}
+                        <option value="{{ metier.slug }}" class="text-black font-medium">
+                            {{ metier.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                    <svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M7 10l5 5 5-5z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
         <!-- Filtre par catégorie -->
         <div class="w-auto">
             <div class="relative">
@@ -68,7 +93,7 @@ Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital
                     <option value="" class="text-sky-700 bg-sky-50 font-medium">Toutes les catégories</option>
                     {% for category in categories %}
                         {% if category.software_count > 0 %}
-                    <option value="{{ category.slug }}" class="text-black font-medium">
+                            <option value="{{ category.slug }}" class="text-black font-medium">
                                 {{ category.name }} ({{ category.software_count }})
                             </option>
                         {% endif %}
@@ -81,25 +106,26 @@ Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital
                 </div>
             </div>
         </div>
-   <!-- Recherche -->
-   <div class="w-auto">
-    <div class="flex flex-col sm:flex-row">
-        <label for="search-input" class="sr-only">Rechercher un logiciel</label>
-        <input 
-            type="text" 
-            id="search-input" 
-            x-model="searchQuery"
-            @keyup.enter="submitForm()"
-            placeholder="Rechercher un logiciel" 
-            class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg sm:rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-100">
-        <button 
-            @click="submitForm()"
-            type="button" 
-            class="w-full sm:w-auto mt-2 sm:mt-0 px-6 py-3 bg-black text-white rounded-lg sm:rounded-l-none hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 transition duration-300">
-            Rechercher
-        </button>
-    </div>
-</div>
+
+        <!-- Recherche -->
+        <div class="w-auto flex-grow">
+            <div class="flex flex-col sm:flex-row">
+                <label for="search-input" class="sr-only">Rechercher un logiciel</label>
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    x-model="searchQuery"
+                    @keyup.enter="submitForm()"
+                    placeholder="Rechercher un logiciel" 
+                    class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg sm:rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-100">
+                <button 
+                    @click="submitForm()"
+                    type="button" 
+                    class="w-full sm:w-auto mt-2 sm:mt-0 px-6 py-3 bg-black text-white rounded-lg sm:rounded-l-none hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 transition duration-300">
+                    Rechercher
+                </button>
+            </div>
+        </div>
     </div>
 
     <div id="software-list-content" class="w-full">

@@ -101,6 +101,9 @@ class Actualites(models.Model):
 class Metier(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
+    seo_title = models.CharField(max_length=60, blank=True, help_text="Titre optimisé pour le référencement (60 caractères max)")
+    seo_description = models.CharField(max_length=160, blank=True, help_text="Description optimisée pour le référencement (160 caractères max)")
+    
     class Meta:
         verbose_name = "Logiciels - Métiers"
         verbose_name_plural = "Logiciels - Métiers"

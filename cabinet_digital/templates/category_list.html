@@ -17,11 +17,34 @@ Cabinet Digital - Les catégories de logiciels pour experts-comptables et financ
 {% block content %}
 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
     <h1 class="custom-header">Catégories de logiciels</h1>
+
+    <!-- Filtres par métier -->
+    <div class="mb-8">
+        <div class="flex flex-wrap gap-2">
+            <a href="{% url 'category_list' %}" 
+               class="inline-flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 {% if not selected_metier %}bg-sky-100 text-sky-700 border-2 border-sky-200{% else %}bg-gray-100 text-gray-700 hover:bg-sky-50 border border-gray-200{% endif %}">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+                Tous les métiers
+            </a>
+            {% for metier in metiers %}
+                <a href="{% url 'category_list' %}?metier={{ metier.slug }}" 
+                   class="inline-flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 {% if selected_metier == metier.slug %}bg-sky-100 text-sky-700 border-2 border-sky-200{% else %}bg-gray-100 text-gray-700 hover:bg-sky-50 border border-gray-200{% endif %}">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    {{ metier.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {% for category in categories %}
             <div class="group [&:hover_#numlogiciel]:bg-white">
                 <a href="{% url 'category_detail' category.slug %}" class="block h-full">
-                    <div class="bg-white border border-gray-200 rounded-lg  hover:bg-sky-50 p-4 transition-all duration-300 group-hover:border-sky-200 h-full flex flex-col justify-between relative">
+                    <div class="bg-white border border-gray-200 rounded-lg hover:bg-sky-50 p-4 transition-all duration-300 group-hover:border-sky-200 h-full flex flex-col justify-between relative">
                         <h2 class="text-lg font-medium text-gray-800 group-hover:text-sky-600 mt-4">
                             {% if category.icon %}
                                 <img src="{{ category.icon.url }}" alt="{{ category.name }}" class="w-6 h-6 mr-2 inline-block">
@@ -31,6 +54,11 @@ Cabinet Digital - Les catégories de logiciels pour experts-comptables et financ
                         <span id="numlogiciel" class="absolute top-2 right-2 inline-block px-2 py-1 text-xs font-medium bg-sky-50 text-sky-700 rounded-full hover:bg-sky-100 hover:text-sky-800 transition-colors duration-300 shadow-sm hover:shadow-md">
                             {{ category.software_count }} logiciel{% if category.software_count > 1 %}s{% endif %}
                         </span>
+                        {% if category.metier %}
+                        <div class="mt-2">
+                            <span class="text-xs text-gray-500">{{ category.metier.name }}</span>
+                        </div>
+                        {% endif %}
                     </div>
                 </a>
             </div>

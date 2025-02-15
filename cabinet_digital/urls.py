@@ -31,7 +31,7 @@ from django.utils.text import slugify
 import unidecode
 from cabinet_digital.sitemaps import (
     SoftwareSitemap, CategorySitemap, ActualitesSitemap, StaticViewSitemap,
-    AIModelSitemap, AIToolSitemap, AIArticleSitemap
+    AIModelSitemap, AIToolSitemap, AIArticleSitemap, MetierSitemap
 )
 from django.views.generic import TemplateView
 
@@ -73,6 +73,7 @@ sitemaps = {
     'ai_models': AIModelSitemap,
     'ai_tools': AIToolSitemap,
     'ai_articles': AIArticleSitemap,
+    'metiers': MetierSitemap,
 }
 
 # Modifiez ces lignes au début du fichier
@@ -85,7 +86,7 @@ urlpatterns = [
     path('logiciels/', SoftwareListView.as_view(), name='software_list'),
     path('', views.home, name='home'),
     path('logiciels/<str:slug>/', SoftwareDetailView.as_view(), name='software_detail'),
-   path('categories/', CategoryListView.as_view(), name='category_list'),
+    path('categories/', CategoryListView.as_view(), name='category_list'),
     path('categories/<str:slug>/', CategoryDetailView.as_view(), name='category_detail'),
     path('metiers/<slug:slug>/', views.MetierDetailView.as_view(), name='metier_detail'),
     path('contact/', views.contact, name='contact'),

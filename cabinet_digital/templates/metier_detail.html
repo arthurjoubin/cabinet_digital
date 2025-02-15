@@ -2,13 +2,13 @@
 {% load static %}
 
 {% block title %}
-{{ metier.name }} - Logiciels et outils pour {{ metier.name }} | Cabinet Digital
+{% if metier.seo_title %}{{ metier.seo_title }}{% else %}{{ metier.name }} - Logiciels et outils pour {{ metier.name }} | Cabinet Digital{% endif %}
 {% endblock %}
 
 {% block meta_description %}
-<meta name="description" content="Découvrez tous les logiciels et outils pour {{ metier.name }}. Une sélection des meilleures solutions adaptées aux besoins des {{ metier.name }}.">
-<meta property="og:title" content="{{ metier.name }} - Logiciels et outils | Cabinet Digital">
-<meta property="og:description" content="Découvrez tous les logiciels et outils pour {{ metier.name }}. Une sélection des meilleures solutions adaptées aux besoins des {{ metier.name }}.">
+<meta name="description" content="{% if metier.seo_description %}{{ metier.seo_description }}{% else %}Découvrez tous les logiciels et outils pour {{ metier.name }}. Une sélection des meilleures solutions adaptées aux besoins des {{ metier.name }}.{% endif %}">
+<meta property="og:title" content="{% if metier.seo_title %}{{ metier.seo_title }}{% else %}{{ metier.name }} - Logiciels et outils | Cabinet Digital{% endif %}">
+<meta property="og:description" content="{% if metier.seo_description %}{{ metier.seo_description }}{% else %}Découvrez tous les logiciels et outils pour {{ metier.name }}. Une sélection des meilleures solutions adaptées aux besoins des {{ metier.name }}.{% endif %}">
 <meta property="og:type" content="website">
 <meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
 <meta property="og:site_name" content="Cabinet Digital">

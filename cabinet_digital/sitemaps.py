@@ -1,6 +1,6 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from .models import Software, SoftwareCategory, Actualites, AIModel, AITool, AIArticle
+from .models import Software, SoftwareCategory, Actualites, AIModel, AITool, AIArticle, Metier
 from django.contrib.sites.shortcuts import get_current_site
 
 class BaseSitemap(Sitemap):
@@ -91,4 +91,17 @@ class AIArticleSitemap(BaseSitemap):
         return obj.pub_date
 
     def location(self, obj):
-        return reverse('ai_article_detail', kwargs={'slug': obj.slug}) 
+        return reverse('ai_article_detail', kwargs={'slug': obj.slug})
+
+class MetierSitemap(BaseSitemap):
+    changefreq = "monthly"
+    priority = 0.6
+
+    def items(self):
+        return Metier.objects.all().order_by('name')
+
+    def lastmod(self, obj):
+        return None
+
+    def location(self, obj):
+        return reverse('metier_detail', kwargs={'slug': obj.slug}) 

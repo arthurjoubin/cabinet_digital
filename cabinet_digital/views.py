@@ -43,12 +43,22 @@ class CategoryListView(ListView):
     template_name = 'category_list.html'
     context_object_name = 'categories'
     def get_queryset(self):
-        return SoftwareCategory.objects.annotate(
+        queryset = SoftwareCategory.objects.annotate(
             software_count=Count('categories_softwares_link')
-        ).order_by('name').filter(software_count__gt=0)
+        ).filter(software_count__gt=0)
+
+        # Filtre par métier si spécifié
+        metier_slug = self.request.GET.get('metier')
+        if metier_slug:
+            queryset = queryset.filter(metier__slug=metier_slug)
+
+        return queryset.order_by('name')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Ajouter la liste des métiers pour le filtre
+        context['metiers'] = Metier.objects.all().order_by('name')
+        context['selected_metier'] = self.request.GET.get('metier')
         return context
 
 class CategoryDetailView(DetailView):
@@ -74,6 +84,8 @@ class CategoryDetailView(DetailView):
         context['count'] = Software.objects.filter(category=category, is_published=True).count()
         context['softwares'] = Software.objects.filter(category=category, is_published=True)
         context['canonical_url'] = self.request.build_absolute_uri(self.object.get_absolute_url())
+        # Ajouter le métier au contexte
+        context['metier'] = category.metier
         return context
 
 class SoftwareListView(ListView):
@@ -95,6 +107,8 @@ class SoftwareListView(ListView):
         context['selected_category'] = self.request.GET.get('categorie')
         context['search_query'] = self.request.GET.get('search', '')
         context['current_sort'] = self.request.GET.get('sort', 'alpha')
+        context['metiers'] = Metier.objects.all().order_by('name')
+        context['selected_metier'] = self.request.GET.get('metier')
         return context
 
     def get_queryset(self):
@@ -103,13 +117,18 @@ class SoftwareListView(ListView):
         category = self.request.GET.get('categorie')
         search = self.request.GET.get('search')
         sort = self.request.GET.get('sort')
+        metier = self.request.GET.get('metier')
+
         # Apply sorting
         if sort == 'views':
             queryset = queryset.order_by('-unique_views')
         elif sort == 'alpha':
             queryset = queryset.order_by('name')
+
         if category and category != 'None':
             queryset = queryset.filter(category__slug=category)
+        if metier and metier != 'None':
+            queryset = queryset.filter(Q(metier__slug=metier) | Q(category__metier__slug=metier))
         if search and search.strip():
             queryset = queryset.filter(
                 Q(name__icontains=search) | 
