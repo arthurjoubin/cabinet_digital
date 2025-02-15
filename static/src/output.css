@@ -1680,6 +1680,11 @@ video {
   margin-bottom: 2rem;
 }
 
+.mx-0 {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
 .-ml-6 {
   margin-left: -1.5rem;
 }
@@ -1830,6 +1835,10 @@ video {
 
 .mr-0\.5 {
   margin-right: 0.125rem;
+}
+
+.mr-0 {
+  margin-right: 0px;
 }
 
 .line-clamp-1 {
@@ -4623,6 +4632,14 @@ video {
 
   .sm\:mt-8 {
     margin-top: 2rem;
+  }
+
+  .sm\:block {
+    display: block;
+  }
+
+  .sm\:inline {
+    display: inline;
   }
 
   .sm\:h-10 {

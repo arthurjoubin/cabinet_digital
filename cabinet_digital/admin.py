@@ -82,7 +82,8 @@ class SoftwareAdmin(ModelAdmin):
 
 @admin.register(SoftwareCategory)
 class CategoryAdmin(ModelAdmin):
-    list_display = ('name', 'software_count', 'excerpt', 'metier')
+    list_display = ('name', 'software_count', 'excerpt', 'metier', 'is_published')
+    list_editable = ['excerpt', 'metier', 'is_published']
     search_fields = ('name',)
     inlines = [SoftwareInline]
     fieldsets = (
