@@ -1,5 +1,5 @@
 **Prompt de rebranding pour "Cabinet Digital" :**  
-Créez un design professionnel et moderne pour un annuaire d'outils financiers et IA (public français), en fusionnant :  
+Créez un design professionnel et moderne pour un annuaire d'outils pour PME et Experts-Comptables, et IA (public français), en fusionnant :  
 - **Couleurs** : Noir/blanc + 1 accent vif (bleu/vert) pour dynamisme.  
 - **Typographie** : Polices géométriques (headlines) et minimalistes (texte).  
 - **Style** : Néo-brutalisme adouci (bordures gris foncé, grilles asymétriques mais structurées).  

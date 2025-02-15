@@ -155,13 +155,18 @@ class TagAdmin(ModelAdmin):
 
 @admin.register(Metier)
 class MetierAdmin(ModelAdmin):
-    list_display = ('name', 'slug')
+    list_display = ('name', 'slug', 'seo_title')
     list_filter = ['name']
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
     fieldsets = (
         (None, {
             'fields': ('name', 'slug')
+        }),
+        ('SEO', {
+            'fields': ('seo_title', 'seo_description'),
+            'description': 'Optimisation pour les moteurs de recherche',
+            'classes': ('collapse',)
         }),
     )
 

@@ -9,11 +9,11 @@
 - cabinet_digital\templates\404.html
 - cabinet_digital\templates\actualite_detail.html
 - cabinet_digital\templates\actualites.html
-- cabinet_digital\templates\actualites\article_detail.html
 - cabinet_digital\templates\ai\article_detail.html
 - cabinet_digital\templates\ai\article_list.html
 - cabinet_digital\templates\ai\model_detail.html
 - cabinet_digital\templates\ai\model_list.html
+- cabinet_digital\templates\ai\provider_detail.html
 - cabinet_digital\templates\ai\tool_detail.html
 - cabinet_digital\templates\ai\tool_list.html
 - cabinet_digital\templates\alternative_detail.html
@@ -22,6 +22,7 @@
 - cabinet_digital\templates\category_list.html
 - cabinet_digital\templates\contact.html
 - cabinet_digital\templates\home.html
+- cabinet_digital\templates\metier_detail.html
 - cabinet_digital\templates\software_detail.html
 - cabinet_digital\templates\software_list.html
 - cabinet_digital\templates\template_article.html
@@ -39,13 +40,14 @@ FILE: cabinet_digital\admin.py
 ================================================================================
 
 from django.contrib import admin
-from .models import Software, SoftwareCategory, Article, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory
+from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI
 from django.db import models
 from django import forms
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 from django.contrib.auth.admin import UserAdmin
+
 from django.contrib.auth.models import User
 from unfold.contrib.forms.widgets import WysiwygWidget
 
@@ -71,10 +73,7 @@ class ActualitesInline(admin.TabularInline):
     extra = 1
     ordering = ('tag__name',)
 
-class ArticleInline(admin.TabularInline):
-    model = Article.tags.through
-    extra = 1
-    ordering = ('tag__name',)
+
 
 class SoftwareInline(admin.TabularInline):
     model = Software.category.through
@@ -124,7 +123,8 @@ class SoftwareAdmin(ModelAdmin):
 
 @admin.register(SoftwareCategory)
 class CategoryAdmin(ModelAdmin):
-    list_display = ('name', 'software_count', 'excerpt', 'metier')
+    list_display = ('name', 'software_count', 'excerpt', 'content_length', 'metier', 'is_published')
+    list_editable = ['excerpt', 'metier', 'is_published']
     search_fields = ('name',)
     inlines = [SoftwareInline]
     fieldsets = (
@@ -141,6 +141,10 @@ class CategoryAdmin(ModelAdmin):
         return Software.objects.filter(category=obj).count()
     software_count.short_description = 'Nombre de logiciels'
 
+    def content_length(self, obj):
+        return f"{len(obj.description)} caractères"
+    content_length.short_description = 'Longueur description'
+
     formfield_overrides = {
         models.TextField: {'widget': WysiwygWidget},
     }
@@ -148,31 +152,6 @@ class CategoryAdmin(ModelAdmin):
     compressed_fields = True
     warn_unsaved_form = True
     list_filter_sheet = True
-
-@admin.register(Article)
-class ArticleAdmin(ModelAdmin):
-    list_display = ('title', 'pub_date', 'is_published')
-    search_fields = ('title', 'content')
-    list_filter = ('tags', 'is_published', 'pub_date')
-    date_hierarchy = 'pub_date'
-    prepopulated_fields = {'slug': ('title',)}
-    fieldsets = (
-        (None, {
-            'fields': ('title', 'slug', 'content')
-        }),
-        ('Publication', {
-            'fields': ('pub_date', 'is_published', 'tags'),
-            'classes': ('collapse',)
-        }),
-    )
-
-    compressed_fields = True
-    warn_unsaved_form = True
-    list_filter_sheet = True
-    
-    formfield_overrides = {
-        models.TextField: {'widget': WysiwygWidget},
-    }
 
 @admin.register(Actualites)
 class ActualitesAdmin(ModelAdmin):
@@ -200,7 +179,8 @@ class TagAdmin(ModelAdmin):
     list_display = ('name', 'slug', 'color', 'colored_tag')
     list_editable = ['slug']
     search_fields = ('name',)
-    inlines = [ActualitesInline, ArticleInline]
+    inlines = [ActualitesInline]
+
 
     def colored_tag(self, obj):
         return format_html(
@@ -210,10 +190,13 @@ class TagAdmin(ModelAdmin):
             obj.name
         )
     colored_tag.short_description = 'Tag'
+    verbose_name = 'Logiciels - Tags'
+    verbose_name_plural = 'Logiciels - Tags'
+
 
 @admin.register(Metier)
 class MetierAdmin(ModelAdmin):
-    list_display = ('name', 'slug')
+    list_display = ('name', 'slug', 'seo_title')
     list_filter = ['name']
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
@@ -221,17 +204,22 @@ class MetierAdmin(ModelAdmin):
         (None, {
             'fields': ('name', 'slug')
         }),
+        ('SEO', {
+            'fields': ('seo_title', 'seo_description'),
+            'description': 'Optimisation pour les moteurs de recherche',
+            'classes': ('collapse',)
+        }),
     )
 
+    verbose_name = 'Logiciels - Métiers'
+    verbose_name_plural = 'Logiciels - Métiers'
 
 @admin.register(AIModel)
 class AIModelAdmin(ModelAdmin):
-    list_display = ['slug', 'name', 'provider', 'is_published', 'is_top_pick', 'unique_views']
-    list_editable = ['is_top_pick']
+    list_display = ['name', 'excerpt', 'tags', 'price', 'is_published']
+    list_editable = ['excerpt', 'tags', 'price']
     search_fields = ['name', 'provider', 'description']
     list_filter = ['is_published', 'is_top_pick', 'provider']
-    readonly_fields = ['unique_views']
-
     fieldsets = (
         (None, {
             'fields': ('name', 'slug', 'provider', 'description', 'excerpt', 'tags')
@@ -256,14 +244,27 @@ class AIModelAdmin(ModelAdmin):
 
 @admin.register(AIToolCategory)
 class AIToolCategoryAdmin(ModelAdmin):
-    list_display = ['name', 'slug']
+    list_display = ['name', 'slug', 'content_length']
     search_fields = ['name']
+    
+    def content_length(self, obj):
+        return f"{len(obj.description)} caractères"
+    content_length.short_description = 'Longueur description'
+    
+    def __str__(self):
+        return self.name
 
 @admin.register(AITool)
 class AIToolAdmin(ModelAdmin):
-    list_display = ['name', 'is_published', 'is_top_pick', 'unique_views']
+    list_display = ['name', 'excerpt', 'categories_display', 'is_published']
+    list_editable = ['excerpt']
     list_filter = ['name', 'category']
-    list_editable = ['is_top_pick', 'unique_views']
+    search_fields = ['name', 'description']
+    readonly_fields = ['unique_views']
+
+    def categories_display(self, obj):
+        return ", ".join([category.name for category in obj.category.all()])
+    categories_display.short_description = 'Catégories'
 
     formfield_overrides = {
         models.TextField: {'widget': WysiwygWidget},
@@ -275,7 +276,8 @@ class AIToolAdmin(ModelAdmin):
 
 @admin.register(AIArticle)
 class AIArticleAdmin(ModelAdmin):
-    list_display = ['title', 'pub_date', 'is_published']
+    list_display = ['title', 'excerpt', 'tags', 'site', 'pub_date', 'is_published']
+    list_editable = ['excerpt', 'tags', 'site']
     search_fields = ['title', 'content']
     list_filter = ['is_published', 'pub_date']
     date_hierarchy = 'pub_date'
@@ -290,6 +292,16 @@ class AIArticleAdmin(ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': WysiwygWidget},
     }
+
+
+
+@admin.register(ProviderAI)
+class ProviderAIAdmin(ModelAdmin):
+    list_display = ['name', 'slug']
+    search_fields = ['name']
+    verbose_name = 'IA - Editeurs'
+    verbose_name_plural = 'IA - Editeurs'
+
 
 
 
@@ -339,16 +351,20 @@ class SoftwareCategory(models.Model):
         return reverse('category_detail', kwargs={'slug': self.slug})
 
     class Meta:
-        verbose_name_plural = "Software Categories"
+        verbose_name = "Logiciels - Catégories"
+        verbose_name_plural = "Logiciels - Catégories"
 
 class Tag(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=False, blank=True)
     color = models.CharField(max_length=50, blank=True)
-
+    class Meta:
+        verbose_name = "Logiciels - Tags"
+        verbose_name_plural = "Logiciels - Tags"
     def __str__(self):
         return self.name
     
+
 class Software(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
@@ -380,28 +396,17 @@ class Software(models.Model):
 
     class Meta:
         ordering = ['-is_top_pick', 'name']
+        verbose_name = "Logiciel - Liste"
+        verbose_name_plural = "Logiciels - Liste"
+
+
 
     def __str__(self):
         return self.name
 
+
     def get_absolute_url(self):
         return reverse('software_detail', kwargs={'slug': self.slug})
-
-class Article(models.Model):
-    title = models.CharField(max_length=200)
-    excerpt = models.CharField(max_length=500)
-    content = models.TextField()
-    pub_date = models.DateTimeField(default=timezone.now)
-    slug = models.SlugField(unique=True)
-    image = models.ImageField(upload_to='articles/images', null=True, blank=True)
-    tags = models.ManyToManyField(Tag, blank=True)
-    is_published = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.title
-
-    def get_absolute_url(self):
-        return reverse('article_detail', kwargs={'slug': self.slug})
 
 
 
@@ -418,33 +423,61 @@ class Actualites(models.Model):
         return self.title
 
     class Meta:
-        verbose_name_plural = "Actualites"
+        verbose_name_plural = "Logiciels - Actualités"
+
 
 class Metier(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
+    seo_title = models.CharField(max_length=60, blank=True, help_text="Titre optimisé pour le référencement (60 caractères max)")
+    seo_description = models.CharField(max_length=160, blank=True, help_text="Description optimisée pour le référencement (160 caractères max)")
+    
+    class Meta:
+        verbose_name = "Logiciels - Métiers"
+        verbose_name_plural = "Logiciels - Métiers"
+
 
     def __str__(self):
         return self.name
 
+class ProviderAI(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, blank=True)
+    description = HTMLField(blank=True)
+    logo = models.ImageField(upload_to='providers/', null=True, blank=True)
+    site = models.URLField(max_length=200, blank=True)
+    is_published = models.BooleanField(default=True)
 
+    class Meta:
+        verbose_name = "IA - Editeurs"
+        verbose_name_plural = "IA - Editeurs"
+
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('provider_detail', kwargs={'slug': self.slug})
 
 class AIModel(models.Model):
-    provider = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
+    provider = models.ForeignKey(ProviderAI, on_delete=models.SET_NULL, null=True, blank=True)
     slug = models.SlugField(unique=True, blank=True)
     description = HTMLField()
     excerpt = models.CharField(max_length=200, blank=True)
+    price = models.CharField(max_length=200, blank=True)
     logo = models.ImageField(upload_to='logos/', null=True, blank=True)
     is_published = models.BooleanField(default=False)
     site = models.URLField(max_length=200, blank=True)
+
     is_top_pick = models.BooleanField(default=False)
     unique_views = models.IntegerField(default=0)
     tags = models.CharField(max_length=50, blank=True)
 
     class Meta:
-        verbose_name = "Modèle IA"
-        verbose_name_plural = "Modèles IA"
+        verbose_name = "IA - Modèle"
+        verbose_name_plural = "IA - Modèles"
+
 
     def __str__(self):
         return self.name
@@ -458,7 +491,16 @@ class AIToolCategory(models.Model):
     description = HTMLField()
     excerpt = models.CharField(max_length=200, blank=True)
 
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "IA - Catégories"
+        verbose_name_plural = "IA - Catégories"
+
+
 class AITool(models.Model):
+    provider = models.ForeignKey(ProviderAI, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
     description = HTMLField()
@@ -471,8 +513,9 @@ class AITool(models.Model):
     category = models.ManyToManyField(AIToolCategory, blank=True)
 
     class Meta:
-        verbose_name = "Outil IA"
-        verbose_name_plural = "Outils IA"
+        verbose_name = "IA - Outil"
+        verbose_name_plural = "IA - Outils"
+
 
     def __str__(self):
         return self.name
@@ -494,10 +537,13 @@ class AIArticle(models.Model):
     banner = models.ImageField(upload_to='articles/banners', null=True, blank=True)
     related_ai_models = models.ManyToManyField(AIModel, blank=True)
     related_ai_tools = models.ManyToManyField(AITool, blank=True)
+    tags = models.CharField(max_length=50, blank=True)
+    site = models.URLField(max_length=200, blank=True)
 
     class Meta:
-        verbose_name = "Article IA"
-        verbose_name_plural = "Articles IA"
+        verbose_name = "IA - Article"
+        verbose_name_plural = "IA - Articles"
+
 
     def __str__(self):
         return self.title
@@ -512,7 +558,7 @@ FILE: cabinet_digital\sitemaps.py
 
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from .models import Software, SoftwareCategory, Actualites
+from .models import Software, SoftwareCategory, Actualites, AIModel, AITool, AIArticle, Metier
 from django.contrib.sites.shortcuts import get_current_site
 
 class BaseSitemap(Sitemap):
@@ -570,7 +616,53 @@ class StaticViewSitemap(BaseSitemap):
         return ['home', 'contact', 'outils']
 
     def location(self, item):
-        return reverse(item) 
+        return reverse(item)
+
+class AIModelSitemap(BaseSitemap):
+    changefreq = "weekly"
+    priority = 0.8
+
+    def items(self):
+        return AIModel.objects.filter(is_published=True).order_by('name')
+
+    def location(self, obj):
+        return reverse('ai_model_detail', kwargs={'slug': obj.slug})
+
+class AIToolSitemap(BaseSitemap):
+    changefreq = "weekly"
+    priority = 0.8
+
+    def items(self):
+        return AITool.objects.filter(is_published=True).order_by('name')
+
+    def location(self, obj):
+        return reverse('ai_tool_detail', kwargs={'slug': obj.slug})
+
+class AIArticleSitemap(BaseSitemap):
+    changefreq = "daily"
+    priority = 0.7
+
+    def items(self):
+        return AIArticle.objects.filter(is_published=True).order_by('-pub_date')
+
+    def lastmod(self, obj):
+        return obj.pub_date
+
+    def location(self, obj):
+        return reverse('ai_article_detail', kwargs={'slug': obj.slug})
+
+class MetierSitemap(BaseSitemap):
+    changefreq = "monthly"
+    priority = 0.6
+
+    def items(self):
+        return Metier.objects.all().order_by('name')
+
+    def lastmod(self, obj):
+        return None
+
+    def location(self, obj):
+        return reverse('metier_detail', kwargs={'slug': obj.slug}) 
 
 ================================================================================
 FILE: cabinet_digital\templates\404.html
@@ -611,8 +703,11 @@ FILE: cabinet_digital\templates\actualite_detail.html
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}
+{{ actualite.title }} - Cabinet Digital
+{% endblock %}
+
 {% block meta_description %}
-<title>{{ actualite.title }} - Cabinet Digital</title>
 <meta name="description" content="{{ actualite.excerpt }}">
 <meta property="og:title" content="{{ actualite.title }} - Cabinet Digital">
 <meta property="og:description" content="{{ actualite.excerpt }}">
@@ -634,12 +729,14 @@ FILE: cabinet_digital\templates\actualites.html
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}
+Actualités des logiciels pour experts-comptables et PME - Cabinet Digital
+{% endblock %}
 
 {% block meta_description %}
-<title>Actualités des logiciels pour experts-comptables et financiers - Cabinet Digital</title>
 <meta name="description" content="Dernières actualités et tendances en expertise comptable et logiciels pour experts-comptables.">
-<meta property="og:title" content="Actualités des logiciels pour experts-comptables et financiers - Cabinet Digital">
-<meta property="og:description" content="Dernières actualités et tendances en expertise comptable et logiciels pour experts-comptables.">
+<meta property="og:title" content="Actualités des logiciels pour experts-comptables et PME - Cabinet Digital">
+<meta property="og:description" content="Dernières actualités et tendances en expertise comptable et logiciels pour experts-comptables et PME.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
 <meta property="og:site_name" content="Cabinet Digital">
@@ -666,20 +763,17 @@ FILE: cabinet_digital\templates\actualites.html
 
 
 ================================================================================
-FILE: cabinet_digital\templates\actualites\article_detail.html
-================================================================================
-
- 
-
-================================================================================
 FILE: cabinet_digital\templates\ai\article_detail.html
 ================================================================================
 
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}   
+{{ article.title }} - Cabinet Digital
+{% endblock %}
+
 {% block meta_description %}
-<title>{{ article.title }} - Cabinet Digital</title>
 <meta name="description" content="{{ article.excerpt }}">
 <meta property="og:title" content="{{ article.title }} - Cabinet Digital">
 <meta property="og:description" content="{{ article.excerpt }}">
@@ -689,52 +783,57 @@ FILE: cabinet_digital\templates\ai\article_detail.html
 {% endblock %}
 
 {% block content %}
-<article class="max-w-5xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
-    <!-- Section outils et modèles -->
-   
-
-    <header class="px-8 pt-8 pb-6">
-        <nav class="mb-8">
-            <a href="{% url 'ai_article_list' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-purple-700 bg-purple-50/50 rounded-lg hover:bg-purple-100 transition-all duration-300">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                {% if custom_plural %}
-                    Revenir aux {{ custom_plural }}
-                {% else %}
-                    Revenir à la liste
-                {% endif %}
-            </a>
-        </nav>
-
-        <div class="space-y-4">
-            <h1 class="text-4xl font-bold text-gray-900 tracking-tight">{{ article.title }}</h1>
-            
-            {% if article.excerpt %}
-                <p class="text-xl text-gray-600 leading-relaxed">{{ article.excerpt |safe }}</p>
-            {% endif %}
-
-            <div class="flex flex-wrap items-center justify-between gap-4 pt-4">
-                <div class="flex flex-wrap gap-2">
-                    {% for tag in article.tags.all %}
-                        <span class="px-3 py-1 text-xs font-medium rounded-full bg-purple-50 text-purple-700">{{ tag.name }}</span>
-                    {% endfor %}
+<article class="max-w-5xl mx-auto bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-12">
+    <!-- Header Section -->
+    <div class="p-4 sm:p-6 border-b border-gray-200">
+        <div class="flex flex-col space-y-4">
+            <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4">
+                <a href="{% url 'ai_article_list' %}" 
+                   class="inline-flex items-center px-4 py-2 text-sm font-medium text-emerald-700 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors duration-300">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    {% if custom_plural %}
+                        {{ custom_plural }}
+                    {% else %}
+                        Retour aux articles
+                    {% endif %}
+                </a>
+                
+                <!-- Date in header -->
+                <div class="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    {{ article.pub_date|date:"d F Y"|lower }}
                 </div>
-
-
             </div>
         </div>
+    </div>
+
+    <div class="p-4 sm:p-8 max-w-4xl mx-auto">
+        <!-- Title and Excerpt -->
+        <div class="mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-emerald-800 mb-4">{{ article.title }}</h1>
+            {% if article.excerpt %}
+                <p class="text-gray-700 text-lg leading-relaxed">{{ article.excerpt|safe }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Related Tools and Models -->
         {% if article.related_ai_tools.exists or article.related_ai_models.exists %}
-        <div class="bg-purple-50 border-b border-purple-100 p-6">
-            <div class="flex flex-wrap gap-6">
+        <div class="bg-emerald-50 rounded-lg p-6 mb-8 border border-emerald-100">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {% if article.related_ai_models.exists %}
-                <div class="flex-1 min-w-[250px]">
-                    <h4 class="text-sm uppercase tracking-wider text-purple-700 font-medium mb-3">Modèles IA</h4>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4">Modèles IA associés</h4>
                     <div class="flex flex-wrap gap-2">
                         {% for model in article.related_ai_models.all %}
                         <a href="{{ model.get_absolute_url }}" 
-                           class="group flex items-center px-3 py-1.5 bg-white text-purple-700 rounded-lg border border-purple-200 hover:border-purple-400 hover:shadow-sm transition-all">
+                           class="group flex items-center px-4 py-2 bg-white text-emerald-700 rounded-lg border border-emerald-200 hover:border-emerald-300 hover:shadow-sm transition-all">
                             <span class="text-sm">{{ model.name }}</span>
-                            <svg class="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            <svg class="w-4 h-4 ml-2 transform transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/>
                             </svg>
                         </a>
                         {% endfor %}
@@ -743,15 +842,15 @@ FILE: cabinet_digital\templates\ai\article_detail.html
                 {% endif %}
     
                 {% if article.related_ai_tools.exists %}
-                <div class="flex-1 min-w-[250px]">
-                    <h4 class="text-sm uppercase tracking-wider text-purple-700 font-medium mb-3">Outils techniques</h4>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4">Outils techniques</h4>
                     <div class="flex flex-wrap gap-2">
                         {% for tool in article.related_ai_tools.all %}
                         <a href="{{ tool.get_absolute_url }}" 
-                        class="group flex items-center px-3 py-1.5 bg-white text-purple-700 rounded-lg border border-purple-200 hover:border-purple-400 hover:shadow-sm transition-all">
+                        class="group flex items-center px-4 py-2 bg-white text-emerald-700 rounded-lg border border-emerald-200 hover:border-emerald-300 hover:shadow-sm transition-all">
                             <span class="text-sm">{{ tool.name }}</span>
-                            <svg class="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            <svg class="w-4 h-4 ml-2 transform transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/>
                             </svg>
                         </a>
                         {% endfor %}
@@ -761,26 +860,20 @@ FILE: cabinet_digital\templates\ai\article_detail.html
             </div>
         </div>
         {% endif %}
-        <div class="flex items-center text-gray-500 text-sm">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <time>Publié le {{ article.pub_date|date:"d F Y"|lower }}</time>
-        </div>
-    </header>
 
-    <div class="px-8 py-6">
-        <div class="prose max-w-none">
+        <!-- Article Content -->
+        <div class="prose prose-lg max-w-none prose-headings:font-bold prose-a:text-emerald-600">
             {{ article.content|safe }}
         </div>
     </div>
 
-    <footer class="mt-12 bg-gradient-to-b from-white to-gray-50 p-12 border-t border-gray-100 rounded-b-xl text-center">
-        <h2 class="text-2xl font-semibold text-gray-800 mb-4">À propos de <span class="bg-black text-white px-2 py-0.5 rounded-md">Cabinet Digital</span></h2>
-        <p class="text-gray-600 leading-relaxed max-w-2xl mx-auto">
+    <!-- Footer -->
+    <div class="bg-white p-6 border-t border-gray-200 rounded-b-lg shadow-sm text-center">
+        <h2 class="text-2xl font-semibold text-emerald-800 mb-4">À propos de <span class="bg-black text-white px-2 rounded">Cabinet Digital</span></h2>
+        <p class="text-gray-700 leading-relaxed max-w-2xl mx-auto">
             Cabinet Digital est un site indépendant dédié aux entreprises et experts-comptables. Notre mission est de vous aider à choisir les logiciels les plus adaptés à vos besoins spécifiques en matière de comptabilité, gestion et finance.
         </p>
-    </footer>
+    </div>
 </article>
 {% endblock %} 
 
@@ -791,10 +884,13 @@ FILE: cabinet_digital\templates\ai\article_list.html
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}
+Articles IA pour experts-comptables et PME - Cabinet Digital
+{% endblock %}
+
 {% block meta_description %}
-<title>Articles IA pour experts-comptables et financiers - Cabinet Digital</title>
 <meta name="description" content="Dernières actualités et tendances en IA pour l'expertise comptable et les logiciels pour experts-comptables.">
-<meta property="og:title" content="Articles IA pour experts-comptables et financiers - Cabinet Digital">
+<meta property="og:title" content="Articles IA pour experts-comptables et PME - Cabinet Digital">
 <meta property="og:description" content="Dernières actualités et tendances en IA pour l'expertise comptable et les logiciels pour experts-comptables.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
@@ -803,17 +899,17 @@ FILE: cabinet_digital\templates\ai\article_list.html
 
 {% block content %}
 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-    <h1 class="custom-header">Articles IA</h1>
+    <h1 class="custom-header-emerald">Articles IA</h1>
 
     <div class="grid gap-6 md:gap-8 md:grid-cols-2 lg:grid-cols-3">
         {% for article in articles %}
         <div class="transition-all duration-200">
-            <div class="border border-gray-200 bg-white rounded-2xl overflow-hidden relative flex flex-col transition-all duration-300 ease-in-out h-full hover:bg-purple-50 [&:hover_#title]:text-purple-600">
+            <div class="border border-gray-200 bg-white rounded-2xl overflow-hidden relative flex flex-col transition-all duration-300 ease-in-out h-full hover:bg-emerald-50 [&:hover_#title]:text-emerald-600">
                 <a href="{% url 'ai_article_detail' article.slug %}" class="flex flex-col h-full">
                     <div class="p-6 flex flex-col h-full">    
             
                         <!-- Title section -->
-                        <h2 id="title" class="text-xl font-semibold text-gray-900 group-hover:text-purple-600 transition-colors duration-300">
+                        <h2 id="title" class="text-xl font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors duration-300">
                             {{ article.title }}
                         </h2>
             
@@ -825,7 +921,7 @@ FILE: cabinet_digital\templates\ai\article_list.html
                         <!-- Outils et modeles -->
                         <div class="flex flex-wrap gap-2 mb-4">
                             {% for tool in article.related_ai_tools.all %}
-                            <span class="px-2 py-1 text-xs font-medium rounded-lg bg-purple-100 text-purple-700" >
+                            <span class="px-2 py-1 text-xs font-medium rounded-lg bg-emerald-100 text-emerald-700" >
                                 {{ tool.name }}
                             </span>
                             {% endfor %}
@@ -849,7 +945,7 @@ FILE: cabinet_digital\templates\ai\article_list.html
             </div>
                     </div>
         {% empty %}
-        <div class="col-span-full flex items-center justify-center min-h-[300px] bg-purple-50 text-purple-600 rounded-xl border border-purple-100">
+        <div class="col-span-full flex items-center justify-center min-h-[300px] bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100">
             <p class="text-xl text-gray-600">Aucun article disponible pour le moment.</p>
         </div>
         {% endfor %}
@@ -864,10 +960,13 @@ FILE: cabinet_digital\templates\ai\model_detail.html
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}
+{{ model.name }} | Découvrir la fiche du modèle LLM
+{% endblock %}
+
 {% block meta_description %}
-<title>{{ model.name }} | Découvrir la fiche du modèle</title>
 <meta name="description" content="Découvrez notre fiche sur {{ model.name }}. {{ model.excerpt }}">
-<meta property="og:title" content="{{ model.name }} - Découvrir la fiche du modèle">
+<meta property="og:title" content="{{ model.name }} - Découvrir la fiche du modèle LLM">
 <meta property="og:description" content="Découvrez notre fiche sur {{ model.name }}. {{ model.excerpt }}">
 <meta property="og:type" content="website">
 <meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
@@ -879,17 +978,17 @@ FILE: cabinet_digital\templates\ai\model_detail.html
   <div class="p-4 sm:p-6 border-b border-gray-200">
     <div class="flex flex-col space-y-4">
       <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4">
-        <a href="{% url 'ai_model_list' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors duration-300">
+        <a href="{% url 'ai_model_list' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-emerald-700 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors duration-300">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Retour à la liste des modèles
         </a>
-        <div class="bg-purple-50 text-purple-700 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center">
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-          </svg>
-          <span class="font-bold">{{ model.unique_views }}&nbsp;</span>visites
+        {% if model.price %}
+        <div class="inline-flex items-center px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg shadow-sm border border-emerald-200">
+          <span class="text-md text-emerald-600">Tarif :</span>
+          <span class="text-md font-bold ml-1">{{ model.price }}</span>
+          <span class="text-md text-emerald-600 ml-1">pour ~10 romans générés</span>
         </div>
+        {% endif %}
     
         {% if model.site %}
         <a href="{{ model.site }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center">
@@ -911,10 +1010,13 @@ FILE: cabinet_digital\templates\ai\model_detail.html
       </div>
       {% endif %}
       <div class="flex-grow text-center md:text-left">
-        <h1 class="text-3xl sm:text-4xl font-bold text-purple-800 mb-2">{{ model.name }}</h1>
-        <p class="text-gray-600 text-sm font-medium bg-gray-50 px-3 py-1 rounded-full inline-block border border-gray-200">{{ model.provider }}</p>
+        <h1 class="text-3xl sm:text-4xl font-bold text-emerald-800 mb-2">{{ model.name }}</h1>
+        <a href="{% url 'provider_detail' slug=model.provider.slug %}" 
+           class="text-gray-600 text-sm font-medium bg-gray-50 px-3 py-1 rounded-full inline-block border border-gray-200 hover:bg-gray-100 transition-colors duration-300">
+          {{ model.provider }}
+        </a>
         {% if model.tags %}
-        <div class="inline-block px-2 py-1 mt-2 bg-purple-100 text-purple-800 text-xs font-medium rounded-full border border-purple-200">
+        <div class="inline-block px-2 py-1 mt-2 bg-emerald-100 text-emerald-800 text-xs font-medium rounded-full border border-emerald-200">
           {{ model.tags }}
         </div>
         {% endif %}
@@ -932,33 +1034,8 @@ FILE: cabinet_digital\templates\ai\model_detail.html
     </div>
   </div>
 
-  <div class="border-t border-gray-200 p-4 sm:p-6 text-center">
-    <h2 class="text-xl sm:text-2xl font-semibold text-purple-800 mb-6">Modèles similaires</h2>
-    {% if related_models %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {% for model in related_models %}
-      <div class="bg-purple-50 rounded-lg p-6">
-        <div class="flex items-center mb-4">
-          {% if model.logo %}
-          <img src="{{ model.logo.url }}" alt="{{ model.name }}" class="w-12 h-12 rounded-lg object-contain">
-          {% endif %}
-          <div class="ml-4">
-            <h3 class="font-semibold text-gray-900">{{ model.name }}</h3>
-            <p class="text-purple-600">{{ model.provider }}</p>
-          </div>
-        </div>
-        <p class="text-gray-600 mb-4">{{ model.excerpt }}</p>
-        <a href="{{ model.get_absolute_url }}" class="text-purple-600 hover:text-purple-700 font-medium">En savoir plus →</a>
-      </div>
-      {% endfor %}
-    </div>
-    {% else %}
-    <p class="text-purple-600">Aucun modèle similaire trouvé.</p>
-    {% endif %}
-  </div>
-
   <div class="bg-white p-6 border-t border-gray-200 rounded-b-lg shadow-sm text-center">
-    <h2 class="text-2xl font-semibold text-purple-800 mb-4">À propos de <span class="bg-black text-white px-1 rounded">Cabinet Digital</span></h2>
+    <h2 class="text-2xl font-semibold text-emerald-800 mb-4">À propos de <span class="bg-black text-white px-1 rounded">Cabinet Digital</span></h2>
     <p class="text-gray-700 leading-relaxed max-w-2xl mx-auto">
       Cabinet Digital est un site indépendant dédié aux entreprises et experts-comptables. Notre mission est de vous aider à choisir les logiciels les plus adaptés à vos besoins spécifiques en matière de comptabilité, gestion et finance.
     </p>
@@ -973,13 +1050,16 @@ FILE: cabinet_digital\templates\ai\model_list.html
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}
+Les meilleurs modèles d'IA pour les entreprises (2025) - Cabinet Digital
+{% endblock %}
+
 {% block meta_description %}
-<title>Les meilleurs modèles d'IA pour experts-comptables - Cabinet Digital</title>
 <meta name="description"
-    content="Découvrez notre liste complète de modèles d'IA. Trouvez les meilleurs outils pour vos besoins professionnels, filtrés par catégorie et facilement recherchables.">
-<meta property="og:title" content="Les meilleurs modèles d'IA pour experts-comptables - Cabinet Digital">
+    content="Découvrez notre liste des meilleurs modèles d'IA pour les entreprises en 2025 avec leurs fiches détaillées et leurs avantages.">
+<meta property="og:title" content="Les meilleurs modèles d'IA pour les entreprises (2025) - Cabinet Digital">
 <meta property="og:description"
-    content="Découvrez notre liste complète de modèles d'IA. Trouvez les meilleurs outils pour vos besoins professionnels, filtrés par catégorie et facilement recherchables.">
+    content="Découvrez notre liste des meilleurs modèles d'IA pour les entreprises en 2025 avec leurs fiches détaillées et leurs avantages.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
 <meta property="og:site_name" content="Cabinet Digital">
@@ -987,26 +1067,18 @@ FILE: cabinet_digital\templates\ai\model_list.html
 
 {% block content %}
 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-    <h1 class="custom-header text-purple-800">Liste des modèles d'IA</h1>
+    <h1 class="custom-header-emerald">Les meilleurs modèles d'IA à utiliser en entreprise (2025)</h1>
     <div id="model-list-content" class="w-full">
         <div id="model-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {% for model in models %}
-            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:bg-purple-50 p-6 h-full flex flex-col relative group cursor-pointer"
+            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:bg-emerald-50 p-4 h-full flex flex-col relative group cursor-pointer"
                 onclick="window.location='{{ model.get_absolute_url }}'">
-                <div class="absolute top-2 left-2 bg-purple-50 text-purple-700 px-2 py-2 rounded-lg text-sm font-medium flex items-center justify-center"
-                    onclick="event.stopPropagation()">
-                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                        </path>
-                    </svg>
-                    <span class="font-bold">{{ model.unique_views }}&nbsp;</span>vues
-                </div>
-
-                <header class="flex flex-col items-center mb-4">
+                {% if model.is_top_pick %}
+                    <div class="absolute top-4 right-4 bg-green-100 text-green-800 px-3 py-1 text-xs font-medium rounded-full">
+                        Top Pick
+                    </div>
+                {% endif %}
+                <header class="flex flex-col items-center">
                     {% if model.logo %}
                     <div class="w-16 h-16 flex items-center justify-center mb-4">
                         <img src="{{ model.logo.url }}" alt="{{ model.name }}"
@@ -1016,23 +1088,32 @@ FILE: cabinet_digital\templates\ai\model_list.html
                     <h3 class="text-2xl font-bold text-gray-900 text-center mb-2">{{ model.name }}</h3>
                     <div class="flex items-center justify-center">
                         <p
-                            class="text-gray-600 text-sm font-medium bg-gray-50 px-3 py-1 rounded-full inline-block border border-gray-200">
-                            {{ model.provider }}</p>
+                            class="text-gray-600 text-sm font-medium bg-gray-50 px-3 py-1 rounded-full inline-block border border-gray-200 hover:bg-gray-100 transition-colors duration-300">
+                            {{ model.provider }}
+                        </p>
                         {% if model.tags %}
                         <div
-                            class="inline-block px-2 py-1 mt-2 mb-2 bg-purple-100 text-purple-800 text-xs font-medium rounded-full border border-purple-200">
+                            class="inline-block px-2 py-1 mt-2 mb-2 bg-emerald-100 text-emerald-800 text-xs font-medium rounded-full border border-emerald-200">
                             {{ model.tags }}
                         </div>
                         {% endif %}
                     </div>
 
 
-                    <p class="text-sm text-gray-500 text-center leading-normal max-w-xs">{{  model.excerpt|safe|truncatechars:100 }}</p>
+                    <p class="text-sm text-gray-500 text-center leading-normal max-w-xs">{{ model.excerpt|safe|truncatechars:100 }}</p>
+                    {% if model.price %}
+                    <div class="mt-2 flex flex-col items-center">
+                        <div class="inline-flex items-center px-3 py-1 bg-emerald-100/80 text-emerald-800 rounded-lg border border-emerald-200 group-hover:bg-white transition-all duration-300">
+                            <span class="font-medium text-sm text-emerald-900">{{ model.price }}</span>
+                            <span class="text-xs ml-2 text-emerald-700">- générer équivalent de 10 livres</span>
+                        </div>
+                    </div>
+                    {% endif %}
                 </header>
             </div>
             {% empty %}
             <div
-                class="col-span-full flex items-center justify-center min-h-[300px] bg-purple-50/50 rounded-xl border border-purple-100">
+                class="col-span-full flex items-center justify-center min-h-[300px] bg-emerald-50/50 rounded-xl border border-emerald-100">
                 <p class="text-xl text-gray-600">Aucun modèle disponible pour le moment.</p>
             </div>
             {% endfor %}
@@ -1044,22 +1125,113 @@ FILE: cabinet_digital\templates\ai\model_list.html
             <div class="flex space-x-2">
                 {% if page_obj.has_previous %}
                 <a href="?page={{ page_obj.previous_page_number }}"
-                    class="px-4 py-2 bg-white text-purple-600 rounded-lg border border-purple-200 hover:bg-purple-50">Précédent</a>
+                    class="px-4 py-2 bg-white text-emerald-600 rounded-lg border border-emerald-200 hover:bg-emerald-50">Précédent</a>
                 {% endif %}
 
-                <span class="px-4 py-2 bg-purple-600 text-white rounded-lg">{{ page_obj.number }}</span>
+                <span class="px-4 py-2 bg-emerald-600 text-white rounded-lg">{{ page_obj.number }}</span>
 
                 {% if page_obj.has_next %}
                 <a href="?page={{ page_obj.next_page_number }}"
-                    class="px-4 py-2 bg-white text-purple-600 rounded-lg border border-purple-200 hover:bg-purple-50">Suivant</a>
+                    class="px-4 py-2 bg-white text-emerald-600 rounded-lg border border-emerald-200 hover:bg-emerald-50">Suivant</a>
                 {% endif %}
             </div>
         </div>
         {% endif %}
     </div>
 </div>
-</div>
 {% endblock %}
+
+================================================================================
+FILE: cabinet_digital\templates\ai\provider_detail.html
+================================================================================
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+{{ provider.name }} | Éditeur d'IA - Cabinet Digital
+{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="{{ provider.description|striptags|truncatewords:30 }}">
+<meta property="og:title" content="{{ provider.name }} - Éditeur d'IA - Cabinet Digital">
+<meta property="og:description" content="{{ provider.description|striptags|truncatewords:30 }}">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-12">
+    <!-- Header Section -->
+    <div class="p-4 sm:p-6 border-b border-gray-200">
+        <div class="flex flex-col space-y-4">
+            <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4">
+                <a href="{% url 'ai_model_list' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-emerald-700 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors duration-300">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Retour à la liste des modèles
+                </a>
+                {% if provider.site %}
+                <a href="{{ provider.site }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center">
+                    Visiter leur site
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="p-4 sm:p-8 max-w-4xl mx-auto">
+        <div class="flex flex-col md:flex-row items-center md:items-start mb-8">
+            {% if provider.logo %}
+            <div class="w-24 h-24 mb-4 md:mb-0 md:mr-6 flex-shrink-0">
+                <img src="{{ provider.logo.url }}" alt="{{ provider.name }}" class="w-full h-full object-contain">
+            </div>
+            {% endif %}
+            <div class="flex-grow text-center md:text-left">
+                <h1 class="text-3xl sm:text-4xl font-bold text-emerald-800 mb-4">Les modèles d'IA de {{ provider.name }}</h1>
+                <div class="prose max-w-none text-gray-700">
+                    {{ provider.description|safe }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Models Section -->
+        <div class="mt-12">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for model in provider_models %}
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:bg-emerald-50 p-4 h-full flex flex-col relative group cursor-pointer"
+                    onclick="window.location='{{ model.get_absolute_url }}'">
+                    <header class="flex flex-col items-center">
+                       
+                        <h3 class="text-2xl font-bold text-gray-900 text-center mb-2">{{ model.name }}</h3>
+                        {% if model.tags %}
+                        <div class="inline-block px-2 py-1 mt-2 mb-2 bg-emerald-100 text-emerald-800 text-xs font-medium rounded-full border border-emerald-200">
+                            {{ model.tags }}
+                        </div>
+                        {% endif %}
+                        <p class="text-sm text-gray-500 text-center leading-normal max-w-xs">{{ model.excerpt|safe|truncatechars:100 }}</p>
+                        {% if model.price %}
+                        <div class="mt-2 inline-flex items-center h-10 px-3 bg-emerald-50 text-emerald-700 rounded-md shadow-sm border border-emerald-200 transition-all duration-300 group-hover:bg-white">
+                            <span class="text-sm font-medium mr-1">Tarif :</span>
+                            <span class="text-sm">{{ model.price }}</span>
+                        </div>
+                        {% endif %}
+                    </header>
+                </div>
+                {% empty %}
+                <div class="col-span-full flex items-center justify-center min-h-[300px] bg-emerald-50/50 rounded-xl border border-emerald-100">
+                    <p class="text-xl text-gray-600">Aucun modèle disponible pour cet éditeur.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
 
 ================================================================================
 FILE: cabinet_digital\templates\ai\tool_detail.html
@@ -1068,10 +1240,13 @@ FILE: cabinet_digital\templates\ai\tool_detail.html
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}
+{{ tool.name }} | Découvrir la fiche de cette solution d'IA
+{% endblock %}
+
 {% block meta_description %}
-<title>{{ tool.name }} | Découvrir la fiche de l'outil</title>
 <meta name="description" content="Découvrez notre fiche sur {{ tool.name }}. {{ tool.excerpt }}">
-<meta property="og:title" content="{{ tool.name }} - Découvrir la fiche de l'outil">
+<meta property="og:title" content="{{ tool.name }} - Découvrir la fiche de l'outil d'IA">
 <meta property="og:description" content="Découvrez notre fiche sur {{ tool.name }}. {{ tool.excerpt }} | Catégories : {% for category in tool.category.all %}{{ category.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">
 <meta property="og:type" content="website">
 <meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
@@ -1083,17 +1258,21 @@ FILE: cabinet_digital\templates\ai\tool_detail.html
   <div class="p-4 sm:p-6 border-b border-gray-200">
     <div class="flex flex-col space-y-4">
       <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4">
-        <a href="{% url 'ai_tool_list' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors duration-300">
+        <a href="{% url 'ai_tool_list' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-emerald-700 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors duration-300">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Retour à la liste des outils
         </a>
-        <div class="bg-purple-50 text-purple-700 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center">
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-          </svg>
-          <span class="font-bold">{{ tool.unique_views }}&nbsp;</span>visites
+        
+        {% if tool.category.all %}
+        <div class="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+            </svg>
+            {% for category in tool.category.all %}
+                {{ category.name }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
         </div>
+        {% endif %}
     
         {% if tool.site %}
         <a href="{{ tool.site }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center">
@@ -1116,26 +1295,21 @@ FILE: cabinet_digital\templates\ai\tool_detail.html
       {% endif %}
       <div class="flex-grow text-center md:text-left">
         <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">{{ tool.name }}</h1>
-
         <p class="text-gray-700 text-base leading-relaxed">{{ tool.excerpt|safe }}</p>
-        {% if tool.category.all %}
-        <div class="flex flex-wrap justify-center md:justify-start mt-2">
-          {% for category in tool.category.all|dictsort:"name" %}
-          <a href="{% url 'category_detail' category.slug %}" class="inline-block px-2 py-1 text-xs font-medium bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors duration-300 mr-1 mb-2">
-            {{ category.name }}
-          </a>
-          {% endfor %}
-        </div>
-        {% endif %}
       </div>
     </div>
 
     <hr class="my-6 sm:my-8 border-t border-gray-200">
 
     <div class="prose max-w-none text-gray-700 leading-relaxed">
-      <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 text-center md:text-left">Présentation de <span class="bg-black text-white rounded px-2"> {{ tool.name }} </span></h2>
+      <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 text-center md:text-left">
+        Présentation de 
+        <span class="bg-emerald-600 text-white rounded px-1">{{ tool.name }}</span>
+      </h2>
       <div class="text-left relative">
         {{ tool.description|safe }}
+
+
       </div>
     </div>
 
@@ -1151,7 +1325,7 @@ FILE: cabinet_digital\templates\ai\tool_detail.html
     {% if similar_tools %}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {% for tool in similar_tools %}
-      <div class="bg-purple-50 rounded-lg p-6">
+      <div class="bg-emerald-50 rounded-lg p-6">
         <div class="flex items-center mb-4">
           {% if tool.logo %}
           <img src="{{ tool.logo.url }}" alt="{{ tool.name }}" class="w-12 h-12 rounded-lg object-contain">
@@ -1160,13 +1334,13 @@ FILE: cabinet_digital\templates\ai\tool_detail.html
             <h3 class="font-semibold text-gray-900">{{ tool.name }}</h3>
             <div class="flex flex-wrap gap-2 mt-1">
               {% for category in tool.category.all %}
-              <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">{{ category.name }}</span>
+              <span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs">{{ category.name }}</span>
               {% endfor %}
             </div>
           </div>
         </div>
         <p class="text-gray-600 mb-4">{{ tool.excerpt }}</p>
-        <a href="{{ tool.get_absolute_url }}" class="text-purple-600 hover:text-purple-700 font-medium">En savoir plus →</a>
+        <a href="{{ tool.get_absolute_url }}" class="text-emerald-600 hover:text-emerald-700 font-medium">En savoir plus →</a>
       </div>
       {% endfor %}
     </div>
@@ -1191,8 +1365,12 @@ FILE: cabinet_digital\templates\ai\tool_list.html
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}
+Les meilleurs outils d'IA pour experts-comptables - Cabinet Digital
+{% endblock %}
+
+
 {% block meta_description %}
-<title>Les meilleurs outils d'IA pour experts-comptables - Cabinet Digital</title>
 <meta name="description" content="Découvrez notre liste complète d'outils d'IA. Trouvez les meilleurs outils pour vos besoins professionnels, filtrés par catégorie et facilement recherchables.">
 <meta property="og:title" content="Les meilleurs outils d'IA pour experts-comptables - Cabinet Digital">
 <meta property="og:description" content="Découvrez notre liste complète d'outils d'IA. Trouvez les meilleurs outils pour vos besoins professionnels, filtrés par catégorie et facilement recherchables.">
@@ -1203,23 +1381,18 @@ FILE: cabinet_digital\templates\ai\tool_list.html
 
 {% block content %}
 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-    <h1 class="custom-header">Liste des outils d'IA</h1>
-   
+    <h1 class="custom-header-emerald">Les meilleurs logiciels d'IA à connaitre en entreprise (2025)</h1>
+
+
+
+
+
     <div id="tool-list-content" class="w-full">
         <div id="tool-grid" 
              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {% for tool in tools %}
-            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:bg-purple-50 p-6 h-full flex flex-col relative group cursor-pointer"
+            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:bg-emerald-50 p-6 h-full flex flex-col relative group cursor-pointer"
                  onclick="window.location='{{ tool.get_absolute_url }}'">
-                <div class="absolute top-2 left-2 bg-purple-50 text-purple-700 px-2 py-2 rounded-lg text-sm font-medium flex items-center justify-center"
-                     onclick="event.stopPropagation()">
-                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                    </svg>
-                    <span class="font-bold">{{ tool.unique_views }}&nbsp;</span>vues
-                </div>
-
                 {% if tool.is_top_pick %}
                     <div class="absolute top-4 right-4 bg-green-100 text-green-800 px-3 py-1 text-xs font-medium rounded-full">
                         Top Pick
@@ -1239,13 +1412,13 @@ FILE: cabinet_digital\templates\ai\tool_list.html
                 {% if tool.category.all %}
                 <div class="flex flex-wrap justify-center gap-2 mt-auto">
                     {% for category in tool.category.all %}
-                    <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">{{ category.name }}</span>
+                    <span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs">{{ category.name }}</span>
                     {% endfor %}
                 </div>
                 {% endif %}
             </div>
             {% empty %}
-            <div class="col-span-full flex items-center justify-center min-h-[300px] bg-purple-50/50 rounded-xl border border-purple-100">
+            <div class="col-span-full flex items-center justify-center min-h-[300px] bg-emerald-50/50 rounded-xl border border-emerald-100">
                 <p class="text-xl text-gray-600">Aucun outil disponible pour le moment.</p>
             </div>
             {% endfor %}
@@ -1256,13 +1429,13 @@ FILE: cabinet_digital\templates\ai\tool_list.html
         <div class="mt-8 flex justify-center">
             <div class="flex space-x-2">
                 {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-white text-purple-600 rounded-lg border border-purple-200 hover:bg-purple-50">Précédent</a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-white text-emerald-600 rounded-lg border border-emerald-200 hover:bg-emerald-50">Précédent</a>
                 {% endif %}
                 
-                <span class="px-4 py-2 bg-purple-600 text-white rounded-lg">{{ page_obj.number }}</span>
+                <span class="px-4 py-2 bg-emerald-600 text-white rounded-lg">{{ page_obj.number }}</span>
                 
                 {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-white text-purple-600 rounded-lg border border-purple-200 hover:bg-purple-50">Suivant</a>
+                <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-white text-emerald-600 rounded-lg border border-emerald-200 hover:bg-emerald-50">Suivant</a>
                 {% endif %}
             </div>
         </div>
@@ -1278,8 +1451,9 @@ FILE: cabinet_digital\templates\alternative_detail.html
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Alternatives à {{ software.name }} | Cabinet Digital{% endblock %}
+
 {% block meta_description %}
-<title>Alternatives à {{ software.name }} - Cabinet Digital</title>
 <meta name="description" content="Découvrez les meilleures alternatives à {{ software.name }}. Comparez les fonctionnalités et trouvez la solution idéale pour votre entreprise.">
 <meta property="og:title" content="Alternatives à {{ software.name }} - Cabinet Digital">
 <meta property="og:description" content="Découvrez les meilleures alternatives à {{ software.name }}. Comparez les fonctionnalités et trouvez la solution idéale pour votre entreprise.">
@@ -1343,10 +1517,14 @@ FILE: cabinet_digital\templates\base.html
 {% load compress %}
 
 <!DOCTYPE html>
-<html lang="fr" class="bg-sky-50">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    {% if canonical_url %}
+    <link rel="canonical" href="{{ canonical_url }}" />
+    {% endif %}
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}" sizes="any">
     <link rel="robots" href="/robots.txt">
     
@@ -1382,7 +1560,7 @@ FILE: cabinet_digital\templates\base.html
     {% block extra_head %}{% endblock %}
 </head>
 
-<body class="flex flex-col min-h-screen text-black">
+<body class="flex flex-col min-h-screen text-black bg-gray-100">
     <header x-data="{ 
         scrolled: false,
         currentPath: window.location.pathname,
@@ -1420,8 +1598,8 @@ FILE: cabinet_digital\templates\base.html
                             @click.away="close()"
                             type="button"
                             class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2"
-                            :class="{ 'bg-sky-50 text-sky-600': currentPath.startsWith('/experts-comptables/') }">
-                        <span>Experts Comptables</span>
+                            :class="{ 'bg-sky-50 text-sky-600': currentPath.startsWith('/metiers/') || currentPath.startsWith('/logiciels/') || currentPath.startsWith('/categories/') || currentPath.startsWith('/actualites/') || currentPath === '/logiciels' || currentPath === '/categories' || currentPath === '/actualites' }">
+                        <span>Logiciels experts comptables et PME</span>
                         <svg class="w-4 h-4" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
@@ -1439,21 +1617,34 @@ FILE: cabinet_digital\templates\base.html
                         <div class="p-2 space-y-1">
                             <a href="{% url 'software_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                 </svg>
                                 <span>Tous les logiciels</span>
                             </a>
+                            <a href="{% url 'metier_detail' slug='experts_comptables' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10H9m3-7v4m3-4v4m3-4v4M9 3h6m0 0h2a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h2" />
+                                </svg>
+                                <span>Logiciels experts comptables</span>
+                            </a>
+                            <a href="{% url 'metier_detail' slug='pme' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                <span>Logiciels PME</span>
+                            </a>
+                            <div class="border-t border-gray-100 my-2"></div>
                             <a href="{% url 'category_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                                 </svg>
-                                <span>Catégories de logiciels</span>
+                                <span>Catégories logiciels</span>
                             </a>
                             <a href="{% url 'actualites' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                                 </svg>
-                                <span>Actualités du marché</span>
+                                <span>Actualités logiciels</span>
                             </a>
                         </div>
                     </div>
@@ -1468,10 +1659,12 @@ FILE: cabinet_digital\templates\base.html
                     <button @click="toggle()" 
                             @click.away="close()"
                             type="button"
-                            class="text-lg font-semibold text-gray-900 hover:bg-purple-50 hover:text-purple-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2"
-                            :class="{ 'bg-purple-50 text-purple-600': currentPath.startsWith('/ia/') }">
-                        <span>Intelligence Artificielle</span>
-                        <span class="bg-purple-100 text-purple-600 px-2 py-0.5 rounded text-xs font-medium">New</span>
+                            class="text-lg font-semibold text-gray-900 hover:bg-emerald-50 hover:text-emerald-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2"
+                            :class="{ 'bg-emerald-50 text-emerald-600': currentPath.startsWith('/ia/') }">
+                        <span>Meilleures outils d'IA</span>
+                        <span class="bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded text-xs font-medium">Nouveau</span>
+
+
                         <svg class="w-4 h-4" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
@@ -1481,87 +1674,29 @@ FILE: cabinet_digital\templates\base.html
                          @keydown.escape.window="close()"
                          class="absolute left-0 mt-2 w-80 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 divide-y divide-gray-100">
                         <div class="p-2 space-y-1">
-                  
-                            <a href="{% url 'ai_model_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-md group">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                                </svg>
-                                <span>Modèles LLMs</span>
-                            </a>
-                            <a href="{% url 'ai_tool_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-md group">
+                            <a href="{% url 'ai_tool_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 rounded-md group">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                 </svg>
                                 <span>Outils d'automatisation</span>
                             </a>
-                            <a href="{% url 'ai_article_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-md group">
+                            <a href="{% url 'ai_model_list' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 rounded-md group">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
                                 </svg>
-                                <span>Guides pratiques</span>
+                                <span>Modèles de langage</span>
                             </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Menu Outils -->
-                <div class="relative" x-data="{ 
-                    open: false,
-                    toggle() { this.open = !this.open },
-                    close() { this.open = false }
-                }">
-                    <button @click="toggle()" 
-                            @click.away="close()"
-                            type="button"
-                            class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2">
-                        <span>Outils</span>
-                        <span class="bg-sky-100 text-sky-600 px-2 py-0.5 rounded text-xs font-medium">New</span>
-                        <svg class="w-4 h-4" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                    <div x-show="open" 
-                         x-cloak 
-                         @keydown.escape.window="close()"
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 transform scale-95"
-                         x-transition:enter-end="opacity-100 transform scale-100"
-                         x-transition:leave="transition ease-in duration-150"
-                         x-transition:leave-start="opacity-100 transform scale-100"
-                         x-transition:leave-end="opacity-0 transform scale-95"
-                         class="absolute left-0 mt-2 w-80 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 divide-y divide-gray-100">
-                        <div class="p-2 space-y-1">
-                            <a href="{% url 'roi_calculateur' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                                </svg>
-                                <span>Calculer le ROI d'un logiciel</span>
-                            </a>
-                            <a href="{% url 'amortissement_calculateur' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                </svg>
-                                <span>Amortissement d'un emprunt</span>
-                            </a>
-                            <a href="{% url 'sftp_generator' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                <span>Générer script SFTP</span>
-                            </a>
-                            <a href="{% url 'immobilier_calculateur' %}" class="flex items-center gap-3 px-4 py-2.5 text-md font-semibold text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-md group">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                                </svg>
-                                <span>Immobilier : achat vs location</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                <a href="{% url 'contact' %}" class="text-black border border-gray-200 px-6 py-2.5 text-lg font-medium hover:bg-sky-50 transition-all duration-300 rounded-lg shadow-sm flex items-center gap-3">
+                <a href="{% url 'contact' %}" class="text-black border border-gray-200 px-6 py-2.5 text-lg font-medium hover:bg-black hover:text-white transition-all duration-300 rounded-lg shadow-sm flex items-center gap-3">
                     Contact
+
+
+
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                     </svg>
@@ -1581,30 +1716,55 @@ FILE: cabinet_digital\templates\base.html
              class="lg:hidden" 
              id="mobile-menu">
             <div class="space-y-1 px-4 pb-3 pt-2">
-                <a href="{% url 'software_list' %}" 
-                   :class="{ 'bg-sky-50 text-sky-600': currentPath === '{% url 'software_list' %}' }"
-                   class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600">
-                    Logiciels
-                </a>
-                <a href="{% url 'category_list' %}" 
-                   :class="{ 'bg-sky-50 text-sky-600': currentPath === '{% url 'category_list' %}' }"
-                   class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600">
-                    Catégories
-                </a>
-                <a href="{% url 'actualites' %}" 
-                   :class="{ 'bg-sky-50 text-sky-600': currentPath === '{% url 'actualites' %}' }"
-                   class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600">
-                    Actualités
-                </a>
+                <!-- Section Experts Comptables Mobile -->
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open"
+                            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600"
+                            :class="{ 'bg-sky-50 text-sky-600': currentPath.startsWith('/metiers/') || currentPath.startsWith('/logiciels/') || currentPath.startsWith('/categories/') || currentPath.startsWith('/actualites/') || currentPath === '/logiciels' || currentPath === '/categories' || currentPath === '/actualites' }">
+                        <span>Logiciels experts comptables et PME</span>
+                        <svg class="w-5 h-5 transition-transform duration-200" 
+                             :class="{'rotate-180': open}"
+                             fill="none" 
+                             stroke="currentColor" 
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="open"
+                         x-cloak
+                         class="mt-2 space-y-1">
+                        <a href="{% url 'software_list' %}" 
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 pl-6">
+                            Tous les logiciels
+                        </a>
+                        <a href="{% url 'metier_detail' slug='experts_comptables' %}" 
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 pl-6">
+                            Logiciels experts comptables
+                        </a>
+                        <a href="{% url 'metier_detail' slug='pme' %}" 
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 pl-6">
+                            Logiciels PME
+                        </a>
+                        <div class="border-t border-gray-100 my-2 mx-6"></div>
+                        <a href="{% url 'category_list' %}" 
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 pl-6">
+                            Catégories logiciels
+                        </a>
+                        <a href="{% url 'actualites' %}" 
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 pl-6">
+                            Actualités logiciels
+                        </a>
+                    </div>
+                </div>
 
                 <!-- Section IA Mobile -->
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open"
-                            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-purple-50 hover:text-purple-600"
-                            :class="{ 'bg-purple-50 text-purple-600': currentPath.startsWith('/ia/') }">
+                            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-emerald-50 hover:text-emerald-600"
+                            :class="{ 'bg-emerald-50 text-emerald-600': currentPath.startsWith('/ia/') }">
                         <div class="flex items-center">
-                            <span>Intelligence Artificielle</span>
-                            <span class="ml-2 bg-purple-100 text-purple-600 px-2 py-0.5 rounded text-xs font-medium">New</span>
+                            <span>Meilleures outils d'IA</span>
+                            <span class="ml-2 bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded text-xs font-medium">Nouveau</span>
                         </div>
                         <svg class="w-5 h-5 transition-transform duration-200" 
                              :class="{'rotate-180': open}"
@@ -1617,83 +1777,88 @@ FILE: cabinet_digital\templates\base.html
                     <div x-show="open"
                          x-cloak
                          class="mt-2 space-y-1">
-                 
-                        <a href="{% url 'ai_model_list' %}" 
-                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-purple-50 hover:text-purple-600 pl-6">
-                            Modèles IA
-                        </a>
                         <a href="{% url 'ai_tool_list' %}" 
-                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-purple-50 hover:text-purple-600 pl-6">
-                            Outils IA
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-emerald-50 hover:text-emerald-600 pl-6">
+                            Outils de productivité
                         </a>
-                        <a href="{% url 'ai_article_list' %}" 
-                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-purple-50 hover:text-purple-600 pl-6">
-                            Guides IA
+                        <a href="{% url 'ai_model_list' %}" 
+                           class="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-emerald-50 hover:text-emerald-600 pl-6">
+                            Modèles de langage
                         </a>
                     </div>
                 </div>
 
-                <!-- Section Outils Mobile -->
-                <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open"
-                            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600">
-                        <div class="flex items-center">
-                            <span>Outils</span>
-                            <span class="ml-2 bg-sky-100 text-sky-600 px-2 py-0.5 rounded text-xs font-medium">New</span>
-                        </div>
-                        <svg class="w-5 h-5 transition-transform duration-200" 
-                             :class="{'rotate-180': open}"
-                             fill="none" 
-                             stroke="currentColor" 
-                             viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div x-show="open"
-                         x-cloak
-                         class="mt-2 space-y-1">
-                        <a href="{% url 'roi_calculateur' %}" class="flex items-center gap-3 rounded-md px-3 py-2 text-base hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 pl-6">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                            </svg>
-                            <span>Calculer le ROI d'un logiciel</span>
-                        </a>
-                        <a href="{% url 'amortissement_calculateur' %}" class="flex items-center gap-3 rounded-md px-3 py-2 text-base hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 pl-6">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                            </svg>
-                            <span>Amortissement d'un emprunt</span>
-                        </a>
-                        <a href="{% url 'sftp_generator' %}" class="flex items-center gap-3 rounded-md px-3 py-2 text-base hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 pl-6">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                            <span>Générer script SFTP</span>
-                        </a>
-                        <a href="{% url 'immobilier_calculateur' %}" class="flex items-center gap-3 rounded-md px-3 py-2 text-base hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 pl-6">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                            </svg>
-                            <span>Immobilier : achat vs location</span>
-                        </a>
-                    </div>
-                </div>
-                
-                <a href="{% url 'contact' %}" class="block w-full text-center bg-sky-100 text-black px-4 py-2 text-base font-medium hover:bg-sky-200 transition-colors duration-300 rounded-md mt-2">Contact</a>
+                <a href="{% url 'contact' %}" class="block w-full text-center text-gray-900 border border-gray-200 px-6 py-2.5 text-lg font-medium hover:bg-sky-50 transition-all duration-300 rounded-lg shadow-sm mt-4">
+                    Contact
+                </a>
             </div>
         </div>
     </header>
-    <main class="flex-grow container mx-auto px-2 sm:px-4 py-4 sm:py-8 bg-sky-50">
+    <main class="flex-grow container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         {% block content %}{% endblock %}
     </main>
-    <footer class="bg-sky-50 border-t border-gray-200 shadow-sm w-full">
-        <div class="container mx-auto px-4 py-6">
-            <nav>
-                <ul class="flex flex-wrap justify-center space-x-4 sm:space-x-8 text-sm text-gray-600">
-                    <li class="font-medium">Cabinet Digital</li>
-                    <li><a href="{% url 'contact' %}" class="hover:text-sky-500 transition-colors duration-300">Contacter</a></li>
-                </ul>
-            </nav>
+    <footer class="bg-white border-t border-gray-200">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Logiciels</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="{% url 'software_list' %}" class="text-gray-600 hover:text-sky-600 transition-colors">Tous les logiciels</a></li>
+                        <li><a href="{% url 'category_list' %}" class="text-gray-600 hover:text-sky-600 transition-colors">Catégories</a></li>
+                        <li><a href="{% url 'actualites' %}" class="text-gray-600 hover:text-sky-600 transition-colors">Actualités</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Intelligence Artificielle</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="{% url 'ai_model_list' %}" class="text-gray-600 hover:text-emerald-600 transition-colors">Modèles IA</a></li>
+                        <li><a href="{% url 'ai_tool_list' %}" class="text-gray-600 hover:text-emerald-600 transition-colors">Outils IA</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Outils Financiers</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="{% url 'roi_calculateur' %}" class="text-gray-600 hover:text-amber-600 transition-colors">ROI Logiciel</a></li>
+                        <li><a href="{% url 'amortissement_calculateur' %}" class="text-gray-600 hover:text-amber-600 transition-colors">Amortissement</a></li>
+                        <li><a href="{% url 'immobilier_calculateur' %}" class="text-gray-600 hover:text-amber-600 transition-colors">Simulateur Immobilier</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Outils Techniques</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="{% url 'sftp_generator' %}" class="text-gray-600 hover:text-amber-600 transition-colors">Script SFTP</a></li>
+                        <li><a href="{% url 'outils' %}" class="text-gray-600 hover:text-amber-600 transition-colors">Tous les outils</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">À propos</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="{% url 'contact' %}" class="text-gray-600 hover:text-sky-600 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-12 pt-8 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <img src="{% static 'cabinet_logos/logo_cabinetdigital.png' %}" alt="Cabinet Digital logo" class="h-8 w-auto">
+                        <p class="text-gray-500 text-sm">&copy; {% now "Y" %} Cabinet Digital. Tous droits réservés.</p>
+                    </div>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-gray-500">
+                            <span class="sr-only">LinkedIn</span>
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-gray-500">
+                            <span class="sr-only">Twitter</span>
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </footer>
 </body>
@@ -1707,8 +1872,11 @@ FILE: cabinet_digital\templates\category_detail.html
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}
+Les {{ softwares|length }} meilleures {{ category.excerpt }}
+{% endblock %}
+
 {% block meta_description %}
-<title>Les {{ softwares|length }} meilleures {{ category.excerpt }}</title>
 <meta name="description" content="Découvrez les {{ softwares|length }} meilleures {{ category.excerpt }}. Découvrir et trouver la solution qui répond à vos besoins parmis la liste.">
 <meta property="og:title" content="Les {{ softwares|length }} meilleures {{ category.excerpt }}">
 <meta property="og:description" content="Nous avons répertorié les meilleures {{ category.excerpt }}. Trouver la solution qui répond à vos besoins parmis la liste.">
@@ -1721,9 +1889,20 @@ FILE: cabinet_digital\templates\category_detail.html
 <div class="max-w-5xl mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-sm border-2 border-gray-200">
     <div class="relative mb-8 bg-sky-50 p-6 rounded-lg shadow-sm border border-gray-200">
         <div class="relative flex flex-col items-center">
-            <span class="bg-black text-white px-2 py-1 rounded-lg mb-4">
-                {{ category.name }}
-            </span>
+            <div class="flex items-center gap-4 mb-4">
+                <span class="bg-black text-white px-2 py-1 rounded-lg">
+                    {{ category.name }}
+                </span>
+                {% if metier %}
+                <a href="{% url 'metier_detail' metier.slug %}" 
+                   class="inline-flex items-center px-3 py-1 bg-sky-100 text-sky-700 rounded-lg hover:bg-sky-200 transition-colors duration-300">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    {{ metier.name }}
+                </a>
+                {% endif %}
+            </div>
             <h1 class="text-2xl sm:text-3xl font-bold text-black text-center">
                 Les <span class="underline">{{ count }}</span> meilleures {{ category.excerpt }}
             </h1>
@@ -1760,11 +1939,14 @@ FILE: cabinet_digital\templates\category_list.html
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}
+Cabinet Digital - Les catégories de logiciels pour experts-comptables et PME
+{% endblock %}
+
 {% block meta_description %}
-<title>Cabinet Digital - Les catégories de logiciels pour experts-comptables et financiers</title>
-<meta name="description" content="Découvrez les catégories de logiciels pour experts comptables et financiers. Trouvez les meilleurs outils pour vos besoins professionnels, filtrés par catégorie et facilement recherchables.">
-<meta property="og:title" content="Cabinet Digital - Les catégories de logiciels pour experts-comptables et financiers">
-<meta property="og:description" content="Découvrez les catégories de logiciels pour experts comptables et financiers. Trouvez les meilleurs outils pour vos besoins professionnels, filtrés par catégorie et facilement recherchables.">
+<meta name="description" content="Découvrez toutes les catégories de logiciels pour experts comptables et PME. Trouvez les meilleurs outils pour vos besoins professionnels, filtrés par catégorie et facilement recherchables.">
+<meta property="og:title" content="Cabinet Digital - Les catégories de logiciels pour experts-comptables et PME">
+<meta property="og:description" content="Découvrez toutes les catégories de logiciels pour experts comptables et PME. Trouvez les meilleurs outils pour vos besoins professionnels, filtrés par catégorie et facilement recherchables.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
 <meta property="og:site_name" content="Cabinet Digital">
@@ -1773,11 +1955,34 @@ FILE: cabinet_digital\templates\category_list.html
 {% block content %}
 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
     <h1 class="custom-header">Catégories de logiciels</h1>
+
+    <!-- Filtres par métier -->
+    <div class="mb-8">
+        <div class="flex flex-wrap gap-2">
+            <a href="{% url 'category_list' %}" 
+               class="inline-flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 {% if not selected_metier %}bg-sky-100 text-sky-700 border-2 border-sky-200{% else %}bg-gray-100 text-gray-700 hover:bg-sky-50 border border-gray-200{% endif %}">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+                Tous les métiers
+            </a>
+            {% for metier in metiers %}
+                <a href="{% url 'category_list' %}?metier={{ metier.slug }}" 
+                   class="inline-flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-300 {% if selected_metier == metier.slug %}bg-sky-100 text-sky-700 border-2 border-sky-200{% else %}bg-gray-100 text-gray-700 hover:bg-sky-50 border border-gray-200{% endif %}">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    {{ metier.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {% for category in categories %}
             <div class="group [&:hover_#numlogiciel]:bg-white">
                 <a href="{% url 'category_detail' category.slug %}" class="block h-full">
-                    <div class="bg-white border border-gray-200 rounded-lg  hover:bg-sky-50 p-4 transition-all duration-300 group-hover:border-sky-200 h-full flex flex-col justify-between relative">
+                    <div class="bg-white border border-gray-200 rounded-lg hover:bg-sky-50 p-4 transition-all duration-300 group-hover:border-sky-200 h-full flex flex-col justify-between relative">
                         <h2 class="text-lg font-medium text-gray-800 group-hover:text-sky-600 mt-4">
                             {% if category.icon %}
                                 <img src="{{ category.icon.url }}" alt="{{ category.name }}" class="w-6 h-6 mr-2 inline-block">
@@ -1787,6 +1992,11 @@ FILE: cabinet_digital\templates\category_list.html
                         <span id="numlogiciel" class="absolute top-2 right-2 inline-block px-2 py-1 text-xs font-medium bg-sky-50 text-sky-700 rounded-full hover:bg-sky-100 hover:text-sky-800 transition-colors duration-300 shadow-sm hover:shadow-md">
                             {{ category.software_count }} logiciel{% if category.software_count > 1 %}s{% endif %}
                         </span>
+                        {% if category.metier %}
+                        <div class="mt-2">
+                            <span class="text-xs text-gray-500">{{ category.metier.name }}</span>
+                        </div>
+                        {% endif %}
                     </div>
                 </a>
             </div>
@@ -1802,8 +2012,11 @@ FILE: cabinet_digital\templates\contact.html
 {% extends 'base.html' %}
 
 {% load static %}
+{% block title %}
+Formulaire de contact - Cabinet Digital
+{% endblock %}
+
 {% block meta_description %}
-<title>Formulaire de contact - Cabinet Digital</title>
 <meta name="description" content="Contactez-nous pour toute question ou suggestion concernant Cabinet Digital. Nous sommes là pour vous aider.">
 <meta property="og:title" content="Formulaire de contact - Cabinet Digital">
 <meta property="og:description" content="Contactez-nous pour toute question ou suggestion concernant Cabinet Digital. Nous sommes là pour vous aider.">
@@ -1837,8 +2050,12 @@ FILE: cabinet_digital\templates\home.html
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}
+Cabinet Digital - Les meilleurs logiciels pour PME et experts-comptables
+{% endblock %}
+
+
 {% block meta_description %}
-<title>Cabinet Digital - Les meilleurs logiciels pour PME et experts-comptables</title>
 <meta name="description" content="Découvrez plus de 200 logiciels pour experts-comptables et entreprises. Solutions classées par catégorie avec fiches détaillées.">
 <meta property="og:title" content="Cabinet Digital - Les meilleurs logiciels pour PME et experts-comptables">
 <meta property="og:description" content="Découvrez plus de 200 logiciels pour experts-comptables et entreprises. Solutions classées par catégorie avec fiches détaillées.">
@@ -1909,41 +2126,86 @@ FILE: cabinet_digital\templates\home.html
     </div>
   </header>
 
-  <section class="my-10 sm:my-12">
-    <div class="bg-white border-2 border-gray-200 rounded-3xl p-6 sm:p-8 shadow-sm max-w-full sm:max-w-4xl mx-auto">
-      <h2 class="text-xl sm:text-2xl font-bold text-black text-center mb-4">Les nouveaux acteurs du marché</h2>
-      <div class="grid grid-cols-3 md:grid-cols-6 gap-6 items-center justify-items-center">
-        <img src="{% static 'featured_logos/pennylane.webp' %}" alt="Pennylane" class="h-8 sm:h-10 object-contain">
-        <img src="{% static 'featured_logos/qonto.webp' %}" alt="Qonto" class="h-8 sm:h-10 object-contain">
-        <img src="{% static 'featured_logos/odoo.webp' %}" alt="Odoo" class="h-8 sm:h-10 object-contain">
-        <img src="{% static 'featured_logos/agicap.webp' %}" alt="Agicap" class="h-8 sm:h-10 object-contain">
-        <img src="{% static 'featured_logos/sellsy.png' %}" alt="Sellsy" class="h-8 sm:h-10 object-contain">
-        <img src="{% static 'featured_logos/fulll.webp' %}" alt="Fulll" class="h-8 sm:h-10 object-contain">
+  <section class="my-12">
+    <div class="bg-white border-2 border-gray-800/10 rounded-3xl p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] max-w-5xl mx-auto">
+      <div class="flex flex-col md:flex-row items-center gap-8">
+        <div class="flex-1">
+          <span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full mb-4">Nouveau</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Intelligence Artificielle pour votre entreprise</h2>
+          <p class="text-gray-600 mb-6">Découvrez notre sélection d'outils d'IA pour automatiser vos tâches et augmenter votre productivité.</p>
+          <div class="flex flex-wrap gap-3">
+            <a href="{% url 'ai_tool_list' %}" class="inline-flex items-center bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors">
+              Outils d'automatisation
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              </svg>
+            </a>
+            <a href="{% url 'ai_model_list' %}" class="inline-flex items-center bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+              Modèles de langage
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="w-full md:w-1/3">
+          <img src="{% static 'marketing/ia_side_image.webp' %}" alt="Intelligence Artificielle" class="w-full h-auto rounded-xl shadow-lg">
+        </div>
       </div>
-      <div class="mt-12">
-        <img src="{% static 'marketing/agicap_marketing.webp' %}" alt="Fiche Agicap" class="w-3/4 mx-auto rounded-xl shadow-md border-2 border-gray-200 hover:shadow-lg transition-all duration-300">
-      </div>
-
     </div>
   </section>
 
-  <section class="text-center my-10 sm:my-12">
-    <div class="inline-block bg-white border-2 border-gray-200 rounded-3xl max-w-full sm:max-w-4xl p-8 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-      <div class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 mb-6">
-        <img src="{% static 'icons/users-group.svg' %}" alt="Users" class="w-12 h-12 sm:w-14 sm:h-14  animate-pulse">
-        <div>
-          <p class="text-2xl sm:text-3xl font-extrabold text-black mb-2">+10 000 visiteurs</p>
-          <p class="text-md sm:text-xl text-gray-700">ont consulté nos fiches cette année</p>
-        </div>
-
+  <section class="my-12">
+    <div class="bg-white border-2 border-gray-800/10 rounded-3xl p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] max-w-5xl mx-auto">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Outils gratuits</h2>
+        <p class="text-gray-600 mt-2">Des outils pratiques pour vos prises de décision</p>
       </div>
-      <div class="relative">
-        <div class="relative w-3/4 mx-auto">
-            <img src="{% static 'marketing/proof_traffic.webp' %}" alt="Preuve de trafic" class="w-full rounded-xl border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300">
-            <div class="absolute -bottom-4 -right-4 bg-black text-white text-sm  font-bold py-2 px-4 rounded-full transform rotate-3">
-                Trafic vérifié
-            </div>
-        </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <a href="{% url 'roi_calculateur' %}" class="group p-4 bg-amber-50 rounded-xl border border-amber-200 hover:border-amber-300 transition-all">
+          <div class="text-amber-600 mb-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10H9m3-7v4m3-4v4m3-4v4M9 3h6m0 0h2a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h2"></path>
+            </svg>
+          </div>
+          <h3 class="font-semibold text-gray-900">ROI Logiciel</h3>
+          <p class="text-sm text-gray-600 mt-1">Calculez la rentabilité</p>
+        </a>
+        <a href="{% url 'immobilier_calculateur' %}" class="group p-4 bg-amber-50 rounded-xl border border-amber-200 hover:border-amber-300 transition-all">
+          <div class="text-amber-600 mb-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+            </svg>
+          </div>
+          <h3 class="font-semibold text-gray-900">Achat vs Location</h3>
+          <p class="text-sm text-gray-600 mt-1">Simulateur immobilier</p>
+        </a>
+        <a href="{% url 'sftp_generator' %}" class="group p-4 bg-amber-50 rounded-xl border border-amber-200 hover:border-amber-300 transition-all">
+          <div class="text-amber-600 mb-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <h3 class="font-semibold text-gray-900">Scripts SFTP</h3>
+          <p class="text-sm text-gray-600 mt-1">Automatisez vos transferts</p>
+        </a>
+        <a href="{% url 'amortissement_calculateur' %}" class="group p-4 bg-amber-50 rounded-xl border border-amber-200 hover:border-amber-300 transition-all">
+          <div class="text-amber-600 mb-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+          <h3 class="font-semibold text-gray-900">Amortissement</h3>
+          <p class="text-sm text-gray-600 mt-1">Calculez vos actifs</p>
+        </a>
+      </div>
+      <div class="text-center mt-8">
+        <a href="{% url 'outils' %}" class="inline-flex items-center bg-black text-white px-6 py-3 rounded-lg hover:bg-amber-600 transition-colors">
+          Voir tous les outils
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+          </svg>
+        </a>
       </div>
     </div>
   </section>
@@ -1951,19 +2213,152 @@ FILE: cabinet_digital\templates\home.html
 {% endblock %}
 
 ================================================================================
+FILE: cabinet_digital\templates\metier_detail.html
+================================================================================
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{% if metier.seo_title %}{{ metier.seo_title }}{% else %}{{ metier.name }} - Logiciels et outils pour {{ metier.name }} | Cabinet Digital{% endif %}
+{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="{% if metier.seo_description %}{{ metier.seo_description }}{% else %}Découvrez tous les logiciels et outils pour {{ metier.name }}. Une sélection des meilleures solutions adaptées aux besoins des {{ metier.name }}.{% endif %}">
+<meta property="og:title" content="{% if metier.seo_title %}{{ metier.seo_title }}{% else %}{{ metier.name }} - Logiciels et outils | Cabinet Digital{% endif %}">
+<meta property="og:description" content="{% if metier.seo_description %}{{ metier.seo_description }}{% else %}Découvrez tous les logiciels et outils pour {{ metier.name }}. Une sélection des meilleures solutions adaptées aux besoins des {{ metier.name }}.{% endif %}">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
+{% endblock %}
+
+{% block content %}
+<div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+    <div class="text-center mb-12">
+        <h1 class="text-3xl font-bold mb-4">
+            Logiciels pour
+            <span class="bg-black text-white px-3 py-1 rounded-lg inline-block">
+                {{ metier.name }}
+            </span>
+        </h1>
+    </div>
+
+    {% if categories %}
+    <div class="space-y-8 mb-16">
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center">
+                <h2 class="px-4 text-2xl font-semibold bg-white">Catégories de logiciels</h2>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for category in categories %}
+                <div class="group [&:hover_#numlogiciel]:bg-white">
+                    <a href="{% url 'category_detail' category.slug %}" class="block h-full">
+                        <div class="bg-white border border-gray-200 rounded-lg hover:bg-sky-50 p-4 transition-all duration-300 group-hover:border-sky-200 h-full flex flex-col justify-between relative">
+                            <h3 class="text-lg font-medium text-gray-800 group-hover:text-sky-600 mt-4">
+                                {% if category.icon %}
+                                    <img src="{{ category.icon.url }}" alt="{{ category.name }}" class="w-6 h-6 mr-2 inline-block">
+                                {% endif %}
+                                {{ category.name }}
+                            </h3>
+                            <span id="numlogiciel" class="absolute top-2 right-2 inline-block px-2 py-1 text-xs font-medium bg-sky-50 text-sky-700 rounded-full hover:bg-sky-100 hover:text-sky-800 transition-colors duration-300 shadow-sm hover:shadow-md">
+                                {{ category.software_count }} logiciel{% if category.software_count > 1 %}s{% endif %}
+                            </span>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if softwares %}
+    <div class="space-y-8">
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center">
+                <h2 class="px-4 text-2xl font-semibold bg-white">Tous les logiciels</h2>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for software in softwares %}
+                {% include 'template_card_software.html' with software=software %}
+            {% endfor %}
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+        <div class="mt-8 flex justify-center">
+            <nav class="flex items-center space-x-2" aria-label="Pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" 
+                       class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        Précédent
+                    </a>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if num == page_obj.number %}
+                        <span class="px-3 py-2 text-sm font-medium text-white bg-sky-600 border border-sky-600 rounded-md">
+                            {{ num }}
+                        </span>
+                    {% elif num == 1 or num == page_obj.paginator.num_pages or num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a href="?page={{ num }}" 
+                           class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            {{ num }}
+                        </a>
+                    {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
+                        <span class="px-2 text-gray-500">...</span>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" 
+                       class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        Suivant
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if not categories and not softwares %}
+    <div class="text-center py-12">
+        <p class="text-gray-500 text-lg">
+            Aucun logiciel ou catégorie n'est disponible pour ce métier pour le moment.
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 
+
+================================================================================
 FILE: cabinet_digital\templates\software_detail.html
 ================================================================================
 
 {% extends 'base.html' %}
 {% load static %}
+
+{% block title %}
+{{ software.name }} | Découvrir la fiche de la solution
+{% endblock %}
+
 {% block meta_description %}
-<title>{{ software.name }} | Découvrir la fiche de la solution</title>
 <meta name="description" content="Découvrez notre fiche sur {{ software.name }}. {{ software.excerpt }}">
 <meta property="og:title" content="{{ software.name }} - Découvrir la fiche de la solution">
 <meta property="og:description" content="Découvrez notre fiche sur {{ software.name }}. {{ software.excerpt }} | Catégories : {% for category in software.category.all %}{{ category.name }}{% if not forloop.last %}, {% endif %}{% endfor %}">
 <meta property="og:type" content="website">
 <meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
 <meta property="og:site_name" content="Cabinet Digital">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
 {% endblock %}
 
 {% block content %}
@@ -1995,25 +2390,62 @@ FILE: cabinet_digital\templates\software_detail.html
   </div>
 
   <div class="p-4 sm:p-8 max-w-4xl mx-auto">
-    <div class="flex flex-col md:flex-row items-center md:items-start mb-8">
-      {% if software.logo %}
-      <div class="w-24 h-24 mb-4 md:mb-0 md:mr-6 flex-shrink-0">
-        <img src="{{ MEDIA_URL }}{{ software.logo.url }}" alt="{{ software.name }}" class="w-full h-full object-contain">
-      </div>
-      {% endif %}
-      <div class="flex-grow text-center md:text-left">
-        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">{{ software.name }}</h1>
-
-        <p class="text-gray-700 text-base leading-relaxed">{{ software.excerpt|safe }}</p>
-        {% if software.category.all %}
-        <div class="flex flex-wrap justify-center md:justify-start mt-2">
-          {% for category in software.category.all|dictsort:"name" %}
-          <a href="{% url 'category_detail' category.slug %}" class="inline-block px-2 py-1 text-xs font-medium bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors duration-300 mr-1 mb-2">
-            {{ category.name }}
-          </a>
-          {% endfor %}
+    <div class="flex flex-col md:flex-row items-start justify-between gap-6 mb-8">
+      <div class="flex flex-col md:flex-row items-center md:items-start flex-grow">
+        {% if software.logo %}
+        <div class="w-24 h-24 mb-4 md:mb-0 md:mr-6 flex-shrink-0">
+          <img src="{{ MEDIA_URL }}{{ software.logo.url }}" alt="{{ software.name }}" class="w-full h-full object-contain">
         </div>
         {% endif %}
+        <div class="flex-grow text-center md:text-left">
+          <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">{{ software.name }}</h1>
+          <p class="text-gray-700 text-base leading-relaxed">{{ software.excerpt|safe }}</p>
+          {% if software.category.all %}
+          <div class="flex flex-wrap justify-center md:justify-start mt-2">
+            {% for category in software.category.all|dictsort:"name" %}
+            <a href="{% url 'category_detail' category.slug %}" class="inline-block px-2 py-1 text-xs font-medium bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors duration-300 mr-1 mb-2">
+              {{ category.name }}
+            </a>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- ROI Calculator Card -->
+      <div class="w-full md:w-64 flex-shrink-0 bg-white border-2 border-black transform transition-transform hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative mx-auto md:mx-0 mt-4 md:mt-0">
+        <div class="absolute -top-2 -right-2 bg-black text-white text-xs md:text-[10px] font-bold px-2 py-0.5 rounded-full shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]">
+          NOUVEAU
+        </div>
+        <div class="p-3 md:p-2">
+          <div class="flex items-center gap-2 mb-3 md:mb-2 justify-center md:justify-start">
+            <svg class="w-5 h-5 md:w-4 md:h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            <h2 class="text-base md:text-sm font-bold text-black">Notre simulateur ROI</h2>
+          </div>
+          <p class="text-gray-600 text-sm md:text-[11px] mb-4 md:mb-3 text-center md:text-left">Calculez le retour sur investissement de {{ software.name }}</p>
+          <div class="flex items-center gap-2 mb-4 md:mb-3 justify-center md:justify-start flex-wrap">
+            <span class="inline-flex items-center text-xs md:text-[10px] bg-gray-100 px-2 md:px-1.5 py-1 md:py-0.5 rounded-full">
+              <svg class="w-3 md:w-2.5 h-3 md:h-2.5 mr-1 md:mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              Graphiques
+            </span>
+            <span class="inline-flex items-center text-xs md:text-[10px] bg-gray-100 px-2 md:px-1.5 py-1 md:py-0.5 rounded-full">
+              <svg class="w-3 md:w-2.5 h-3 md:h-2.5 mr-1 md:mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              ROI 36 mois
+            </span>
+          </div>
+          <a href="{% url 'roi_calculateur' %}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center px-3 md:px-2 py-2 md:py-1.5 bg-black text-white text-sm md:text-[11px] font-medium rounded hover:bg-gray-800 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]">
+            Calculer mon ROI
+            <svg class="w-3 md:w-2.5 h-3 md:h-2.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+            </svg>
+          </a>
+        </div>
       </div>
     </div>
 
@@ -2024,14 +2456,7 @@ FILE: cabinet_digital\templates\software_detail.html
       <div class="text-left relative">
         {{ software.description|safe }}
       </div>
-    
     </div>
-
-    {% if software.preview_gif %}
-    <div class="mt-8 flex justify-center">
-      <img src="{{ MEDIA_URL }}{{ software.preview_gif.url }}" alt="Démonstration {{ software.name }}" class="max-w-full h-auto rounded-lg shadow-lg">
-    </div>
-    {% endif %}
   </div>
 
   <div class="border-t border-gray-200 p-4 sm:p-6 text-center">
@@ -2069,8 +2494,11 @@ FILE: cabinet_digital\templates\software_list.html
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}
+Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital
+{% endblock %}
+
 {% block meta_description %}
-<title>Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital</title>
 <meta name="description" content="Découvrez notre liste complète de logiciels. Trouvez les meilleurs outils pour vos besoins professionnels, filtrés par catégorie et facilement recherchables.">
 <meta property="og:title" content="Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital">
 <meta property="og:description" content="Découvrez notre liste complète de logiciels. Trouvez les meilleurs outils pour vos besoins professionnels, filtrés par catégorie et facilement recherchables.">
@@ -2083,17 +2511,18 @@ FILE: cabinet_digital\templates\software_list.html
 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200" x-data="{
     searchQuery: '{{ search_query }}',
     selectedCategory: '{{ selected_category }}',
+    selectedMetier: '{{ selected_metier }}',
     currentSort: '{{ current_sort|default:'alpha' }}',
     isLoading: false,
     
     submitForm() {
         this.isLoading = true;
-        window.location.href = `{% url 'software_list' %}?categorie=${this.selectedCategory}&search=${this.searchQuery}&sort=${this.currentSort}`;
+        window.location.href = `{% url 'software_list' %}?categorie=${this.selectedCategory}&metier=${this.selectedMetier}&search=${this.searchQuery}&sort=${this.currentSort}`;
     }
 }">
     <h1 class="custom-header">Liste des logiciels</h1>
-    <div class="flex flex-col space-y-4 md:space-y-0 md:flex-row md:justify-between md:items-start mb-8">
-     
+
+    <div class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:gap-3 mb-8">
         <!-- Tri -->
         <div class="w-auto">
             <button 
@@ -2121,6 +2550,30 @@ FILE: cabinet_digital\templates\software_list.html
             </button>
         </div>
 
+        <!-- Filtre par métier -->
+        <div class="w-auto">
+            <div class="relative">
+                <label for="metier-filter" class="sr-only">Filtrer par métier</label>
+                <select 
+                    id="metier-filter" 
+                    x-model="selectedMetier"
+                    @change="submitForm()"
+                    class="hover:cursor-pointer w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-100 appearance-none transition-all duration-300 hover:border-sky-100">
+                    <option value="" class="text-sky-700 bg-sky-50 font-medium">Tous les métiers</option>
+                    {% for metier in metiers %}
+                        <option value="{{ metier.slug }}" class="text-black font-medium">
+                            {{ metier.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                    <svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M7 10l5 5 5-5z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
         <!-- Filtre par catégorie -->
         <div class="w-auto">
             <div class="relative">
@@ -2133,7 +2586,7 @@ FILE: cabinet_digital\templates\software_list.html
                     <option value="" class="text-sky-700 bg-sky-50 font-medium">Toutes les catégories</option>
                     {% for category in categories %}
                         {% if category.software_count > 0 %}
-                    <option value="{{ category.slug }}" class="text-black font-medium">
+                            <option value="{{ category.slug }}" class="text-black font-medium">
                                 {{ category.name }} ({{ category.software_count }})
                             </option>
                         {% endif %}
@@ -2146,25 +2599,26 @@ FILE: cabinet_digital\templates\software_list.html
                 </div>
             </div>
         </div>
-   <!-- Recherche -->
-   <div class="w-auto">
-    <div class="flex flex-col sm:flex-row">
-        <label for="search-input" class="sr-only">Rechercher un logiciel</label>
-        <input 
-            type="text" 
-            id="search-input" 
-            x-model="searchQuery"
-            @keyup.enter="submitForm()"
-            placeholder="Rechercher un logiciel" 
-            class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg sm:rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-100">
-        <button 
-            @click="submitForm()"
-            type="button" 
-            class="w-full sm:w-auto mt-2 sm:mt-0 px-6 py-3 bg-black text-white rounded-lg sm:rounded-l-none hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 transition duration-300">
-            Rechercher
-        </button>
-    </div>
-</div>
+
+        <!-- Recherche -->
+        <div class="w-auto flex-grow">
+            <div class="flex flex-col sm:flex-row">
+                <label for="search-input" class="sr-only">Rechercher un logiciel</label>
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    x-model="searchQuery"
+                    @keyup.enter="submitForm()"
+                    placeholder="Rechercher un logiciel" 
+                    class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg sm:rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-100">
+                <button 
+                    @click="submitForm()"
+                    type="button" 
+                    class="w-full sm:w-auto mt-2 sm:mt-0 px-6 py-3 bg-black text-white rounded-lg sm:rounded-l-none hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 transition duration-300">
+                    Rechercher
+                </button>
+            </div>
+        </div>
     </div>
 
     <div id="software-list-content" class="w-full">
@@ -2294,7 +2748,7 @@ FILE: cabinet_digital\templates\template_card_software.html
     <header class="flex flex-col items-center mb-4">
         {% if software.logo %}
         <div class="w-16 h-16 flex items-center justify-center mb-4">
-            <img src="{{ MEDIA_URL }}{{ software.logo.url }}" alt="{{ software.name }}" class="max-w-full max-h-full object-contain">
+            <img loading="lazy" src="{{ MEDIA_URL }}{{ software.logo.url }}" alt="{{ software.name }}" class="max-w-full max-h-full object-contain">
         </div>
         {% endif %}
         <h3 id="title" class="text-2xl font-bold text-gray-900 text-center mb-2">{{ software.name }}</h3>
@@ -2357,9 +2811,9 @@ FILE: cabinet_digital\templates\template_card_software_list_partial.html
 FILE: cabinet_digital\views.py
 ================================================================================
 
-from .models import Software, SoftwareCategory, Article, Actualites, Tag, AIModel, AITool, AIArticle
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView
+from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI
 from django.conf import settings
 from django.db.models import Count, Prefetch, Q, F
 from django.shortcuts import redirect
@@ -2372,6 +2826,7 @@ from django.shortcuts import render
 from datetime import date
 import unidecode
 from urllib.parse import unquote
+from django.core.paginator import Paginator
 
 
 logger = logging.getLogger(__name__)
@@ -2388,29 +2843,6 @@ REDIRECTIONS = {
     ('article', 'congres-de-l-ordre-experts-comptables-2023-guide-complet', 'rec0TrJ0pZJzkfmxL'): '/actualites/guide-du-congres-de-lordre-des-experts-comptables/',
 }
 
-class ArticleListView(ListView):
-    model = Article
-    template_name = "article_list.html"
-    queryset = Article.objects.filter(is_published=True)
-
-class ArticleDetailView(DetailView):
-    model = AIArticle
-    template_name = "article_detail.html"
-    context_object_name = "article"
-
-    def get_queryset(self):
-        return AIArticle.objects.filter(is_published=True)
-
-    def get_object(self, queryset=None):
-        if queryset is None:
-            queryset = self.get_queryset()
-        
-        slug = self.kwargs.get('slug')
-        decoded_slug = unidecode.unidecode(slug)
-        clean_slug = slugify(decoded_slug)[:49]
-        
-        return get_object_or_404(queryset, slug=clean_slug)
-
 def home(request):
     return render(request, 'home.html')
 
@@ -2424,12 +2856,22 @@ class CategoryListView(ListView):
     template_name = 'category_list.html'
     context_object_name = 'categories'
     def get_queryset(self):
-        return SoftwareCategory.objects.annotate(
+        queryset = SoftwareCategory.objects.annotate(
             software_count=Count('categories_softwares_link')
-        ).order_by('name').filter(software_count__gt=0)
+        ).filter(software_count__gt=0)
+
+        # Filtre par métier si spécifié
+        metier_slug = self.request.GET.get('metier')
+        if metier_slug:
+            queryset = queryset.filter(metier__slug=metier_slug)
+
+        return queryset.order_by('name')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Ajouter la liste des métiers pour le filtre
+        context['metiers'] = Metier.objects.all().order_by('name')
+        context['selected_metier'] = self.request.GET.get('metier')
         return context
 
 class CategoryDetailView(DetailView):
@@ -2452,8 +2894,11 @@ class CategoryDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         category = self.object
         context['category'] = category
-        context['count'] = Software.objects.filter(category=category).count()
-        context['softwares'] = Software.objects.filter(category=category)
+        context['count'] = Software.objects.filter(category=category, is_published=True).count()
+        context['softwares'] = Software.objects.filter(category=category, is_published=True)
+        context['canonical_url'] = self.request.build_absolute_uri(self.object.get_absolute_url())
+        # Ajouter le métier au contexte
+        context['metier'] = category.metier
         return context
 
 class SoftwareListView(ListView):
@@ -2475,6 +2920,8 @@ class SoftwareListView(ListView):
         context['selected_category'] = self.request.GET.get('categorie')
         context['search_query'] = self.request.GET.get('search', '')
         context['current_sort'] = self.request.GET.get('sort', 'alpha')
+        context['metiers'] = Metier.objects.all().order_by('name')
+        context['selected_metier'] = self.request.GET.get('metier')
         return context
 
     def get_queryset(self):
@@ -2483,13 +2930,18 @@ class SoftwareListView(ListView):
         category = self.request.GET.get('categorie')
         search = self.request.GET.get('search')
         sort = self.request.GET.get('sort')
+        metier = self.request.GET.get('metier')
+
         # Apply sorting
         if sort == 'views':
             queryset = queryset.order_by('-unique_views')
         elif sort == 'alpha':
             queryset = queryset.order_by('name')
+
         if category and category != 'None':
             queryset = queryset.filter(category__slug=category)
+        if metier and metier != 'None':
+            queryset = queryset.filter(Q(metier__slug=metier) | Q(category__metier__slug=metier))
         if search and search.strip():
             queryset = queryset.filter(
                 Q(name__icontains=search) | 
@@ -2562,7 +3014,8 @@ class SoftwareDetailView(DetailView):
         
         viewed_softwares = self.request.session.get('viewed_softwares', [])
         
-        if obj.id not in viewed_softwares:
+        # On ne compte que sur une requête de chargement complet et si ce n'est pas un robot
+        if not self.request.headers.get('HX-Request') and obj.id not in viewed_softwares and not self.request.user_agent.is_bot:
             Software.objects.filter(id=obj.id).update(unique_views=F('unique_views') + 1)
             
             obj.refresh_from_db()
@@ -3046,8 +3499,7 @@ class AIModelListView(ListView):
         if provider:
             queryset = queryset.filter(provider=provider)
 
-            
-        return queryset.distinct()
+        return queryset.distinct().order_by('-is_top_pick', Lower('name'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -3068,8 +3520,11 @@ class AIModelDetailView(DetailView):
         clean_slug = slugify(decoded_slug)[:49]
         
         obj = get_object_or_404(queryset, slug=clean_slug, is_published=True)
-        obj.unique_views += 1
-        obj.save()
+        
+        # Ne pas incrémenter le compteur si c'est un robot
+        if not self.request.user_agent.is_bot:
+            obj.unique_views += 1
+            obj.save()
         
         return obj
 
@@ -3080,7 +3535,8 @@ class AIToolListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        return AITool.objects.filter(is_published=True)
+        queryset = AITool.objects.filter(is_published=True)
+        return queryset.distinct().order_by('-is_top_pick', Lower('name'))
 
 class AIToolDetailView(DetailView):
     model = AITool
@@ -3096,8 +3552,11 @@ class AIToolDetailView(DetailView):
         clean_slug = slugify(decoded_slug)[:49]
         
         obj = get_object_or_404(queryset, slug=clean_slug, is_published=True)
-        obj.unique_views += 1
-        obj.save()
+        
+        # Ne pas incrémenter le compteur si c'est un robot
+        if not self.request.user_agent.is_bot:
+            obj.unique_views += 1
+            obj.save()
         
         return obj
 
@@ -3128,6 +3587,75 @@ class AIArticleDetailView(DetailView):
         clean_slug = slugify(decoded_slug)[:49]
         
         return get_object_or_404(queryset, slug=clean_slug, is_published=True)
+
+class ProviderDetailView(DetailView):
+    model = ProviderAI
+    template_name = 'ai/provider_detail.html'
+    context_object_name = 'provider'
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        
+        slug = self.kwargs.get('slug')
+        decoded_slug = unidecode.unidecode(slug)
+        clean_slug = slugify(decoded_slug)[:49]
+        
+        return get_object_or_404(queryset, slug=clean_slug, is_published=True)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Ajouter les modèles associés à cet éditeur
+        context['provider_models'] = AIModel.objects.filter(
+            provider=self.object,
+            is_published=True
+        ).order_by('-is_top_pick', 'name')
+        return context
+
+class MetierDetailView(DetailView):
+    model = Metier
+    template_name = 'metier_detail.html'
+    context_object_name = 'metier'
+    paginate_by = 12
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        
+        slug = self.kwargs.get('slug')
+        decoded_slug = unidecode.unidecode(slug)
+        clean_slug = slugify(decoded_slug)[:49]
+        
+        return get_object_or_404(queryset, slug=clean_slug)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        metier = self.object
+        
+        # Récupérer les catégories liées à ce métier
+        context['categories'] = SoftwareCategory.objects.filter(
+            metier=metier,
+            is_published=True
+        ).annotate(
+            software_count=Count('categories_softwares_link', 
+                filter=Q(categories_softwares_link__is_published=True))
+        ).filter(software_count__gt=0).order_by('name')
+        
+        # Récupérer les logiciels liés à ce métier (directement ou via catégories)
+        softwares = Software.objects.filter(
+            Q(metier=metier) | Q(category__metier=metier),
+            is_published=True
+        ).distinct().order_by('-is_top_pick', 'name')
+        
+        # Pagination des logiciels
+        paginator = Paginator(softwares, self.paginate_by)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+        context['softwares'] = page_obj
+        context['page_obj'] = page_obj
+        
+        return context
 
 
 ================================================================================
