@@ -9,13 +9,17 @@ CACHE/
 # Static files
 /static/*
 !/static/.gitkeep
+!/static/cabinet_logos/
+!/static/src/
+!/static/src/output.css
 
 # Tailwind CSS
 /static/src/input.css
 !/static/src/output.css
 
 # Collected static files
-/static/
+/static/admin/
+/static/unfold/
 
 # Keep staticfiles directory
 !staticfiles/
