@@ -64,6 +64,11 @@ pip-delete-this-directory.txt
 # Node.js
 node_modules/
 
+# Autres
+tailwind.config.js
+codebase_content.txt
+codebase_to_txt.txt
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
