@@ -5,6 +5,8 @@ __pycache__/
 
 # Media files
 CACHE/
+/media/*
+!/media/.gitkeep
 
 # Static files
 /static/*
@@ -21,8 +23,10 @@ CACHE/
 /static/admin/
 /static/unfold/
 
-# Keep staticfiles directory
-!staticfiles/
+# Staticfiles directory (collectstatic output)
+/staticfiles/*
+!/staticfiles/.gitkeep
+
 # Fichiers CSS compilés
 staticfiles/src/output.css
 
