@@ -68,6 +68,7 @@ node_modules/
 tailwind.config.js
 codebase_content.txt
 codebase_to_txt.txt
+cabinetdigital.code-workspace
 
 # Unit test / coverage reports
 htmlcov/
