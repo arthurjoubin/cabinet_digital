@@ -69,6 +69,7 @@ tailwind.config.js
 codebase_content.txt
 codebase_to_txt.txt
 cabinetdigital.code-workspace
+.env
 
 # Unit test / coverage reports
 htmlcov/
