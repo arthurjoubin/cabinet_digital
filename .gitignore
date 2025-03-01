@@ -19,14 +19,21 @@ CACHE/
 
 # Keep staticfiles directory
 !staticfiles/
-
+# Fichiers CSS compilés
+staticfiles/src/output.css
 
 # SQLite database
 db.sqlite3
 *.sqlite3
 
+# Dossiers de migrations en double
+cabinet_digital/migrations/migrate/
 
+# Fichiers de contexte et de style spécifiques à l'environnement de développement
+.cursor/
 
+# Fichiers temporaires/de listing
+paste.txt
 
 # C extensions
 *.so
@@ -67,7 +74,7 @@ node_modules/
 # Autres
 tailwind.config.js
 codebase_content.txt
-codebase_to_txt.txt
+codebase_to_txt.py
 cabinetdigital.code-workspace
 .env
 
