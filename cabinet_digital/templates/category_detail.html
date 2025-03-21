@@ -15,7 +15,7 @@ Les {{ softwares|length }} meilleures {{ category.excerpt }}
 {% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-sm border-2 border-gray-200">
+<div class="max-w-7xl mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-sm border-2 border-gray-200">
     <div class="relative mb-8 bg-sky-50 p-6 rounded-lg shadow-sm border border-gray-200">
         <div class="relative flex flex-col items-center">
             <div class="flex items-center gap-4 mb-4">
@@ -44,7 +44,7 @@ Les {{ softwares|length }} meilleures {{ category.excerpt }}
         </div>
     {% endif %}
     
-    <div class="mb-6 sm:mb-8 bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="mb-6 sm:mb-8 bg-white rounded-lg shadow-sm border border-gray-200 max-w-5xl mx-auto">
         <h2 class="text-xl sm:text-2xl font-semibold p-2 border-b border-gray-200 bg-sky-50 text-center">
             Logiciels de la catégorie
             <span class="inline-block bg-black text-white px-2 py-1 rounded-lg mt-2 sm:mt-0">{{ category.name }}</span>

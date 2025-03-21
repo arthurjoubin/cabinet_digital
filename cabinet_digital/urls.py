@@ -21,7 +21,9 @@ from cabinet_digital.views import (
     CategoryListView, CategoryDetailView, ActualitesListView, ActualitesDetailView,
     alternative_detail, SoftwareDetailView, SoftwareListView, Custom404View,
     AIModelListView, AIModelDetailView, AIToolListView, AIToolDetailView,
-    AIArticleListView, AIArticleDetailView, ProviderDetailView
+    AIArticleListView, AIArticleDetailView, ProviderDetailView,
+    CompleteProfileView, UserProfileView, UserReviewsView, ReviewCreateView, 
+    ReviewEditView, ReviewDeleteView, ReviewVoteView
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -93,6 +95,20 @@ urlpatterns = [
     path('actualites/', views.actualites, name='actualites'),
     path('actualites/<slug:slug>/', ActualitesDetailView.as_view(), name='actualite_detail'),
     path('logiciels/<str:slug>/alternatives/', alternative_detail, name='alternative_detail'),
+    
+    # Authentication URLs
+    path('accounts/', include('allauth.urls')),
+    path('accounts/profile/complete/', CompleteProfileView.as_view(), name='complete_profile'),
+    path('accounts/profile/', UserProfileView.as_view(), name='user_profile'),
+    path('accounts/profile/reviews/', UserReviewsView.as_view(), name='user_reviews'),
+    path('post-social-login/', views.post_social_login, name='post_social_login'),
+    
+    # Review URLs
+    path('logiciels/<str:slug>/review/create/', ReviewCreateView.as_view(), name='review_create'),
+    path('logiciels/<str:slug>/review/<int:pk>/edit/', ReviewEditView.as_view(), name='review_edit'),
+    path('logiciels/<str:slug>/review/<int:pk>/delete/', ReviewDeleteView.as_view(), name='review_delete'),
+    path('review/<int:pk>/vote/', ReviewVoteView.as_view(), name='review_vote'),
+    
     re_path(r'^(?P<old_path>categorie)/logiciel_(?P<slug>[^/]+)(?:/r/(?P<r_id>[^/]+))?/?$', 
     views.custom_redirect_view, 
     name='custom_redirect'),

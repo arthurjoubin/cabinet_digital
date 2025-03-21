@@ -16,21 +16,21 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-12">
-  <div class="p-4 sm:p-6 border-b border-gray-200">
+<div class="max-w-6xl mx-auto bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-12">
+  <div class="p-4 sm:p-6 border-b-2 border-gray-200">
     <div class="flex flex-col space-y-4">
       <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4">
-        <a href="{% url 'software_list' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-sky-700 bg-sky-50 rounded-lg hover:bg-sky-100 transition-colors duration-300">
+        <a href="{% url 'software_list' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium border-2 text-black rounded-lg hover:bg-gray-100 transition-colors duration-300">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Retour à la liste des logiciels
         </a>
-        <div class="bg-sky-50 text-sky-700 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center">
+        <div class="bg-gray-100 text-black px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
           </svg>
           <span class="font-bold">{{ software.unique_views }}&nbsp;</span>visites 
-          <span class="text-xs text-sky-600 ml-1">(Depuis {{ days_since }} jours)</span>
+          <span class="text-xs text-black ml-1">(Depuis {{ days_since }} jours)</span>
         </div>
     
         <a href="{{ software.site }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center">
@@ -43,9 +43,9 @@
     </div>
   </div>
 
-  <div class="p-4 sm:p-8 max-w-4xl mx-auto">
+  <div class="p-4 sm:p-8 max-w-5xl mx-auto">
     <div class="flex flex-col md:flex-row items-start justify-between gap-6 mb-8">
-      <div class="flex flex-col md:flex-row items-center md:items-start flex-grow">
+      <div class="flex flex-col md:flex-row items-center md:items-start flex-grow border p-6 bg-gray-50 rounded-xl">
         {% if software.logo %}
         <div class="w-24 h-24 mb-4 md:mb-0 md:mr-6 flex-shrink-0">
           <img src="{{ MEDIA_URL }}{{ software.logo.url }}" alt="{{ software.name }}" class="w-full h-full object-contain">
@@ -67,12 +67,12 @@
       </div>
 
       <!-- ROI Calculator Card -->
-      <div class="w-full md:w-64 flex-shrink-0 bg-white border-2 border-black transform transition-transform hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative mx-auto md:mx-0 mt-4 md:mt-0">
+      <div class="w-full md:w-64 flex-shrink-0 bg-white border border-gray-800 transform transition-transform hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative mx-auto md:mx-0 mt-4 md:mt-0 rounded-md">
         <div class="absolute -top-2 -right-2 bg-black text-white text-xs md:text-[10px] font-bold px-2 py-0.5 rounded-full shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]">
           NOUVEAU
         </div>
-        <div class="p-3 md:p-2">
-          <div class="flex items-center gap-2 mb-3 md:mb-2 justify-center md:justify-start">
+        <div class="p-3 md:p-2 ">
+          <div class="flex items-center gap-2 mb-3 md:mb-2 justify-center md:justify-start ">
             <svg class="w-5 h-5 md:w-4 md:h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
             </svg>
@@ -103,7 +103,7 @@
       </div>
     </div>
 
-    <hr class="my-6 sm:my-8 border-t border-gray-200">
+    <hr class="my-6 sm:my-8 border-t-2 border-gray-200">
 
     <div class="prose max-w-none text-gray-700 leading-relaxed">
       <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 text-center md:text-left">Présentation de <span class="bg-black text-white rounded px-2"> {{ software.name }} </span></h2>
@@ -113,29 +113,71 @@
     </div>
   </div>
 
-  <div class="border-t border-gray-200 p-4 sm:p-6 text-center">
+  <!-- Section des avis -->
+  <div class="border-t-2 border-gray-200 p-4 sm:p-8">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">Avis des utilisateurs</h2>
+        {% if user.is_authenticated %}
+          {% if not user_has_reviewed %}
+          <a href="{% url 'review_create' software.slug %}" class="inline-flex items-center px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors duration-300">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+            </svg>
+            Donner mon avis
+          </a>
+          {% endif %}
+        {% else %}
+          <a href="{% url 'account_login' %}?next={{ request.path }}" class="inline-flex items-center px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors duration-300">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+            </svg>
+            Se connecter pour donner son avis
+          </a>
+        {% endif %}
+      </div>
+
+      {% if reviews %}
+        <div class="space-y-6" id="reviews-container">
+          {% for review in reviews %}
+            {% include "reviews/review_card.html" with review=review %}
+          {% endfor %}
+          {% if reviews.has_next %}
+            <div class="text-center mt-6">
+              <button 
+                hx-get="{% url 'load_more_reviews' software.slug %}?page={{ reviews.next_page_number }}"
+                hx-target="#reviews-container"
+                hx-swap="beforeend"
+                class="px-4 py-2 bg-white text-black border-2 border-gray-700 text-sm font-medium rounded-md hover:bg-gray-100 transition-colors duration-300">
+                Voir plus d'avis
+              </button>
+            </div>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="text-center py-8">
+          <p class="text-gray-600">Aucun avis pour le moment. Soyez le premier à donner votre avis !</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="border-t-2 border-gray-200 p-4 sm:p-6 text-center">
     <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6">Logiciels similaires</h2>
     {% if similar_softwares %}
-    <div id="software-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div id="software-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
       {% for software in similar_softwares %}
       {% include 'template_card_software.html' %}
       {% endfor %}
     </div>
     <div class="flex justify-center mt-6 sm:mt-8">
-      <a href="{% url 'alternative_detail' software.slug %}" class="inline-block px-6 py-3 bg-sky-50 text-sky-700 text-sm font-medium rounded-md hover:bg-sky-100 transition-colors duration-300">
+      <a href="{% url 'alternative_detail' software.slug %}" class="inline-block px-2 py-2 bg-white text-black border-2 border-gray-700 text-sm font-medium rounded-md hover:bg-gray-100 transition-colors duration-300">
         Voir toutes les alternatives
       </a>
     </div>
     {% else %}
     <p class="text-gray-600">Aucun logiciel similaire trouvé.</p>
     {% endif %}
-  </div>
-
-  <div class="bg-white p-6 border-t border-gray-200 rounded-b-lg shadow-sm text-center">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">À propos de <span class="bg-black text-white px-1 rounded">Cabinet Digital</span></h2>
-    <p class="text-gray-700 leading-relaxed max-w-2xl mx-auto">
-      Cabinet Digital est un site indépendant dédié aux entreprises et experts-comptables. Notre mission est de vous aider à choisir les logiciels les plus adaptés à vos besoins spécifiques en matière de comptabilité, gestion et finance.
-    </p>
   </div>
 </div>
 {% endblock %}

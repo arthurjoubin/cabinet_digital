@@ -1,0 +1,131 @@
+<!-- This is the HTMX response that will replace the initial loading state -->
+<div class="bg-white rounded-lg shadow-sm divide-y divide-gray-200" id="reviews-container">
+    <!-- Reviews header with stats -->
+    <div class="p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2 sm:mb-0">Avis utilisateurs</h2>
+            
+            {% if user.is_authenticated %}
+                {% if user_review %}
+                    <a href="{% url 'edit_review' software.slug user_review.id %}" class="inline-flex items-center px-4 py-2 border border-blue-300 text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Modifier mon avis
+                    </a>
+                {% else %}
+                    <a href="{% url 'add_review' software.slug %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Écrire un avis
+                    </a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'login' %}?next={% url 'software_detail' software.slug %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                    </svg>
+                    Connectez-vous pour écrire un avis
+                </a>
+            {% endif %}
+        </div>
+        
+        <div class="bg-gray-50 p-5 rounded-lg flex flex-col md:flex-row gap-6">
+            <!-- Average rating -->
+            <div class="flex-1 flex flex-col items-center justify-center p-4 border-b md:border-b-0 md:border-r border-gray-200">
+                <div class="text-5xl font-bold text-gray-900 mb-2">{{ software.average_rating|default:"0" }}</div>
+                <div class="flex items-center mb-2">
+                    <div class="text-yellow-500 text-2xl">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= software.average_rating_int %}
+                                ★
+                            {% elif forloop.counter <= software.average_rating_int|add:"0.5" %}
+                                ★
+                            {% else %}
+                                ☆
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500">{{ reviews_count }} avis</p>
+            </div>
+            
+            <!-- Rating distribution -->
+            <div class="flex-2 p-4">
+                <h3 class="text-sm font-medium text-gray-900 mb-3">Répartition des notes</h3>
+                <div class="space-y-2">
+                    {% for count in rating_distribution %}
+                    <div class="flex items-center">
+                        <div class="w-8 text-right mr-2 text-sm text-gray-600">{{ forloop.counter0|add:1 }}</div>
+                        <div class="text-yellow-500">★</div>
+                        <div class="ml-2 w-48 bg-gray-200 rounded-full h-2.5 relative flex-grow">
+                            <div class="bg-yellow-500 h-2.5 rounded-full" style="width: {% if reviews_count %}{{ count|floatformat:0|default:0 }}%{% else %}0%{% endif %}"></div>
+                        </div>
+                        <div class="ml-2 w-10 text-xs text-gray-500">{{ count|floatformat:0|default:0 }}%</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Review filters -->
+    <div class="p-4 bg-gray-50">
+        <div class="flex flex-wrap gap-2">
+            <button class="px-3 py-1.5 {% if current_filter == 'all' %}bg-blue-100 text-blue-800{% else %}bg-gray-100 text-gray-800 hover:bg-gray-200{% endif %} rounded-full text-sm font-medium"
+                    hx-get="{% url 'software_reviews' software.slug %}?filter=all"
+                    hx-target="#reviews-list"
+                    hx-swap="innerHTML">
+                Tous
+            </button>
+            <button class="px-3 py-1.5 {% if current_filter == '5' %}bg-blue-100 text-blue-800{% else %}bg-gray-100 text-gray-800 hover:bg-gray-200{% endif %} rounded-full text-sm font-medium"
+                    hx-get="{% url 'software_reviews' software.slug %}?filter=5"
+                    hx-target="#reviews-list"
+                    hx-swap="innerHTML">
+                5 étoiles
+            </button>
+            <button class="px-3 py-1.5 {% if current_filter == '4' %}bg-blue-100 text-blue-800{% else %}bg-gray-100 text-gray-800 hover:bg-gray-200{% endif %} rounded-full text-sm font-medium"
+                    hx-get="{% url 'software_reviews' software.slug %}?filter=4"
+                    hx-target="#reviews-list"
+                    hx-swap="innerHTML">
+                4 étoiles
+            </button>
+            <button class="px-3 py-1.5 {% if current_filter == '3' %}bg-blue-100 text-blue-800{% else %}bg-gray-100 text-gray-800 hover:bg-gray-200{% endif %} rounded-full text-sm font-medium"
+                    hx-get="{% url 'software_reviews' software.slug %}?filter=3"
+                    hx-target="#reviews-list"
+                    hx-swap="innerHTML">
+                3 étoiles
+            </button>
+            <button class="px-3 py-1.5 {% if current_filter == '2' %}bg-blue-100 text-blue-800{% else %}bg-gray-100 text-gray-800 hover:bg-gray-200{% endif %} rounded-full text-sm font-medium"
+                    hx-get="{% url 'software_reviews' software.slug %}?filter=2"
+                    hx-target="#reviews-list"
+                    hx-swap="innerHTML">
+                2 étoiles
+            </button>
+            <button class="px-3 py-1.5 {% if current_filter == '1' %}bg-blue-100 text-blue-800{% else %}bg-gray-100 text-gray-800 hover:bg-gray-200{% endif %} rounded-full text-sm font-medium"
+                    hx-get="{% url 'software_reviews' software.slug %}?filter=1"
+                    hx-target="#reviews-list"
+                    hx-swap="innerHTML">
+                1 étoile
+            </button>
+            
+            <div class="ml-auto">
+                <button class="px-3 py-1.5 inline-flex items-center gap-1 {% if current_sort == 'recent' %}bg-blue-100 text-blue-800{% else %}bg-gray-100 text-gray-800 hover:bg-gray-200{% endif %} rounded-full text-sm font-medium"
+                        hx-get="{% url 'software_reviews' software.slug %}?sort=recent"
+                        hx-target="#reviews-list"
+                        hx-swap="innerHTML">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+                    </svg>
+                    Récents
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reviews list -->
+    <div id="reviews-list">
+        {% include "reviews/reviews_list_partial.html" %}
+    </div>
+</div> 

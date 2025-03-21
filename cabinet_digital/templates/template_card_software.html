@@ -1,7 +1,7 @@
 {% if software %}
-<article class="bg-white border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:bg-sky-50  [&:hover_#categs]:bg-white [&:hover_#title]:text-sky-600 p-6 h-full flex flex-col relative group cursor-pointer"
+<article class="bg-white border border-gray-300 rounded-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:bg-sky-50  [&:hover_#categs]:bg-white p-6 h-full flex flex-col relative group cursor-pointer"
          onclick="window.location='{% url 'software_detail' software.slug %}'">
-    <div class="absolute top-2 left-2 bg-sky-50 text-sky-700 px-2 py-2 rounded-lg text-sm font-medium flex items-center justify-center"
+    <div class="absolute top-2 left-2 bg-gray-100 text-black px-2 py-2 rounded-lg text-sm font-medium flex items-center justify-center"
          onclick="event.stopPropagation()">
         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -11,7 +11,7 @@
     </div>
 
     {% if software.is_top_pick %}
-        <div class="absolute top-4 right-4 bg-green-100 text-green-800 px-3 py-1 text-xs font-medium rounded-full">
+        <div class="absolute top-4 right-4 bg-black text-white px-2 py-1 text-xs font-medium rounded-md">
             Top Pick
         </div>
     {% endif %}

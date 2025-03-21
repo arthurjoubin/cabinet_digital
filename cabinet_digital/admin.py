@@ -1,11 +1,13 @@
 from django.contrib import admin
-from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI
+from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI, UserProfile, Review, ReviewImage, ReviewVote
 from django.db import models
 from django import forms
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 from django.contrib.auth.admin import UserAdmin
+from django.utils import timezone
+from django.contrib import messages
 
 from django.contrib.auth.models import User
 from unfold.contrib.forms.widgets import WysiwygWidget
@@ -260,5 +262,86 @@ class ProviderAIAdmin(ModelAdmin):
     search_fields = ['name']
     verbose_name = 'IA - Editeurs'
     verbose_name_plural = 'IA - Editeurs'
+
+class ReviewImageInline(admin.TabularInline):
+    model = ReviewImage
+    extra = 0
+    max_num = 5
+
+@admin.register(Review)
+class ReviewAdmin(ModelAdmin):
+    list_display = ['title', 'software', 'user_display', 'rating', 'status', 'created_at', 'vote_display']
+    list_filter = ['status', 'rating', 'created_at', 'software']
+    search_fields = ['title', 'content', 'user__userprofile__username', 'software__name']
+    readonly_fields = ['created_at', 'updated_at', 'publish_date']
+    actions = ['publish_reviews', 'reject_reviews']
+    inlines = [ReviewImageInline]
+    
+    fieldsets = (
+        (None, {
+            'fields': ('software', 'user', 'title', 'content', 'rating')
+        }),
+        ('Statut', {
+            'fields': ('status', 'rejection_reason'),
+        }),
+        ('Dates', {
+            'fields': ('created_at', 'updated_at', 'publish_date'),
+            'classes': ('collapse',),
+        }),
+    )
+    
+    def user_display(self, obj):
+        return obj.user.userprofile.username
+    user_display.short_description = 'Utilisateur'
+    
+    def vote_display(self, obj):
+        upvotes = obj.upvotes()
+        downvotes = obj.downvotes()
+        return f"👍 {upvotes} | 👎 {downvotes}"
+    vote_display.short_description = 'Votes'
+    
+    def publish_reviews(self, request, queryset):
+        updated = queryset.update(status='published', publish_date=timezone.now())
+        self.message_user(request, f"{updated} avis ont été publiés.")
+    publish_reviews.short_description = "Publier les avis sélectionnés"
+    
+    def reject_reviews(self, request, queryset):
+        # This needs custom logic with a reason, would be handled in a custom admin view
+        self.message_user(request, "Pour rejeter des avis, veuillez le faire individuellement en précisant une raison.", level=messages.WARNING)
+    reject_reviews.short_description = "Rejeter les avis sélectionnés"
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(ModelAdmin):
+    list_display = ['username', 'user_email', 'created_at', 'last_active', 'review_count']
+    search_fields = ['username', 'user__email']
+    readonly_fields = ['created_at', 'last_active']
+    
+    def user_email(self, obj):
+        return obj.user.email
+    user_email.short_description = 'Email'
+    
+    def review_count(self, obj):
+        return obj.user.reviews.count()
+    review_count.short_description = 'Nombre d\'avis'
+
+
+@admin.register(ReviewVote)
+class ReviewVoteAdmin(ModelAdmin):
+    list_display = ['user_display', 'review_title', 'vote_display', 'created_at']
+    list_filter = ['vote', 'created_at']
+    search_fields = ['user__userprofile__username', 'review__title']
+    
+    def user_display(self, obj):
+        return obj.user.userprofile.username
+    user_display.short_description = 'Utilisateur'
+    
+    def review_title(self, obj):
+        return obj.review.title
+    review_title.short_description = 'Avis'
+    
+    def vote_display(self, obj):
+        return '👍' if obj.vote == 1 else '👎'
+    vote_display.short_description = 'Vote'
 
 

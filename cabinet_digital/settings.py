@@ -58,6 +58,12 @@ INSTALLED_APPS = [
     # Third party apps
     'cabinet_digital',
     'compressor',
+    
+    # Authentication
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -70,6 +76,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_htmx.middleware.HtmxMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
+    'cabinet_digital.middleware.ProfileCompletionMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'cabinet_digital.urls'
@@ -215,4 +223,41 @@ INTERNAL_IPS = [
 
 # Configuration pour django-user-agents
 USER_AGENTS_CACHE = 'default'
+
+# Authentication settings
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# Django-allauth configuration
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+SOCIALACCOUNT_AUTO_SIGNUP = False
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+LOGIN_REDIRECT_URL = 'post_social_login'
+LOGOUT_REDIRECT_URL = 'home'
+
+# Image upload settings for reviews
+MAX_REVIEW_IMAGES = 5
+REVIEW_IMAGE_MAX_SIZE = (1200, 800)  # Maximum dimensions
+REVIEW_IMAGE_QUALITY = 85  # WebP compression quality
+
+# Review vote settings
+REVIEW_EDIT_WINDOW_HOURS = 24  # Time window to edit a published review
 

@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Supprimer l'avis - {{ software.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-8">
+    <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <h1 class="text-2xl font-bold text-gray-900">
+                Supprimer mon avis
+            </h1>
+            <div>
+                <a href="{% url 'software_detail' software.slug %}" class="text-blue-600 hover:text-blue-800 inline-flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    <span>Retour</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Software info -->
+        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center">
+            {% if software.logo %}
+            <div class="w-12 h-12 mr-4 flex-shrink-0">
+                <img src="{{ MEDIA_URL }}{{ software.logo.url }}" alt="{{ software.name }}" class="w-full h-full object-contain">
+            </div>
+            {% endif %}
+            <div>
+                <h2 class="text-lg font-semibold">{{ software.name }}</h2>
+                <p class="text-sm text-gray-500">{{ object.title }}</p>
+            </div>
+        </div>
+        
+        <!-- Content -->
+        <div class="p-6">
+            {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                <div class="{% if message.tags == 'success' %}bg-green-50 border-green-200 text-green-800{% elif message.tags == 'error' %}bg-red-50 border-red-200 text-red-800{% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %} p-4 mb-4 rounded-lg border">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+                <svg class="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                
+                <h2 class="text-xl font-bold text-red-800 text-center mb-2">Confirmer la suppression</h2>
+                <p class="text-red-700 text-center mb-6">
+                    Êtes-vous sûr de vouloir supprimer cet avis ? Cette action est irréversible.
+                </p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="flex justify-center gap-4">
+                        <a href="{% if request.GET.next == 'profile' %}{% url 'user_reviews' %}{% else %}{% url 'software_detail' software.slug %}{% endif %}" class="px-6 py-2 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition duration-200">
+                            Annuler
+                        </a>
+                        <button type="submit" class="px-6 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition duration-200">
+                            Supprimer
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="border-t border-gray-200 pt-6 mt-6">
+                <h3 class="text-md font-semibold mb-3">Résumé de l'avis</h3>
+                
+                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="text-yellow-500">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= object.rating %}
+                                    ★
+                                {% else %}
+                                    ☆
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="text-sm text-gray-500">{{ object.get_rating_display }}</span>
+                    </div>
+                    
+                    <h4 class="font-medium">{{ object.title }}</h4>
+                    <p class="text-gray-700 mt-2">{{ object.content|linebreaks|truncatewords:50 }}</p>
+                    
+                    {% if object.images.exists %}
+                    <div class="mt-4 grid grid-cols-3 sm:grid-cols-4 gap-2">
+                        {% for image in object.images.all %}
+                        <div class="bg-gray-200 rounded overflow-hidden">
+                            <img src="{{ image.image.url }}" alt="Image de l'avis {{ forloop.counter }}" class="w-full h-auto object-cover">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes avis{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-8">
+    <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h1 class="text-2xl font-bold text-gray-900">Mes avis</h1>
+        </div>
+        
+        <div class="p-6">
+            {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                <div class="{% if message.tags == 'success' %}bg-green-50 border-green-200 text-green-800{% elif message.tags == 'error' %}bg-red-50 border-red-200 text-red-800{% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %} p-4 mb-4 rounded-lg border">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Filter tabs -->
+            <div class="flex flex-wrap border-b border-gray-200 mb-6">
+                <a href="{% url 'user_reviews' %}" class="px-4 py-2 font-medium {% if active_filter == 'all' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                    Tous ({{ reviews.count }})
+                </a>
+                <a href="{% url 'user_reviews' %}?status=draft" class="px-4 py-2 font-medium {% if active_filter == 'draft' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                    Brouillons ({{ draft_count }})
+                </a>
+                <a href="{% url 'user_reviews' %}?status=pending" class="px-4 py-2 font-medium {% if active_filter == 'pending' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                    En attente ({{ pending_count }})
+                </a>
+                <a href="{% url 'user_reviews' %}?status=published" class="px-4 py-2 font-medium {% if active_filter == 'published' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                    Publiés ({{ published_count }})
+                </a>
+                <a href="{% url 'user_reviews' %}?status=rejected" class="px-4 py-2 font-medium {% if active_filter == 'rejected' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                    Rejetés ({{ rejected_count }})
+                </a>
+            </div>
+            
+            {% if reviews %}
+            <div class="space-y-8">
+                {% for review in reviews %}
+                <div class="bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
+                    <!-- Review header -->
+                    <div class="px-6 py-4 bg-gray-100 border-b border-gray-200 flex justify-between items-center flex-wrap gap-4">
+                        <div>
+                            <h2 class="text-lg font-semibold">
+                                <a href="{% url 'software_detail' review.software.slug %}" class="text-blue-600 hover:text-blue-800 transition-colors">
+                                    {{ review.software.name }}
+                                </a>
+                            </h2>
+                            <div class="flex items-center gap-2 mt-1">
+                                <div class="text-yellow-500">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}
+                                            ★
+                                        {% else %}
+                                            ☆
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="text-sm text-gray-500">{{ review.get_rating_display }}</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="inline-block px-2 py-1 rounded-full text-xs font-medium
+                                {% if review.status == 'draft' %}bg-gray-100 text-gray-800
+                                {% elif review.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                {% elif review.status == 'published' %}bg-green-100 text-green-800
+                                {% elif review.status == 'rejected' %}bg-red-100 text-red-800{% endif %}">
+                                {{ review.get_status_display }}
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">{{ review.created_at|date:"j F Y" }}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Review content -->
+                    <div class="px-6 py-4">
+                        <h3 class="text-lg font-medium mb-2">{{ review.title }}</h3>
+                        <p class="text-gray-700">{{ review.content|linebreaks }}</p>
+                        
+                        {% if review.images.exists %}
+                        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                            {% for image in review.images.all %}
+                            <div class="bg-gray-200 rounded overflow-hidden">
+                                <img src="{{ image.image.url }}" alt="Image de l'avis {{ forloop.counter }}" class="w-full h-auto object-cover">
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if review.status == 'rejected' and review.rejection_reason %}
+                        <div class="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
+                            <p class="text-sm font-medium text-red-800">Raison du rejet :</p>
+                            <p class="text-red-800">{{ review.rejection_reason }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Review actions -->
+                    <div class="px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
+                        {% if review.status == 'draft' or review.can_be_edited %}
+                        <a href="{% url 'review_edit' review.software.slug review.pk %}" class="inline-flex items-center gap-1 px-3 py-1 bg-white border border-gray-300 text-sm font-medium rounded hover:bg-gray-50">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                            <span>Modifier</span>
+                        </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'review_delete' review.software.slug review.pk %}?next=profile" class="inline-flex items-center gap-1 px-3 py-1 bg-white border border-red-300 text-red-700 text-sm font-medium rounded hover:bg-red-50">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            <span>Supprimer</span>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <div class="flex justify-center mt-8">
+                <div class="inline-flex rounded-md shadow-sm" role="group">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-50">
+                        Précédent
+                    </a>
+                    {% endif %}
+                    
+                    <span class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border-t border-b border-gray-300">
+                        Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+                    </span>
+                    
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-50">
+                        Suivant
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+            {% else %}
+            <div class="bg-gray-50 rounded-lg p-12 text-center">
+                <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                <p class="text-gray-600 text-lg mb-4">Vous n'avez pas encore d'avis.</p>
+                <p class="text-gray-500">Explorez nos logiciels et partagez votre expérience !</p>
+                
+                <div class="mt-6">
+                    <a href="{% url 'software_list' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-all duration-200">
+                        <span>Découvrir les logiciels</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

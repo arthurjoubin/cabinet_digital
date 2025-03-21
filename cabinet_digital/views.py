@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView
-from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI
+from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI, UserProfile, Review, ReviewImage, ReviewVote
 from django.conf import settings
 from django.db.models import Count, Prefetch, Q, F
 from django.shortcuts import redirect
@@ -14,6 +14,19 @@ from datetime import date
 import unidecode
 from urllib.parse import unquote
 from django.core.paginator import Paginator
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse, reverse_lazy
+from django.views.generic import (
+    View, TemplateView, FormView, UpdateView, DeleteView, CreateView
+)
+from django.http import HttpResponseForbidden
+from django.utils import timezone
+import json
+from django.contrib import messages
+from django.db import transaction
+import uuid
+from django import forms
 
 
 logger = logging.getLogger(__name__)
@@ -239,11 +252,48 @@ class SoftwareDetailView(DetailView):
             )
             .order_by('-common_categories', '-is_top_pick')[:4]
         )
-
+        
+        # Get published reviews
+        reviews = Review.objects.filter(
+            software=software,
+            status='published'
+        ).select_related(
+            'user__userprofile'
+        ).prefetch_related(
+            'images',
+            'votes'
+        ).order_by('-publish_date')
+        
+        # Pagination for reviews
+        paginator = Paginator(reviews, 5)  # 5 reviews per page
+        page_number = self.request.GET.get('page')
+        reviews_page = paginator.get_page(page_number)
+        
+        # Check if user has already submitted a review
+        user_has_review = False
+        user_review = None
+        if self.request.user.is_authenticated:
+            try:
+                user_review = Review.objects.get(
+                    user=self.request.user,
+                    software=software
+                )
+                user_has_review = True
+            except Review.DoesNotExist:
+                pass
+        
+        # Add review data to context
         context.update({
             'similar_softwares': similar_softwares,
             'days_since': (date.today() - date(2024, 11, 10)).days,
+            'reviews': reviews_page,
+            'user_has_review': user_has_review,
+            'user_review': user_review,
+            'review_count': reviews.count(),
+            'average_rating': software.average_rating(),
+            'star_rating': software.get_star_rating(),
         })
+        
         return context
     
 from django.views.generic import TemplateView
@@ -843,3 +893,374 @@ class MetierDetailView(DetailView):
         context['page_obj'] = page_obj
         
         return context
+
+class CompleteProfileView(LoginRequiredMixin, FormView):
+    template_name = 'profile/complete_profile.html'
+    success_url = reverse_lazy('home')
+    
+    class ProfileForm(forms.ModelForm):
+        class Meta:
+            model = UserProfile
+            fields = ['username']
+            widgets = {
+                'username': forms.TextInput(attrs={'class': 'w-full px-3 py-2 border rounded-md'})
+            }
+    
+    form_class = ProfileForm
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = self.request.user.userprofile
+        return kwargs
+    
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, "Votre profil a été mis à jour avec succès.")
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        # Redirect to the page the user was trying to access
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return super().get_success_url()
+
+
+class UserProfileView(LoginRequiredMixin, UpdateView):
+    template_name = 'profile/user_profile.html'
+    success_url = reverse_lazy('user_profile')
+    
+    class ProfileForm(forms.ModelForm):
+        class Meta:
+            model = UserProfile
+            fields = ['username']
+            widgets = {
+                'username': forms.TextInput(attrs={'class': 'w-full px-3 py-2 border rounded-md'})
+            }
+    
+    form_class = ProfileForm
+    
+    def get_object(self):
+        return self.request.user.userprofile
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['review_count'] = Review.objects.filter(user=self.request.user).count()
+        return context
+    
+    def form_valid(self, form):
+        messages.success(self.request, "Votre profil a été mis à jour avec succès.")
+        return super().form_valid(form)
+
+
+class UserReviewsView(LoginRequiredMixin, ListView):
+    template_name = 'profile/user_reviews.html'
+    context_object_name = 'reviews'
+    paginate_by = 10
+    
+    def get_queryset(self):
+        return Review.objects.filter(user=self.request.user).order_by('-created_at')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Add filter counts
+        context['draft_count'] = Review.objects.filter(user=self.request.user, status='draft').count()
+        context['pending_count'] = Review.objects.filter(user=self.request.user, status='pending').count()
+        context['published_count'] = Review.objects.filter(user=self.request.user, status='published').count()
+        context['rejected_count'] = Review.objects.filter(user=self.request.user, status='rejected').count()
+        
+        # Handle filtering
+        status_filter = self.request.GET.get('status')
+        if status_filter and status_filter in ['draft', 'pending', 'published', 'rejected']:
+            context['reviews'] = context['reviews'].filter(status=status_filter)
+            context['active_filter'] = status_filter
+        else:
+            context['active_filter'] = 'all'
+            
+        return context
+
+
+# Custom widget for multiple file upload
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
+
+class ReviewCreateView(LoginRequiredMixin, CreateView):
+    model = Review
+    template_name = 'reviews/review_form.html'
+    
+    class ReviewForm(forms.ModelForm):
+        images = MultipleFileField(required=False)
+        
+        class Meta:
+            model = Review
+            fields = ['title', 'content', 'rating']
+            widgets = {
+                'title': forms.TextInput(attrs={'class': 'w-full px-3 py-2 border rounded-md'}),
+                'content': forms.Textarea(attrs={'class': 'w-full px-3 py-2 border rounded-md', 'rows': 6}),
+                'rating': forms.RadioSelect()
+            }
+    
+    form_class = ReviewForm
+    
+    def get_success_url(self):
+        # Redirect to the software detail page
+        return reverse('software_detail', kwargs={'slug': self.kwargs['slug']})
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['software'] = get_object_or_404(Software, slug=self.kwargs['slug'])
+        context['max_images'] = settings.MAX_REVIEW_IMAGES
+        return context
+    
+    def form_valid(self, form):
+        # Get software from URL
+        software = get_object_or_404(Software, slug=self.kwargs['slug'])
+        
+        # Check if user already has a review for this software
+        if Review.objects.filter(user=self.request.user, software=software).exists():
+            messages.error(self.request, "Vous avez déjà publié un avis pour ce logiciel.")
+            return redirect('software_detail', slug=software.slug)
+        
+        # Set additional fields
+        form.instance.user = self.request.user
+        form.instance.software = software
+        
+        # Set status based on submit button
+        submit_action = self.request.POST.get('submit_action', 'draft')
+        if submit_action == 'submit':
+            form.instance.status = 'pending'
+        else:
+            form.instance.status = 'draft'
+        
+        # Save the review
+        with transaction.atomic():
+            response = super().form_valid(form)
+            
+            # Process images
+            images = self.request.FILES.getlist('images')
+            for i, image in enumerate(images[:settings.MAX_REVIEW_IMAGES]):
+                ReviewImage.objects.create(
+                    review=self.object,
+                    image=image,
+                    order=i
+                )
+        
+        # Add success message
+        if form.instance.status == 'pending':
+            messages.success(self.request, "Votre avis a été soumis et est en attente de validation.")
+        else:
+            messages.success(self.request, "Votre avis a été enregistré comme brouillon.")
+        
+        return response
+
+
+class ReviewEditView(LoginRequiredMixin, UpdateView):
+    model = Review
+    template_name = 'reviews/review_form.html'
+    
+    class ReviewForm(forms.ModelForm):
+        images = MultipleFileField(required=False)
+        
+        class Meta:
+            model = Review
+            fields = ['title', 'content', 'rating']
+            widgets = {
+                'title': forms.TextInput(attrs={'class': 'w-full px-3 py-2 border rounded-md'}),
+                'content': forms.Textarea(attrs={'class': 'w-full px-3 py-2 border rounded-md', 'rows': 6}),
+                'rating': forms.RadioSelect()
+            }
+    
+    form_class = ReviewForm
+    
+    def get_success_url(self):
+        return reverse('software_detail', kwargs={'slug': self.kwargs['slug']})
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['software'] = get_object_or_404(Software, slug=self.kwargs['slug'])
+        context['existing_images'] = self.object.images.all()
+        context['max_images'] = settings.MAX_REVIEW_IMAGES
+        context['is_edit'] = True
+        return context
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Check if the user is the owner of the review
+        review = self.get_object()
+        if review.user != request.user:
+            messages.error(request, "Vous n'êtes pas autorisé à modifier cet avis.")
+            return redirect('software_detail', slug=self.kwargs['slug'])
+        
+        # Check if the review can be edited (within 24h window if published)
+        if review.status == 'published' and not review.can_be_edited():
+            messages.error(request, "Cet avis ne peut plus être modifié car il a été publié il y a plus de 24 heures.")
+            return redirect('software_detail', slug=self.kwargs['slug'])
+        
+        return super().dispatch(request, *args, **kwargs)
+    
+    def form_valid(self, form):
+        # Process images to be deleted
+        images_to_delete = self.request.POST.getlist('delete_image')
+        
+        # Set status based on submit button
+        submit_action = self.request.POST.get('submit_action', 'update')
+        old_status = self.object.status
+        
+        if submit_action == 'submit' and old_status == 'draft':
+            form.instance.status = 'pending'
+        
+        # Save the review
+        with transaction.atomic():
+            # Delete images marked for deletion
+            for image_id in images_to_delete:
+                try:
+                    image = ReviewImage.objects.get(id=image_id, review=self.object)
+                    image.delete()
+                except ReviewImage.DoesNotExist:
+                    pass
+            
+            # Process new images
+            current_image_count = self.object.images.count()
+            new_images = self.request.FILES.getlist('images')
+            available_slots = settings.MAX_REVIEW_IMAGES - current_image_count + len(images_to_delete)
+            
+            for i, image in enumerate(new_images[:available_slots]):
+                ReviewImage.objects.create(
+                    review=self.object,
+                    image=image,
+                    order=current_image_count + i
+                )
+            
+            response = super().form_valid(form)
+        
+        # Add success message
+        if old_status == 'draft' and form.instance.status == 'pending':
+            messages.success(self.request, "Votre avis a été soumis et est en attente de validation.")
+        else:
+            messages.success(self.request, "Votre avis a été mis à jour avec succès.")
+        
+        return response
+
+
+class ReviewDeleteView(LoginRequiredMixin, DeleteView):
+    model = Review
+    template_name = 'reviews/review_confirm_delete.html'
+    
+    def get_success_url(self):
+        if self.request.GET.get('next') == 'profile':
+            return reverse('user_reviews')
+        return reverse('software_detail', kwargs={'slug': self.kwargs['slug']})
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['software'] = self.object.software
+        return context
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Check if the user is the owner of the review
+        review = self.get_object()
+        if review.user != request.user:
+            messages.error(request, "Vous n'êtes pas autorisé à supprimer cet avis.")
+            return redirect('software_detail', slug=self.kwargs['slug'])
+        
+        return super().dispatch(request, *args, **kwargs)
+
+
+class ReviewVoteView(LoginRequiredMixin, View):
+    """Handle AJAX voting on reviews"""
+    
+    def post(self, request, *args, **kwargs):
+        review_id = self.kwargs.get('pk')
+        review = get_object_or_404(Review, id=review_id, status='published')
+        
+        # Check if user is not voting on their own review
+        if review.user == request.user:
+            return JsonResponse({
+                'success': False,
+                'message': "Vous ne pouvez pas voter sur votre propre avis."
+            }, status=403)
+        
+        # Get vote data from request
+        try:
+            data = json.loads(request.body)
+            vote_value = data.get('vote')
+            
+            if vote_value not in [1, -1]:
+                raise ValueError("Vote value must be 1 or -1")
+                
+        except (json.JSONDecodeError, ValueError) as e:
+            return JsonResponse({
+                'success': False,
+                'message': str(e)
+            }, status=400)
+        
+        # Process vote
+        try:
+            # Check if user already voted
+            vote, created = ReviewVote.objects.get_or_create(
+                user=request.user,
+                review=review,
+                defaults={'vote': vote_value}
+            )
+            
+            if not created:
+                # If same vote, remove it (toggle)
+                if vote.vote == vote_value:
+                    vote.delete()
+                    action = 'removed'
+                else:
+                    # If different vote, update it
+                    vote.vote = vote_value
+                    vote.save()
+                    action = 'changed'
+            else:
+                action = 'added'
+            
+            # Return updated counts
+            return JsonResponse({
+                'success': True,
+                'action': action,
+                'upvotes': review.upvotes(),
+                'downvotes': review.downvotes(),
+                'score': review.vote_score()
+            })
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': str(e)
+            }, status=500)
+
+
+def post_social_login(request):
+    """Handle post social login redirection"""
+    # Check if user has a profile
+    try:
+        profile = request.user.userprofile
+        if not profile.username or profile.username.count('_') >= 1:
+            # Redirect to complete profile if username not set or is temporary
+            return redirect(reverse('complete_profile'))
+    except:
+        # If user doesn't have a profile, create one and redirect
+        if request.user.is_authenticated:
+            UserProfile.objects.create(
+                user=request.user,
+                username=f"user_{uuid.uuid4().hex[:8]}"  # Temporary username
+            )
+            return redirect(reverse('complete_profile'))
+    
+    # If user already has a complete profile, redirect to home
+    return redirect(reverse('home'))
