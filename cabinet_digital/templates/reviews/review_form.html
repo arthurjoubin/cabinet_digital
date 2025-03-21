@@ -5,15 +5,15 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto py-8">
-    <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+<div class="max-w-3xl mx-auto py-6">
+    <div class="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
         <!-- Header -->
-        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h1 class="text-2xl font-bold text-gray-900">
+        <div class="px-5 py-3 border-b border-gray-200 flex items-center justify-between">
+            <h1 class="text-xl font-bold text-gray-900">
                 {% if is_edit %}Modifier mon avis{% else %}Ajouter un avis{% endif %}
             </h1>
             <div>
-                <a href="{% url 'software_detail' software.slug %}" class="text-blue-600 hover:text-blue-800 inline-flex items-center gap-2">
+                <a href="{% url 'software_detail' software.slug %}" class="text-blue-600 hover:text-blue-800 inline-flex items-center gap-1 text-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
@@ -23,37 +23,45 @@
         </div>
         
         <!-- Software info -->
-        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center">
+        <div class="px-5 py-3 bg-gray-50 border-b border-gray-200 flex items-center">
             {% if software.logo %}
-            <div class="w-12 h-12 mr-4 flex-shrink-0">
+            <div class="w-10 h-10 mr-3 flex-shrink-0">
                 <img src="{{ MEDIA_URL }}{{ software.logo.url }}" alt="{{ software.name }}" class="w-full h-full object-contain">
             </div>
             {% endif %}
             <div>
-                <h2 class="text-lg font-semibold">{{ software.name }}</h2>
-                <p class="text-sm text-gray-500">{{ software.excerpt|truncatechars:100 }}</p>
+                <h2 class="text-base font-semibold">{{ software.name }}</h2>
+                <p class="text-xs text-gray-500">{{ software.excerpt|truncatechars:80 }}</p>
             </div>
         </div>
         
         <!-- Form -->
-        <div class="p-6">
+        <div class="p-5">
             {% if messages %}
-            <div class="mb-6">
+            <div class="mb-4">
                 {% for message in messages %}
-                <div class="{% if message.tags == 'success' %}bg-green-50 border-green-200 text-green-800{% elif message.tags == 'error' %}bg-red-50 border-red-200 text-red-800{% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %} p-4 mb-4 rounded-lg border">
+                <div class="{% if message.tags == 'success' %}bg-green-50 border-green-200 text-green-800{% elif message.tags == 'error' %}bg-red-50 border-red-200 text-red-800{% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %} p-3 mb-3 rounded-lg border text-sm">
                     {{ message }}
                 </div>
                 {% endfor %}
             </div>
             {% endif %}
             
-            <form method="post" enctype="multipart/form-data" class="space-y-6" id="review-form" hx-encoding="multipart/form-data">
+            <form 
+                method="post" 
+                enctype="multipart/form-data" 
+                class="space-y-4" 
+                id="review-form" 
+                hx-encoding="multipart/form-data"
+                data-max-images="{{ max_images }}"
+                data-existing-images="{% if existing_images %}{{ existing_images.count }}{% else %}0{% endif %}"
+            >
                 {% csrf_token %}
                 
                 {% if form.errors %}
-                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 text-sm">
                     <p class="text-red-800 font-semibold">Erreur :</p>
-                    <ul class="list-disc ml-4 text-red-800">
+                    <ul class="list-disc ml-4 text-red-800 text-sm">
                         {% for field in form %}
                             {% for error in field.errors %}
                                 <li>{{ error }}</li>
@@ -69,9 +77,9 @@
                 <!-- Rating -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Note</label>
-                    <div class="flex flex-wrap gap-4">
+                    <div class="flex flex-wrap gap-2">
                         {% for radio in form.rating %}
-                        <label class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50">
+                        <label class="inline-flex items-center gap-1 bg-white px-3 py-1.5 rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 text-sm">
                             {{ radio.tag }}
                             <span>{{ radio.choice_label }}</span>
                         </label>
@@ -93,30 +101,158 @@
                         Avis détaillé
                     </label>
                     {{ form.content }}
-                    <p class="mt-1 text-sm text-gray-500">Décrivez votre expérience avec ce logiciel.</p>
+                    <p class="mt-1 text-xs text-gray-500">Décrivez votre expérience avec ce logiciel.</p>
                 </div>
                 
                 <!-- Images -->
-                <div>
-                    <label for="{{ form.images.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                        Images (facultatif)
-                    </label>
-                    {{ form.images }}
-                    <p class="mt-1 text-sm text-gray-500">Maximum {{ max_images }} images au format JPG, PNG ou WebP.</p>
+                <div x-data="{ 
+                    fileInputVisible: true,
+                    selectedFiles: [], 
+                    imagePreviewUrls: [],
+                    existingImageCount: {% if existing_images %}{{ existing_images.count }}{% else %}0{% endif %},
+                    maxImages: {{ max_images }},
                     
+                    handleFileSelect(event) {
+                        const files = event.target.files;
+                        if (!files.length) return;
+                        
+                        // Determine how many slots we can use
+                        const availableSlots = this.maxImages - this.existingImageCount - this.selectedFiles.length;
+                        if (availableSlots <= 0) {
+                            alert(`Vous avez atteint le nombre maximum d'images (${this.maxImages}).`);
+                            return;
+                        }
+                        
+                        const filesToAdd = Array.from(files).slice(0, availableSlots);
+                        
+                        // Process each file
+                        filesToAdd.forEach(file => {
+                            // Store file
+                            this.selectedFiles.push(file);
+                            
+                            // Create preview URL
+                            const reader = new FileReader();
+                            reader.onload = e => {
+                                this.imagePreviewUrls.push({
+                                    url: e.target.result,
+                                    name: file.name
+                                });
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                        
+                        // Reset file input to allow selecting the same file again
+                        event.target.value = '';
+                        
+                        // Hide file input if we've reached the limit
+                        this.updateFileInputVisibility();
+                        
+                        // Update the hidden form input right away
+                        this.updateFormInput();
+                    },
+                    
+                    removeNewImage(index) {
+                        this.imagePreviewUrls.splice(index, 1);
+                        this.selectedFiles.splice(index, 1);
+                        this.updateFileInputVisibility();
+                        this.updateFormInput();
+                    },
+                    
+                    updateFileInputVisibility() {
+                        const totalImages = this.existingImageCount + this.selectedFiles.length;
+                        this.fileInputVisible = totalImages < this.maxImages;
+                    },
+                    
+                    updateFormInput() {
+                        // Transfer files to the actual form input
+                        const fileInput = document.getElementById('id_images');
+                        if (fileInput && this.selectedFiles.length > 0) {
+                            // Create a new FileList-like object
+                            const dt = new DataTransfer();
+                            
+                            // Add each selected file to the DataTransfer object
+                            this.selectedFiles.forEach(file => {
+                                dt.items.add(file);
+                            });
+                            
+                            // Set the files property of the actual input element
+                            fileInput.files = dt.files;
+                        }
+                    }
+                }"
+                x-init="$nextTick(() => { document.getElementById('id_images').setAttribute('multiple', 'multiple'); })"
+                >
+                    <div class="flex items-center justify-between mb-1">
+                        <label for="image-input" class="block text-sm font-medium text-gray-700">
+                            Images (facultatif)
+                        </label>
+                        <span class="text-xs text-gray-500" x-text="`${existingImageCount + selectedFiles.length}/${maxImages} images`"></span>
+                    </div>
+                    
+                    <!-- Upload Area -->
+                    <div class="bg-gray-50 border border-gray-300 rounded-lg p-3 mb-2" x-show="fileInputVisible">
+                        <div class="flex flex-col gap-2">
+                            <div>
+                                <label for="image-input" class="flex items-center justify-center w-full px-3 py-2 bg-white rounded-md border border-gray-300 cursor-pointer hover:bg-gray-50 text-sm transition-colors duration-200">
+                                    <svg class="w-4 h-4 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    Ajouter des images
+                                </label>
+                                <input 
+                                    type="file" 
+                                    id="image-input"
+                                    name="temp_images" 
+                                    accept="image/jpeg,image/png,image/webp,image/gif"
+                                    class="hidden"
+                                    @change="handleFileSelect"
+                                    multiple
+                                >
+                                <p class="mt-1 text-xs text-gray-500 text-center">JPG, PNG, WebP, GIF</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- New Image Previews -->
+                    <div class="grid grid-cols-4 gap-2 mb-2" x-show="selectedFiles.length > 0">
+                        <template x-for="(preview, index) in imagePreviewUrls" :key="index">
+                            <div class="relative bg-white border border-gray-200 rounded-lg overflow-hidden">
+                                <img :src="preview.url" :alt="preview.name" class="w-full h-16 object-cover">
+                                <button 
+                                    type="button" 
+                                    class="absolute top-0 right-0 bg-black bg-opacity-60 p-1 rounded-bl-md hover:bg-opacity-80 transition-opacity duration-200"
+                                    @click="removeNewImage(index)"
+                                >
+                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <!-- Add button for selected images -->
+                    <div class="text-right mt-1" x-show="selectedFiles.length > 0">
+                        <p class="text-xs text-green-600 mb-1 italic">Les images sélectionnées seront envoyées lors de l'enregistrement</p>
+                    </div>
+                    
+                    <!-- Hidden input for file submission -->
+                    <div class="hidden">
+                        {{ form.images }}
+                    </div>
+                    
+                    <!-- Existing images -->
                     {% if existing_images %}
-                    <div class="mt-4">
-                        <h3 class="text-sm font-medium text-gray-700 mb-2">Images existantes</h3>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    <div class="mt-3">
+                        <h3 class="text-sm font-medium text-gray-700 mb-1">Images existantes</h3>
+                        <div class="grid grid-cols-4 gap-2">
                             {% for image in existing_images %}
-                            <div class="relative group">
-                                <div class="bg-gray-200 rounded overflow-hidden aspect-w-16 aspect-h-9">
-                                    <img src="{{ image.image.url }}" alt="Image {{ forloop.counter }}" class="w-full h-full object-cover">
-                                </div>
-                                <div class="mt-1 flex">
-                                    <label class="flex items-center gap-1 text-sm text-red-600 cursor-pointer">
-                                        <input type="checkbox" name="delete_image" value="{{ image.id }}" class="form-checkbox text-red-600">
-                                        <span>Supprimer</span>
+                            <div class="relative bg-white border border-gray-200 rounded-lg overflow-hidden">
+                                <img src="{{ image.image.url }}" alt="Image {{ forloop.counter }}" class="w-full h-16 object-cover">
+                                <div class="absolute bottom-0 right-0 bg-black bg-opacity-60 rounded-tl text-xs p-1">
+                                    <label class="flex items-center gap-1 text-white cursor-pointer">
+                                        <input type="checkbox" name="delete_image" value="{{ image.id }}" class="form-checkbox text-red-600 h-3 w-3">
+                                        <span class="text-xs">Supprimer</span>
                                     </label>
                                 </div>
                             </div>
@@ -126,24 +262,36 @@
                     {% endif %}
                 </div>
                 
-                <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                <div class="flex justify-end gap-2 pt-3 border-t border-gray-200 mt-4">
                     {% if is_edit %}
-                        <button type="submit" name="submit_action" value="update" class="px-6 py-2 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition duration-200">
-                            Enregistrer les modifications
+                        <button type="submit" name="submit_action" value="update" class="px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors duration-300 inline-flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Enregistrer
                         </button>
                         
                         {% if object.status == 'draft' %}
-                        <button type="submit" name="submit_action" value="submit" class="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition duration-200">
-                            Soumettre pour publication
+                        <button type="submit" name="submit_action" value="submit" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-300 inline-flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            </svg>
+                            Soumettre
                         </button>
                         {% endif %}
                     {% else %}
-                        <button type="submit" name="submit_action" value="draft" class="px-6 py-2 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition duration-200">
-                            Enregistrer comme brouillon
+                        <button type="submit" name="submit_action" value="draft" class="px-4 py-2 bg-gray-200 text-gray-800 text-sm font-medium rounded-md hover:bg-gray-300 transition-colors duration-300 inline-flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                            </svg>
+                            Brouillon
                         </button>
                         
-                        <button type="submit" name="submit_action" value="submit" class="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition duration-200">
-                            Soumettre pour publication
+                        <button type="submit" name="submit_action" value="submit" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-300 inline-flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            </svg>
+                            Publier
                         </button>
                     {% endif %}
                 </div>
@@ -155,10 +303,11 @@
 
 {% block extra_js %}
 <script>
-    // Highlight selected rating
     document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('review-form');
+        
+        // Highlight selected rating
         const ratingInputs = document.querySelectorAll('input[name="rating"]');
-        const ratingLabels = document.querySelectorAll('input[name="rating"] + span');
         
         ratingInputs.forEach(input => {
             const label = input.parentElement;

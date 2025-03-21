@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+{% load socialaccount %}
+
+{% block title %}Connexion - Cabinet Digital{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto my-12 px-4">
+  <div class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
+    <div class="p-6">
+      <div class="text-center mb-8">
+        <img src="{% static 'cabinet_logos/logo_cabinetdigital.png' %}" alt="Cabinet Digital logo" class="h-16 mx-auto mb-4">
+        <h1 class="text-2xl font-bold text-gray-900">Connectez-vous à Cabinet Digital</h1>
+        <p class="text-gray-600 mt-2">Accédez à votre compte pour gérer vos avis et votre profil</p>
+      </div>
+
+      {% if messages %}
+      <div class="mb-6">
+        {% for message in messages %}
+        <div class="p-4 rounded-md {% if message.tags == 'error' %}bg-red-50 text-red-700{% else %}bg-green-50 text-green-700{% endif %}">
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="space-y-4">
+        {% with callback_url=request.build_absolute_uri|slice:":24" %}
+        <div class="p-4 bg-blue-50 text-blue-700 rounded-md mb-4 text-xs">
+          <p><strong>URL à configurer dans Google Cloud Console:</strong></p>
+          <p class="mt-2">{{ callback_url }}/accounts/google/login/callback/</p>
+        </div>
+        {% endwith %}
+        
+        <a href="{% provider_login_url 'google' process='login' next=request.GET.next|default:'/' %}" class="w-full flex items-center justify-center px-6 py-3 border border-gray-300 rounded-md shadow-sm bg-white hover:bg-gray-50 transition-colors duration-300">
+          <img src="{% static 'icons/google_logo.svg' %}" alt="Google" class="h-5 w-5 mr-2">
+          <span class="text-gray-800 font-medium">Continuer avec Google</span>
+        </a>
+      </div>
+
+      <div class="mt-8 text-center text-sm text-gray-600">
+        <p>En vous connectant, vous acceptez nos <a href="#" class="text-blue-600 hover:underline">Conditions d'utilisation</a> et notre <a href="#" class="text-blue-600 hover:underline">Politique de confidentialité</a>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} 

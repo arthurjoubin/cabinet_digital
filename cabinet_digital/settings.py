@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import sys
 
 # Charger les variables d'environnement
 load_dotenv()
@@ -34,6 +35,16 @@ ALLOWED_HOSTS = ['sansdistraction.eu.pythonanywhere.com', 'www.sansdistraction.e
 # Configuration de DEBUG
 print(os.environ.get('DJANGO_ENV'))
 DEBUG = os.environ.get('DJANGO_ENV') == 'development'
+
+# Utiliser des paramètres spécifiques pour le développement
+if DEBUG:
+    try:
+        from cabinet_digital.settings_local import configure_for_development
+        print("Configuration pour le développement local...")
+        # Utiliser le module settings lui-même plutôt qu'un dictionnaire locals()
+        configure_for_development(sys.modules[__name__])
+    except ImportError as e:
+        print(f"Erreur lors de l'importation des paramètres locaux: {e}")
 
 INSTALLED_APPS = [
     # Unfold admin (doit être avant django.contrib.admin)
@@ -232,12 +243,26 @@ AUTHENTICATION_BACKENDS = [
 
 # Django-allauth configuration
 ACCOUNT_EMAIL_VERIFICATION = 'none'
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USERNAME_REQUIRED = False
-SOCIALACCOUNT_AUTO_SIGNUP = False
+SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
+ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_EMAIL_SUBJECT_PREFIX = 'Cabinet Digital - '
+
+# Définir le protocole en fonction de l'environnement
+if DEBUG:
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'http'
+else:
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+
+ACCOUNT_ADAPTER = 'cabinet_digital.adapters.NoSignupAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'cabinet_digital.adapters.CustomSocialAccountAdapter'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': [
@@ -246,12 +271,14 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
         'AUTH_PARAMS': {
             'access_type': 'online',
+        },
+        'APP': {
+            'client_id': os.environ.get('CLIENT_ID_GOOGLE'),
+            'secret': os.environ.get('SECRET_KEY_GOOGLE'),
+            'key': ''
         }
     }
 }
-
-LOGIN_REDIRECT_URL = 'post_social_login'
-LOGOUT_REDIRECT_URL = 'home'
 
 # Image upload settings for reviews
 MAX_REVIEW_IMAGES = 5

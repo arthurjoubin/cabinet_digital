@@ -896,7 +896,7 @@ class MetierDetailView(DetailView):
 
 class CompleteProfileView(LoginRequiredMixin, FormView):
     template_name = 'profile/complete_profile.html'
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('user_reviews')
     
     class ProfileForm(forms.ModelForm):
         class Meta:
@@ -904,6 +904,12 @@ class CompleteProfileView(LoginRequiredMixin, FormView):
             fields = ['username']
             widgets = {
                 'username': forms.TextInput(attrs={'class': 'w-full px-3 py-2 border rounded-md'})
+            }
+            labels = {
+                'username': 'Nom d\'affichage'
+            }
+            help_texts = {
+                'username': 'Ce nom sera visible publiquement avec vos avis et commentaires.'
             }
     
     form_class = ProfileForm
@@ -915,15 +921,15 @@ class CompleteProfileView(LoginRequiredMixin, FormView):
     
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, "Votre profil a été mis à jour avec succès.")
+        messages.success(self.request, "Votre profil a été complété avec succès.")
         return super().form_valid(form)
     
     def get_success_url(self):
-        # Redirect to the page the user was trying to access
-        next_url = self.request.GET.get('next')
+        # Rediriger vers l'URL stockée en session ou vers la page d'avis par défaut
+        next_url = self.request.session.pop('post_profile_redirect', None)
         if next_url:
             return next_url
-        return super().get_success_url()
+        return reverse('user_reviews')
 
 
 class UserProfileView(LoginRequiredMixin, UpdateView):
@@ -959,7 +965,12 @@ class UserReviewsView(LoginRequiredMixin, ListView):
     paginate_by = 10
     
     def get_queryset(self):
-        return Review.objects.filter(user=self.request.user).order_by('-created_at')
+        queryset = Review.objects.filter(user=self.request.user).order_by('-created_at')
+        # Handle filtering
+        status_filter = self.request.GET.get('status')
+        if status_filter and status_filter in ['draft', 'pending', 'published', 'rejected']:
+            queryset = queryset.filter(status=status_filter)
+        return queryset
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -970,10 +981,9 @@ class UserReviewsView(LoginRequiredMixin, ListView):
         context['published_count'] = Review.objects.filter(user=self.request.user, status='published').count()
         context['rejected_count'] = Review.objects.filter(user=self.request.user, status='rejected').count()
         
-        # Handle filtering
+        # Set active filter
         status_filter = self.request.GET.get('status')
         if status_filter and status_filter in ['draft', 'pending', 'published', 'rejected']:
-            context['reviews'] = context['reviews'].filter(status=status_filter)
             context['active_filter'] = status_filter
         else:
             context['active_filter'] = 'all'
@@ -984,12 +994,21 @@ class UserReviewsView(LoginRequiredMixin, ListView):
 # Custom widget for multiple file upload
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
+    
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        context['widget']['attrs'].update({
+            'accept': 'image/jpeg,image/png,image/webp,image/gif',
+            'class': 'w-full p-2 border-0 rounded-md',
+            'multiple': True
+        })
+        return context
 
 class MultipleFileField(forms.FileField):
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault("widget", MultipleFileInput())
+        kwargs.setdefault('widget', MultipleFileInput())
         super().__init__(*args, **kwargs)
-
+        
     def clean(self, data, initial=None):
         single_file_clean = super().clean
         if isinstance(data, (list, tuple)):
@@ -1053,11 +1072,13 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
             # Process images
             images = self.request.FILES.getlist('images')
             for i, image in enumerate(images[:settings.MAX_REVIEW_IMAGES]):
-                ReviewImage.objects.create(
+                # Create the image
+                review_image = ReviewImage(
                     review=self.object,
                     image=image,
                     order=i
                 )
+                review_image.save()
         
         # Add success message
         if form.instance.status == 'pending':
@@ -1138,11 +1159,13 @@ class ReviewEditView(LoginRequiredMixin, UpdateView):
             available_slots = settings.MAX_REVIEW_IMAGES - current_image_count + len(images_to_delete)
             
             for i, image in enumerate(new_images[:available_slots]):
-                ReviewImage.objects.create(
+                # Create the image
+                review_image = ReviewImage(
                     review=self.object,
                     image=image,
                     order=current_image_count + i
                 )
+                review_image.save()
             
             response = super().form_valid(form)
         
@@ -1246,21 +1269,35 @@ class ReviewVoteView(LoginRequiredMixin, View):
 
 
 def post_social_login(request):
-    """Handle post social login redirection"""
-    # Check if user has a profile
-    try:
-        profile = request.user.userprofile
-        if not profile.username or profile.username.count('_') >= 1:
-            # Redirect to complete profile if username not set or is temporary
-            return redirect(reverse('complete_profile'))
-    except:
-        # If user doesn't have a profile, create one and redirect
-        if request.user.is_authenticated:
-            UserProfile.objects.create(
-                user=request.user,
-                username=f"user_{uuid.uuid4().hex[:8]}"  # Temporary username
-            )
-            return redirect(reverse('complete_profile'))
+    """
+    Vue appelée après une connexion sociale réussie.
+    Vérifie si l'utilisateur a un profil complet, sinon le redirige vers la page de complétion de profil.
+    """
+    # Vérifier si c'est la première connexion de l'utilisateur
+    first_login = False
     
-    # If user already has a complete profile, redirect to home
-    return redirect(reverse('home'))
+    # Vérifier si l'utilisateur a un profil utilisateur
+    if not hasattr(request.user, 'userprofile'):
+        from cabinet_digital.models import UserProfile
+        # Créer un profil utilisateur vide
+        UserProfile.objects.create(user=request.user)
+        first_login = True
+    
+    # Vérifier si le profil est complet (a un nom d'utilisateur)
+    if not request.user.userprofile.username:
+        # Stocker l'URL de redirection après complétion du profil
+        next_url = request.GET.get('next')
+        if next_url:
+            request.session['post_profile_redirect'] = next_url
+        
+        # Ajouter un message encourageant la modification du nom d'affichage
+        if first_login:
+            messages.info(request, "Bienvenue ! Pour une meilleure expérience, veuillez choisir un nom d'affichage qui sera visible dans vos avis et commentaires.")
+        else:
+            messages.info(request, "Veuillez compléter votre profil en ajoutant un nom d'affichage pour pouvoir publier des avis.")
+        
+        return redirect('complete_profile')
+    
+    # Rediriger vers la page demandée ou vers "Mes avis" par défaut
+    next_url = request.GET.get('next', reverse('user_reviews'))
+    return redirect(next_url)
