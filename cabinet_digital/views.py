@@ -1035,6 +1035,14 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
     
     form_class = ReviewForm
     
+    def dispatch(self, request, *args, **kwargs):
+        # Check if user already has a review for this software
+        software = get_object_or_404(Software, slug=self.kwargs['slug'])
+        if Review.objects.filter(user=request.user, software=software).exists():
+            messages.error(request, "Vous avez déjà publié un avis pour ce logiciel. Vous pouvez modifier votre avis existant.")
+            return redirect('software_detail', slug=software.slug)
+        return super().dispatch(request, *args, **kwargs)
+    
     def get_success_url(self):
         # Redirect to the software detail page
         return reverse('software_detail', kwargs={'slug': self.kwargs['slug']})

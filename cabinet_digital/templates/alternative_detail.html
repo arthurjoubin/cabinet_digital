@@ -44,7 +44,9 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {% for alternative in alternatives %}
-                        {% include 'template_card_software.html' with software=alternative %}
+                        <div class="col-span-1">
+                            {% include 'template_card_software.html' with software=alternative %}
+                        </div>
                     {% empty %}
                         <div class="col-span-full py-12">
                             <p class="text-center text-gray-500 text-lg">

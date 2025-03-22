@@ -84,6 +84,28 @@ class Software(models.Model):
             return reviews.aggregate(models.Avg('rating'))['rating__avg']
         return None
         
+    def average_rating_int(self):
+        """Get the integer part of the average rating"""
+        avg = self.average_rating()
+        if avg is None:
+            return 0
+        return int(avg)
+        
+    def has_half_star(self):
+        """Determine if the rating should display a half star by rounding to nearest 0.5"""
+        avg = self.average_rating()
+        if avg is None:
+            return False
+        
+        # Calculate the decimal part
+        decimal_part = avg - int(avg)
+        
+        # Round to nearest 0.5
+        # 0.0-0.24 -> 0.0
+        # 0.25-0.74 -> 0.5
+        # 0.75-0.99 -> 1.0
+        return 0.25 <= decimal_part < 0.75
+        
     def review_count(self):
         """Get the number of published reviews for this software"""
         return self.reviews.filter(status='published').count()
