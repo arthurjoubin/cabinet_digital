@@ -1,0 +1,42 @@
+<!-- Boutons de sélection de logiciel -->
+<div id="software-selection-buttons-{{ software.id }}" class="flex flex-wrap gap-3 items-center">
+    <div class="text-sm font-medium text-gray-700">Actions:</div>
+    
+    <!-- Bouton "J'utilise ce logiciel" -->
+    <button 
+        hx-post="{% url 'toggle_software_selection' %}"
+        hx-vals='{"software_id": "{{ software.id }}", "selection_type": "using"}'
+        hx-trigger="click"
+        hx-target="#software-selection-buttons-{{ software.id }}"
+        hx-swap="outerHTML"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        class="flex items-center px-3 py-1.5 border rounded-md text-sm {% if user_selection_type == 'using' %}bg-blue-100 border-blue-300 text-blue-800{% else %}bg-white border-gray-300 text-gray-700 hover:bg-gray-50{% endif %}">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span>{% if user_selection_type == 'using' %}J'utilise ce logiciel{% else %}Je l'utilise{% endif %}</span>
+    </button>
+    
+    <!-- Bouton "Ça m'intéresse" -->
+    <button 
+        hx-post="{% url 'toggle_software_selection' %}"
+        hx-vals='{"software_id": "{{ software.id }}", "selection_type": "interested"}'
+        hx-trigger="click"
+        hx-target="#software-selection-buttons-{{ software.id }}"
+        hx-swap="outerHTML"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        class="flex items-center px-3 py-1.5 border rounded-md text-sm {% if user_selection_type == 'interested' %}bg-red-100 border-red-300 text-red-800{% else %}bg-white border-gray-300 text-gray-700 hover:bg-gray-50{% endif %}">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+        </svg>
+        <span>{% if user_selection_type == 'interested' %}Je suis intéressé{% else %}Ça m'intéresse{% endif %}</span>
+    </button>
+    
+    <!-- Lien vers "Mes logiciels" au lieu des collections -->
+    <a href="{% url 'mes_logiciels' %}" class="flex items-center px-3 py-1.5 bg-black border border-black rounded-md text-sm text-white hover:bg-gray-800 transition-colors">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+        </svg>
+        <span>Voir ma collection</span>
+    </a>
+</div> 

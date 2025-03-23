@@ -44,6 +44,25 @@
   </div>
 
   <div class="p-4 sm:p-8 max-w-5xl mx-auto" x-data="{ activeTab: 'description' }">
+    <!-- Boutons d'actions pour les utilisateurs connectés -->
+    {% if user.is_authenticated %}
+    <div class="mb-6">
+        {% with user_selection_type=None %}
+            {% if software in user_using_software %}
+                {% with user_selection_type='using' %}
+                    {% include 'software_selection_buttons.html' %}
+                {% endwith %}
+            {% elif software in user_interested_software %}
+                {% with user_selection_type='interested' %}
+                    {% include 'software_selection_buttons.html' %}
+                {% endwith %}
+            {% else %}
+                {% include 'software_selection_buttons.html' %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    {% endif %}
+    
     <div class="flex flex-col md:flex-row items-stretch justify-between gap-6 mb-8">
       <div class="flex flex-col md:flex-row items-center md:items-start flex-grow border p-6 bg-gray-50 rounded-xl">
         {% if software.logo %}
@@ -84,16 +103,34 @@
       <div class="mt-2 mb-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center">
-            <div class="flex text-yellow-500">
+            <div class="flex">
+              {% with avg=software.average_rating %}
+              {% with full_stars=software.average_rating_int %}
+              {% with has_half=software.has_half_star %}
+              
               {% for i in "12345" %}
-                {% if forloop.counter <= software.average_rating_int %}
-                  ★
-                {% elif forloop.counter <= software.average_rating_int|add:"0.5" %}
-                  ★
-                {% else %}
-                  ☆
-                {% endif %}
+                  {% if forloop.counter <= full_stars %}
+                      <!-- Étoile pleine -->
+                      <svg class="w-5 h-5" viewBox="0 0 24 24">
+                          <path fill="#000000" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                      </svg>
+                  {% elif forloop.counter == full_stars|add:"1" and has_half %}
+                      <!-- Demi-étoile -->
+                      <svg class="w-5 h-5" viewBox="0 0 24 24">
+                          <path fill="#E5E7EB" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                          <path fill="#000000" d="M12 17.27L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"/>
+                      </svg>
+                  {% else %}
+                      <!-- Étoile vide -->
+                      <svg class="w-5 h-5" viewBox="0 0 24 24">
+                          <path fill="#E5E7EB" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                      </svg>
+                  {% endif %}
               {% endfor %}
+              
+              {% endwith %}
+              {% endwith %}
+              {% endwith %}
             </div>
             <span class="ml-2 text-sm font-medium text-gray-700">{{ software.average_rating|floatformat:1 }}</span>
           </div>

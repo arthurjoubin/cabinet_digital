@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI, UserProfile, Review, ReviewImage, ReviewVote
+from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI, UserProfile, Review, ReviewImage, ReviewVote, UserSoftwareSelection, UserSoftwareCollection
 from django.db import models
 from django import forms
 from django.utils.html import format_html
@@ -343,5 +343,34 @@ class ReviewVoteAdmin(ModelAdmin):
     def vote_display(self, obj):
         return '👍' if obj.vote == 1 else '👎'
     vote_display.short_description = 'Vote'
+
+@admin.register(UserSoftwareSelection)
+class UserSoftwareSelectionAdmin(ModelAdmin):
+    list_display = ['user_display', 'software', 'selection_type', 'created_at']
+    list_filter = ['selection_type', 'created_at']
+    search_fields = ['user__userprofile__username', 'software__name']
+    
+    def user_display(self, obj):
+        return obj.user.userprofile.username
+    user_display.short_description = 'Utilisateur'
+
+@admin.register(UserSoftwareCollection)
+class UserSoftwareCollectionAdmin(ModelAdmin):
+    list_display = ['title', 'user_display', 'created_at', 'using_count', 'interested_count']
+    list_filter = ['created_at']
+    search_fields = ['title', 'user__userprofile__username']
+    filter_horizontal = ['using_software', 'interested_software']
+    
+    def user_display(self, obj):
+        return obj.user.userprofile.username
+    user_display.short_description = 'Utilisateur'
+    
+    def using_count(self, obj):
+        return obj.using_software.count()
+    using_count.short_description = 'Logiciels utilisés'
+    
+    def interested_count(self, obj):
+        return obj.interested_software.count()
+    interested_count.short_description = 'Logiciels souhaités'
 
 

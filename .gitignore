@@ -9,6 +9,7 @@ CACHE/
 !/media/.gitkeep
 
 # Static files
+commandes.md
 /static/*
 !/static/.gitkeep
 !/static/cabinet_logos/

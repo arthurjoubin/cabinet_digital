@@ -5,6 +5,7 @@ from tinymce.models import HTMLField
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from django.conf import settings
+import uuid
 
 class SoftwareCategory(models.Model):
     name = models.CharField(max_length=100)
@@ -382,3 +383,48 @@ class ReviewVote(models.Model):
         
     def __str__(self):
         return f"{self.user.userprofile.username} - {'👍' if self.vote == 1 else '👎'} - {self.review.software.name}"
+
+class UserSoftwareSelection(models.Model):
+    """
+    Modèle pour stocker les logiciels sélectionnés par l'utilisateur
+    """
+    USER_SELECTION_TYPE = (
+        ('using', 'Logiciels utilisés'),
+        ('interested', 'Logiciels souhaités'),
+    )
+    
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='software_selections')
+    software = models.ForeignKey(Software, on_delete=models.CASCADE, related_name='user_selections')
+    selection_type = models.CharField(max_length=10, choices=USER_SELECTION_TYPE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = "Sélection de logiciel"
+        verbose_name_plural = "Sélections de logiciels"
+        unique_together = ['user', 'software', 'selection_type']
+        
+    def __str__(self):
+        return f"{self.user.userprofile.username} - {self.software.name} - {self.get_selection_type_display()}"
+
+class UserSoftwareCollection(models.Model):
+    """
+    Modèle pour les collections de logiciels partagées par l'utilisateur
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='software_collections')
+    title = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    using_software = models.ManyToManyField(Software, related_name='in_using_collections', blank=True)
+    interested_software = models.ManyToManyField(Software, related_name='in_interested_collections', blank=True)
+    share_token = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Collection de logiciels"
+        verbose_name_plural = "Collections de logiciels"
+        
+    def __str__(self):
+        return f"{self.user.userprofile.username} - {self.title}"
+        
+    def get_absolute_url(self):
+        return reverse('mes_logiciels')

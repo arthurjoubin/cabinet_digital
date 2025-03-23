@@ -1,12 +1,12 @@
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView
-from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI, UserProfile, Review, ReviewImage, ReviewVote
+from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI, UserProfile, Review, ReviewImage, ReviewVote, UserSoftwareSelection, UserSoftwareCollection
 from django.conf import settings
 from django.db.models import Count, Prefetch, Q, F
 from django.shortcuts import redirect
 from django.utils.text import slugify
 from django.db.models.functions import Lower
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import logging
 from django.template.loader import get_template
 from django.shortcuts import render
@@ -231,6 +231,30 @@ class SoftwareDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         software = self.object
         categories = software.category.all()
+
+        # Ajouter les sélections de l'utilisateur au contexte
+        if self.request.user.is_authenticated:
+            # Récupérer le type de sélection actuel pour ce logiciel
+            try:
+                user_selection = UserSoftwareSelection.objects.get(
+                    user=self.request.user,
+                    software=software
+                )
+                context['user_selection_type'] = user_selection.selection_type
+            except UserSoftwareSelection.DoesNotExist:
+                context['user_selection_type'] = None
+                
+            # Pour assurer la compatibilité avec le code existant
+            user_using_software = Software.objects.filter(
+                user_selections__user=self.request.user,
+                user_selections__selection_type='using'
+            )
+            user_interested_software = Software.objects.filter(
+                user_selections__user=self.request.user,
+                user_selections__selection_type='interested'
+            )
+            context['user_using_software'] = user_using_software
+            context['user_interested_software'] = user_interested_software
 
         similar_softwares = (
             Software.objects
@@ -1309,3 +1333,194 @@ def post_social_login(request):
     # Rediriger vers la page demandée ou vers "Mes avis" par défaut
     next_url = request.GET.get('next', reverse('user_reviews'))
     return redirect(next_url)
+
+class ToggleSoftwareSelectionView(LoginRequiredMixin, View):
+    """
+    Vue pour gérer les trois états de sélection : pas intéressé (aucune sélection), 
+    intéressé, ou utilisation active du logiciel
+    """
+    def post(self, request, *args, **kwargs):
+        software_id = request.POST.get('software_id')
+        selection_type = request.POST.get('selection_type')
+        current_url = request.POST.get('current_url', '')
+        
+        if selection_type not in ['using', 'interested']:
+            return JsonResponse({'success': False, 'message': 'Type de sélection invalide'}, status=400)
+        
+        try:
+            software = Software.objects.get(id=software_id)
+            
+            # Récupérer toutes les sélections existantes pour ce logiciel et cet utilisateur
+            existing_selections = UserSoftwareSelection.objects.filter(
+                user=request.user,
+                software=software
+            )
+            
+            # Si l'utilisateur a déjà une sélection du même type, on la supprime (toggle off)
+            if existing_selections.filter(selection_type=selection_type).exists():
+                existing_selections.filter(selection_type=selection_type).delete()
+                action = 'removed'
+                new_type = None
+                
+                # Si la requête provient de la page de collection, retourner un contenu vide
+                # car l'élément doit être supprimé de la liste
+                if 'software-card' in request.headers.get('HX-Target', ''):
+                    return HttpResponse('')
+            else:
+                # Supprimer toute autre sélection existante (car c'est mutuellement exclusif)
+                existing_selections.delete()
+                
+                # Créer la nouvelle sélection
+                UserSoftwareSelection.objects.create(
+                    user=request.user,
+                    software=software,
+                    selection_type=selection_type
+                )
+                action = 'added'
+                new_type = selection_type
+            
+            # Récupère le nombre d'utilisateurs pour ce logiciel
+            using_count = UserSoftwareSelection.objects.filter(
+                software=software,
+                selection_type='using'
+            ).count()
+            
+            interested_count = UserSoftwareSelection.objects.filter(
+                software=software,
+                selection_type='interested'
+            ).count()
+            
+            # Renvoyer un fragment HTML pour les boutons si c'est demandé
+            if request.headers.get('HX-Request') == 'true' and 'software-selection-buttons' in request.headers.get('HX-Target', ''):
+                # Préparer le contexte pour le template
+                context = {
+                    'software': software,
+                    'user_selection_type': new_type,
+                    'using_count': using_count,
+                    'interested_count': interested_count
+                }
+                
+                # Rendre le fragment HTML des boutons
+                from django.template.loader import render_to_string
+                html = render_to_string('software_selection_buttons.html', context, request)
+                return HttpResponse(html)
+            
+            return JsonResponse({
+                'success': True,
+                'action': action,
+                'software_id': software_id,
+                'selection_type': selection_type,
+                'new_type': new_type,
+                'using_count': using_count,
+                'interested_count': interested_count
+            })
+            
+        except Software.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Logiciel non trouvé'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+class UserSoftwareCollectionListView(LoginRequiredMixin, ListView):
+    """
+    Vue pour afficher les logiciels sélectionnés par l'utilisateur
+    """
+    template_name = 'software_collections.html'
+    context_object_name = 'using_software'  # Par défaut
+    
+    def get_queryset(self):
+        # Retourne par défaut les logiciels utilisés
+        return Software.objects.filter(
+            user_selections__user=self.request.user,
+            user_selections__selection_type='using'
+        ).order_by('name')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Ajoute les logiciels qui intéressent l'utilisateur
+        context['interested_software'] = Software.objects.filter(
+            user_selections__user=self.request.user,
+            user_selections__selection_type='interested'
+        ).order_by('name')
+        
+        return context
+
+class UserSoftwareCollectionCreateView(LoginRequiredMixin, CreateView):
+    """
+    Vue pour créer une nouvelle collection de logiciels
+    """
+    model = UserSoftwareCollection
+    template_name = 'software_collection_form.html'
+    fields = ['title', 'description']
+    success_url = reverse_lazy('mes_logiciels')
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        response = super().form_valid(form)
+        
+        # Ajouter les logiciels sélectionnés à la collection
+        using_software_ids = self.request.POST.getlist('using_software')
+        interested_software_ids = self.request.POST.getlist('interested_software')
+        
+        # Ajouter les logiciels utilisés
+        if using_software_ids:
+            form.instance.using_software.add(*using_software_ids)
+            
+        # Ajouter les logiciels souhaités
+        if interested_software_ids:
+            form.instance.interested_software.add(*interested_software_ids)
+            
+        messages.success(self.request, "Votre collection a été créée avec succès.")
+        return response
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Personnaliser les widgets du formulaire
+        form.fields['title'].widget.attrs.update({
+            'class': 'w-full px-3 py-2 border rounded-md',
+            'placeholder': 'Titre de votre collection'
+        })
+        form.fields['description'].widget.attrs.update({
+            'class': 'w-full px-3 py-2 border rounded-md',
+            'rows': 3,
+            'placeholder': 'Description (facultative)'
+        })
+        return form
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Ajouter les sélections de l'utilisateur au contexte
+        context['using_software'] = Software.objects.filter(
+            user_selections__user=self.request.user,
+            user_selections__selection_type='using'
+        ).distinct()
+        context['interested_software'] = Software.objects.filter(
+            user_selections__user=self.request.user,
+            user_selections__selection_type='interested'
+        ).distinct()
+        return context
+
+class UserSoftwareCollectionDetailView(DetailView):
+    """
+    Vue pour afficher une collection de logiciels
+    """
+    model = UserSoftwareCollection
+    template_name = 'software_collection_detail.html'
+    context_object_name = 'collection'
+    
+    def get_object(self, queryset=None):
+        # Récupérer l'objet par son token de partage
+        token = self.kwargs.get('token')
+        return get_object_or_404(UserSoftwareCollection, share_token=token)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        collection = self.object
+        
+        # Ajouter le propriétaire de la collection au contexte
+        context['is_owner'] = self.request.user.is_authenticated and collection.user == self.request.user
+        
+        # URL de partage complète
+        context['share_url'] = self.request.build_absolute_uri(collection.get_absolute_url())
+        
+        return context

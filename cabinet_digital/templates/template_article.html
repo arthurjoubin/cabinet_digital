@@ -1,5 +1,5 @@
 <article class="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-    <header class="mb-8 bg-gray-50/50 border border-gray-100 rounded-xl p-8">
+    <header class="mb-8">
         <nav class="mb-8">
             <a href="{% url 'actualites' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-sky-700 bg-sky-50 rounded-lg hover:bg-sky-100 transition-colors duration-300">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
@@ -11,8 +11,8 @@
             </a>
         </nav>
 
-        <div class="space-y-4">
-            <h1 class="text-4xl font-bold text-gray-900">{{ variable.title }}</h1>
+        <div class="p-6 bg-gray-100 border border-gray-200 rounded-xl space-y-4">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">{{ variable.title }}</h1>
             
             {% if variable.excerpt %}
                 <p class="text-xl text-gray-600">{{ variable.excerpt |safe }}</p>

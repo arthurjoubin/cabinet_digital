@@ -23,7 +23,8 @@ from cabinet_digital.views import (
     AIModelListView, AIModelDetailView, AIToolListView, AIToolDetailView,
     AIArticleListView, AIArticleDetailView, ProviderDetailView,
     CompleteProfileView, UserProfileView, UserReviewsView, ReviewCreateView, 
-    ReviewEditView, ReviewDeleteView, ReviewVoteView
+    ReviewEditView, ReviewDeleteView, ReviewVoteView,
+    ToggleSoftwareSelectionView, UserSoftwareCollectionListView
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -123,6 +124,11 @@ urlpatterns = [
     path('outils/sftp-script-generateur/', views.sftp_generator, name='sftp_generator'),
     path('outils/tableau-amortissement-generateur/', views.amortissement_calculateur, name='amortissement_calculateur'),
     path('outils/', views.outils, name='outils'),
+    
+    # URLs pour les sélections de logiciels
+    path('software/selection/toggle/', ToggleSoftwareSelectionView.as_view(), name='toggle_software_selection'),
+    path('mes_logiciels/', UserSoftwareCollectionListView.as_view(), name='mes_logiciels'),
+    
     path('ia/modeles/', AIModelListView.as_view(), name='ai_model_list'),
     path('ia/modeles/<slug:slug>/', AIModelDetailView.as_view(), name='ai_model_detail'),
     path('ia/editeurs/<slug:slug>/', ProviderDetailView.as_view(), name='provider_detail'),
