@@ -27,6 +27,8 @@ from django.contrib import messages
 from django.db import transaction
 import uuid
 from django import forms
+from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import send_mail, get_connection
 
 
 logger = logging.getLogger(__name__)
@@ -1524,3 +1526,57 @@ class UserSoftwareCollectionDetailView(DetailView):
         context['share_url'] = self.request.build_absolute_uri(collection.get_absolute_url())
         
         return context
+
+@csrf_exempt
+def debug_email_test(request):
+    """Debug view to test email sending directly"""
+    if not settings.DEBUG:
+        return HttpResponse("This view is only available in DEBUG mode", status=403)
+    
+    logger.info("Email debug view accessed")
+    
+    # Log email configuration
+    logger.info(f"Email Backend: {settings.EMAIL_BACKEND}")
+    logger.info(f"Host: {settings.EMAIL_HOST}")
+    logger.info(f"Port: {settings.EMAIL_PORT}")
+    logger.info(f"TLS: {settings.EMAIL_USE_TLS}")
+    logger.info(f"SSL: {settings.EMAIL_USE_SSL}")
+    logger.info(f"User: {settings.EMAIL_HOST_USER}")
+    
+    # Try to get a connection
+    try:
+        connection = get_connection()
+        connection_info = f"Connection type: {type(connection).__name__}"
+        logger.info(f"Got email connection: {connection_info}")
+    except Exception as e:
+        logger.error(f"Failed to get email connection: {str(e)}")
+        return HttpResponse(f"Failed to get email connection: {str(e)}", status=500)
+    
+    # Try to send a test email
+    subject = 'Test Email from Debug View'
+    message = 'This is a test email sent from the debug_email_test view.'
+    from_email = settings.DEFAULT_FROM_EMAIL
+    recipient_list = ['arthurjoubin@gmail.com']
+    
+    try:
+        # Try sending an email
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=from_email,
+            recipient_list=recipient_list,
+            fail_silently=False,
+        )
+        logger.info("Test email sent successfully")
+        
+        # If using console backend, remind the user to check console
+        if settings.EMAIL_BACKEND == 'django.core.mail.backends.console.EmailBackend':
+            return HttpResponse(
+                "Test email sent to console. Check your console output to see the email."
+                "\n\nNOTE: With the console backend, emails are NOT actually sent to real email addresses."
+                "\nThey are only printed to the console for debugging purposes."
+            )
+        return HttpResponse("Test email sent successfully. Check your email inbox.")
+    except Exception as e:
+        logger.error(f"Failed to send test email: {str(e)}")
+        return HttpResponse(f"Failed to send test email: {str(e)}", status=500)

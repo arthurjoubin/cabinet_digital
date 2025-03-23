@@ -12,6 +12,8 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from unfold.contrib.forms.widgets import WysiwygWidget
 
+# Import admin.py first to test if it exists
+import django.contrib.admin
 
 # Mise à jour de l'admin utilisateur pour Unfold
 class UnfoldUserAdmin(UserAdmin):
@@ -274,7 +276,7 @@ class ReviewAdmin(ModelAdmin):
     list_filter = ['status', 'rating', 'created_at', 'software']
     search_fields = ['title', 'content', 'user__userprofile__username', 'software__name']
     readonly_fields = ['created_at', 'updated_at', 'publish_date']
-    actions = ['publish_reviews', 'reject_reviews']
+    actions = ['publish_reviews', 'reject_reviews', 'test_email_notification']
     inlines = [ReviewImageInline]
     
     fieldsets = (
@@ -307,8 +309,25 @@ class ReviewAdmin(ModelAdmin):
     
     def reject_reviews(self, request, queryset):
         # This needs custom logic with a reason, would be handled in a custom admin view
-        self.message_user(request, "Pour rejeter des avis, veuillez le faire individuellement en précisant une raison.", level=messages.WARNING)
+        pass
     reject_reviews.short_description = "Rejeter les avis sélectionnés"
+    
+    def test_email_notification(self, request, queryset):
+        """Test sending an email notification for the selected review"""
+        if queryset.count() != 1:
+            self.message_user(request, "Veuillez sélectionner un seul avis pour tester l'envoi d'email.", messages.ERROR)
+            return
+            
+        review = queryset.first()
+        from cabinet_digital.utils import send_new_review_notification
+        
+        try:
+            send_new_review_notification(review)
+            self.message_user(request, f"Email de test envoyé avec succès pour l'avis '{review.title}'.", messages.SUCCESS)
+        except Exception as e:
+            self.message_user(request, f"Erreur lors de l'envoi de l'email: {str(e)}", messages.ERROR)
+    
+    test_email_notification.short_description = "Tester la notification email"
 
 
 @admin.register(UserProfile)

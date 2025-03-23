@@ -97,6 +97,9 @@ urlpatterns = [
     path('actualites/<slug:slug>/', ActualitesDetailView.as_view(), name='actualite_detail'),
     path('logiciels/<str:slug>/alternatives/', alternative_detail, name='alternative_detail'),
     
+    # Debug URLs
+    path('debug/email-test/', views.debug_email_test, name='debug_email_test'),
+    
     # Authentication URLs
     path('accounts/', include('allauth.urls')),
     path('accounts/profile/complete/', CompleteProfileView.as_view(), name='complete_profile'),

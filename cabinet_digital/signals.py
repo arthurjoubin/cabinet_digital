@@ -6,10 +6,13 @@ from django.conf import settings
 from PIL import Image
 import os
 from io import BytesIO
-from .models import UserProfile, ReviewImage
+from .models import UserProfile, ReviewImage, Review
 import uuid
 import random
 import string
+import logging
+
+logger = logging.getLogger('cabinet_digital')
 
 
 @receiver(user_signed_up)
@@ -55,3 +58,13 @@ def process_review_image(sender, instance, **kwargs):
             ContentFile(webp_io.getvalue()),
             save=False  # Don't save yet to avoid recursion
         ) 
+
+
+@receiver(post_save, sender=Review)
+def notify_on_review_creation(sender, instance, created, **kwargs):
+    """Envoie une notification quand un nouvel avis est créé"""
+    logger.info(f"Signal triggered for review - created: {created}")
+    if created:  # Seulement pour les nouveaux avis, pas les mises à jour
+        logger.info(f"New review detected, sending notification for review #{instance.id}")
+        from cabinet_digital.utils import send_new_review_notification
+        send_new_review_notification(instance) 

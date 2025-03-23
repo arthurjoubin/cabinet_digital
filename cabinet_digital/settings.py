@@ -288,3 +288,37 @@ REVIEW_IMAGE_QUALITY = 85  # WebP compression quality
 # Review vote settings
 REVIEW_EDIT_WINDOW_HOURS = 24  # Time window to edit a published review
 
+# Email settings for Hostinger
+if DEBUG:
+    # Store emails in files for easy inspection
+    import os.path
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+    
+    print("\n----- DEVELOPMENT EMAIL CONFIGURATION -----")
+    print(f"Using file-based email backend for development")
+    print(f"Emails will be saved to: {EMAIL_FILE_PATH}")
+    print(f"Check this directory for email files after sending.")
+    print("-------------------------------------------\n")
+    
+    # Create the directory if it doesn't exist
+    os.makedirs(EMAIL_FILE_PATH, exist_ok=True)
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    print("\n----- PRODUCTION EMAIL CONFIGURATION -----")
+    print("Using SMTP email backend for production")
+    print("-------------------------------------------\n")
+
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.hostinger.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+
+# Try with TLS if SSL doesn't work
+EMAIL_USE_SSL = False
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = 'Cabinet Digital <arthur@cabinetdigital.fr>'
+
+print(f"Email Configuration: HOST={EMAIL_HOST}, PORT={EMAIL_PORT}, USER={EMAIL_HOST_USER}, TLS={EMAIL_USE_TLS}, BACKEND={EMAIL_BACKEND}")
+
