@@ -250,7 +250,7 @@ class SoftwareDetailView(DetailView):
                     filter=Q(category__in=categories)
                 )
             )
-            .order_by('-common_categories', '-is_top_pick')[:4]
+            .order_by('-common_categories', '-is_top_pick')[:3]
         )
         
         # Get published reviews
