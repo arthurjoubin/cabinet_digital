@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView
-from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI, UserProfile, Review, ReviewImage, ReviewVote, UserSoftwareSelection, UserSoftwareCollection
+from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI, UserProfile, Review, ReviewImage
 from django.conf import settings
 from django.db.models import Count, Prefetch, Q, F
 from django.shortcuts import redirect
@@ -46,7 +46,14 @@ REDIRECTIONS = {
 }
 
 def home(request):
-    return render(request, 'home.html')
+    context = {
+        'avis_screenshot': '/static/marketing/avis_screenshot.webp',
+        'selection_screenshot': '/static/marketing/selection_screenshot.webp',
+        'screenshot_1': '/static/marketing/screenshot_1.webp',
+        'screenshot_2': '/static/marketing/screenshot_2.webp',
+        'screenshot_3': '/static/marketing/screenshot_3.webp',
+    }
+    return render(request, 'home.html', context)
 
 def contact(request):
     return render(request, 'contact.html')
@@ -202,126 +209,80 @@ class SoftwareDetailView(DetailView):
     context_object_name = 'software'
     
     def get_queryset(self):
-        return (
-            Software.objects
-            .prefetch_related(
-                Prefetch('category', queryset=SoftwareCategory.objects.only('name', 'slug'))
-            )
-            .select_related('metier')
-            .only('name', 'description', 'slug', 'unique_views', 'is_top_pick', 'metier__name')
+        # Préchargement des catégories pour l'affichage
+        return super().get_queryset().prefetch_related(
+            'category', 
+            'category__metier', 
+            'reviews',
+            'reviews__user',
+            'reviews__images',
         )
-
+    
     def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
+        if queryset is None:
+            queryset = self.get_queryset()
         
-        viewed_softwares = self.request.session.get('viewed_softwares', [])
+        slug = self.kwargs.get('slug')
+        # Décoder et nettoyer le slug
+        decoded_slug = unidecode.unidecode(slug)
+        clean_slug = slugify(decoded_slug)[:49]  # Limiter  49 caractères
         
-        # On ne compte que sur une requête de chargement complet et si ce n'est pas un robot
-        if not self.request.headers.get('HX-Request') and obj.id not in viewed_softwares and not self.request.user_agent.is_bot:
-            Software.objects.filter(id=obj.id).update(unique_views=F('unique_views') + 1)
-            
-            obj.refresh_from_db()
-            
-            viewed_softwares.append(obj.id)
-            self.request.session['viewed_softwares'] = viewed_softwares
-            
-            self.request.session.set_expiry(86400)  # 24 heures en secondes
+        # Chercher la catégorie avec le slug nettoyé
+        obj = get_object_or_404(queryset, slug=clean_slug)
         
+        # Incrémenter les vues seulement si ce n'est pas un utilisateur authentifié
+        if not self.request.user.is_staff:
+            obj.unique_views += 1
+            obj.save(update_fields=['unique_views'])
+            
         return obj
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         software = self.object
+        
+        # Paginer les avis
+        reviews = software.reviews.filter(status='published').select_related('user__userprofile').prefetch_related('images')
+        paginator = Paginator(reviews, 5)  # 5 avis par page
+        
+        page = self.request.GET.get('page', 1)
+        reviews_page = paginator.get_page(page)
+        
+        # Ajouter les avis paginés au contexte
+        context['reviews'] = reviews_page
+        context['review_count'] = reviews.count()
+        
+        # Ajouter les alternatives (logiciels de la même catégorie)
         categories = software.category.all()
-
-        # Ajouter les sélections de l'utilisateur au contexte
+        alternatives = Software.objects.filter(
+            category__in=categories, 
+            is_published=True
+        ).exclude(id=software.id).distinct()[:5]
+        context['alternatives'] = alternatives
+        
+        # Vérifier si l'utilisateur a déjà un avis sur ce logiciel
         if self.request.user.is_authenticated:
-            # Récupérer le type de sélection actuel pour ce logiciel
             try:
-                user_selection = UserSoftwareSelection.objects.get(
+                context['user_review'] = Review.objects.get(
                     user=self.request.user,
                     software=software
                 )
-                context['user_selection_type'] = user_selection.selection_type
-            except UserSoftwareSelection.DoesNotExist:
-                context['user_selection_type'] = None
-                
-            # Pour assurer la compatibilité avec le code existant
-            user_using_software = Software.objects.filter(
-                user_selections__user=self.request.user,
-                user_selections__selection_type='using'
-            )
-            user_interested_software = Software.objects.filter(
-                user_selections__user=self.request.user,
-                user_selections__selection_type='interested'
-            )
-            context['user_using_software'] = user_using_software
-            context['user_interested_software'] = user_interested_software
-
-        similar_softwares = (
-            Software.objects
-            .filter(
-                is_published=True,
-                category__in=categories,
-            )
-            .exclude(id=software.id)
-            .prefetch_related(
-                Prefetch('category', queryset=SoftwareCategory.objects.only('name', 'slug'))
-            )
-            .only('name', 'slug', 'is_top_pick')
-            .distinct()
-            .annotate(
-                common_categories=Count(
-                    'category',
-                    filter=Q(category__in=categories)
-                )
-            )
-            .order_by('-common_categories', '-is_top_pick')[:3]
-        )
-        
-        # Get published reviews
-        reviews = Review.objects.filter(
-            software=software,
-            status='published'
-        ).select_related(
-            'user__userprofile'
-        ).prefetch_related(
-            'images',
-            'votes'
-        ).order_by('-publish_date')
-        
-        # Pagination for reviews
-        paginator = Paginator(reviews, 5)  # 5 reviews per page
-        page_number = self.request.GET.get('page')
-        reviews_page = paginator.get_page(page_number)
-        
-        # Check if user has already submitted a review
-        user_has_review = False
-        user_review = None
-        if self.request.user.is_authenticated:
-            try:
-                user_review = Review.objects.get(
-                    user=self.request.user,
-                    software=software
-                )
-                user_has_review = True
+                context['user_has_review'] = True
             except Review.DoesNotExist:
-                pass
+                context['user_has_review'] = False
+                
+        # Ajouter l'URL canonique
+        context['canonical_url'] = self.request.build_absolute_uri(self.object.get_absolute_url())
         
-        # Add review data to context
-        context.update({
-            'similar_softwares': similar_softwares,
-            'days_since': (date.today() - date(2024, 11, 10)).days,
-            'reviews': reviews_page,
-            'user_has_review': user_has_review,
-            'user_review': user_review,
-            'review_count': reviews.count(),
-            'average_rating': software.average_rating(),
-            'star_rating': software.get_star_rating(),
-        })
-        
+        # Calculate days since creation (assuming last_modified was set at creation)
+        if software.last_modified:
+            days_since = (timezone.now().date() - software.last_modified.date()).days
+            context['days_since'] = days_since
+        else:
+            context['days_since'] = 0
+            
         return context
-    
+
 from django.views.generic import TemplateView
 
 class Custom404View(TemplateView):
@@ -1235,297 +1196,6 @@ class ReviewDeleteView(LoginRequiredMixin, DeleteView):
         
         return super().dispatch(request, *args, **kwargs)
 
-
-class ReviewVoteView(LoginRequiredMixin, View):
-    """Handle AJAX voting on reviews"""
-    
-    def post(self, request, *args, **kwargs):
-        review_id = self.kwargs.get('pk')
-        review = get_object_or_404(Review, id=review_id, status='published')
-        
-        # Check if user is not voting on their own review
-        if review.user == request.user:
-            return JsonResponse({
-                'success': False,
-                'message': "Vous ne pouvez pas voter sur votre propre avis."
-            }, status=403)
-        
-        # Get vote data from request
-        try:
-            data = json.loads(request.body)
-            vote_value = data.get('vote')
-            
-            if vote_value not in [1, -1]:
-                raise ValueError("Vote value must be 1 or -1")
-                
-        except (json.JSONDecodeError, ValueError) as e:
-            return JsonResponse({
-                'success': False,
-                'message': str(e)
-            }, status=400)
-        
-        # Process vote
-        try:
-            # Check if user already voted
-            vote, created = ReviewVote.objects.get_or_create(
-                user=request.user,
-                review=review,
-                defaults={'vote': vote_value}
-            )
-            
-            if not created:
-                # If same vote, remove it (toggle)
-                if vote.vote == vote_value:
-                    vote.delete()
-                    action = 'removed'
-                else:
-                    # If different vote, update it
-                    vote.vote = vote_value
-                    vote.save()
-                    action = 'changed'
-            else:
-                action = 'added'
-            
-            # Return updated counts
-            return JsonResponse({
-                'success': True,
-                'action': action,
-                'upvotes': review.upvotes(),
-                'downvotes': review.downvotes(),
-                'score': review.vote_score()
-            })
-            
-        except Exception as e:
-            return JsonResponse({
-                'success': False,
-                'message': str(e)
-            }, status=500)
-
-
-def post_social_login(request):
-    """
-    Vue appelée après une connexion sociale réussie.
-    Vérifie si l'utilisateur a un profil complet, sinon le redirige vers la page de complétion de profil.
-    """
-    # Vérifier si c'est la première connexion de l'utilisateur
-    first_login = False
-    
-    # Vérifier si l'utilisateur a un profil utilisateur
-    if not hasattr(request.user, 'userprofile'):
-        from cabinet_digital.models import UserProfile
-        # Créer un profil utilisateur vide
-        UserProfile.objects.create(user=request.user)
-        first_login = True
-    
-    # Vérifier si le profil est complet (a un nom d'utilisateur)
-    if not request.user.userprofile.username:
-        # Stocker l'URL de redirection après complétion du profil
-        next_url = request.GET.get('next')
-        if next_url:
-            request.session['post_profile_redirect'] = next_url
-        
-        # Ajouter un message encourageant la modification du nom d'affichage
-        if first_login:
-            messages.info(request, "Bienvenue ! Pour une meilleure expérience, veuillez choisir un nom d'affichage qui sera visible dans vos avis et commentaires.")
-        else:
-            messages.info(request, "Veuillez compléter votre profil en ajoutant un nom d'affichage pour pouvoir publier des avis.")
-        
-        return redirect('complete_profile')
-    
-    # Rediriger vers la page demandée ou vers "Mes avis" par défaut
-    next_url = request.GET.get('next', reverse('user_reviews'))
-    return redirect(next_url)
-
-class ToggleSoftwareSelectionView(LoginRequiredMixin, View):
-    """
-    Vue pour gérer les trois états de sélection : pas intéressé (aucune sélection), 
-    intéressé, ou utilisation active du logiciel
-    """
-    def post(self, request, *args, **kwargs):
-        software_id = request.POST.get('software_id')
-        selection_type = request.POST.get('selection_type')
-        current_url = request.POST.get('current_url', '')
-        
-        if selection_type not in ['using', 'interested']:
-            return JsonResponse({'success': False, 'message': 'Type de sélection invalide'}, status=400)
-        
-        try:
-            software = Software.objects.get(id=software_id)
-            
-            # Récupérer toutes les sélections existantes pour ce logiciel et cet utilisateur
-            existing_selections = UserSoftwareSelection.objects.filter(
-                user=request.user,
-                software=software
-            )
-            
-            # Si l'utilisateur a déjà une sélection du même type, on la supprime (toggle off)
-            if existing_selections.filter(selection_type=selection_type).exists():
-                existing_selections.filter(selection_type=selection_type).delete()
-                action = 'removed'
-                new_type = None
-                
-                # Si la requête provient de la page de collection, retourner un contenu vide
-                # car l'élément doit être supprimé de la liste
-                if 'software-card' in request.headers.get('HX-Target', ''):
-                    return HttpResponse('')
-            else:
-                # Supprimer toute autre sélection existante (car c'est mutuellement exclusif)
-                existing_selections.delete()
-                
-                # Créer la nouvelle sélection
-                UserSoftwareSelection.objects.create(
-                    user=request.user,
-                    software=software,
-                    selection_type=selection_type
-                )
-                action = 'added'
-                new_type = selection_type
-            
-            # Récupère le nombre d'utilisateurs pour ce logiciel
-            using_count = UserSoftwareSelection.objects.filter(
-                software=software,
-                selection_type='using'
-            ).count()
-            
-            interested_count = UserSoftwareSelection.objects.filter(
-                software=software,
-                selection_type='interested'
-            ).count()
-            
-            # Renvoyer un fragment HTML pour les boutons si c'est demandé
-            if request.headers.get('HX-Request') == 'true' and 'software-selection-buttons' in request.headers.get('HX-Target', ''):
-                # Préparer le contexte pour le template
-                context = {
-                    'software': software,
-                    'user_selection_type': new_type,
-                    'using_count': using_count,
-                    'interested_count': interested_count
-                }
-                
-                # Rendre le fragment HTML des boutons
-                from django.template.loader import render_to_string
-                html = render_to_string('software_selection_buttons.html', context, request)
-                return HttpResponse(html)
-            
-            return JsonResponse({
-                'success': True,
-                'action': action,
-                'software_id': software_id,
-                'selection_type': selection_type,
-                'new_type': new_type,
-                'using_count': using_count,
-                'interested_count': interested_count
-            })
-            
-        except Software.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Logiciel non trouvé'}, status=404)
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)}, status=500)
-
-class UserSoftwareCollectionListView(LoginRequiredMixin, ListView):
-    """
-    Vue pour afficher les logiciels sélectionnés par l'utilisateur
-    """
-    template_name = 'software_collections.html'
-    context_object_name = 'using_software'  # Par défaut
-    
-    def get_queryset(self):
-        # Retourne par défaut les logiciels utilisés
-        return Software.objects.filter(
-            user_selections__user=self.request.user,
-            user_selections__selection_type='using'
-        ).order_by('name')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        # Ajoute les logiciels qui intéressent l'utilisateur
-        context['interested_software'] = Software.objects.filter(
-            user_selections__user=self.request.user,
-            user_selections__selection_type='interested'
-        ).order_by('name')
-        
-        return context
-
-class UserSoftwareCollectionCreateView(LoginRequiredMixin, CreateView):
-    """
-    Vue pour créer une nouvelle collection de logiciels
-    """
-    model = UserSoftwareCollection
-    template_name = 'software_collection_form.html'
-    fields = ['title', 'description']
-    success_url = reverse_lazy('mes_logiciels')
-    
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        response = super().form_valid(form)
-        
-        # Ajouter les logiciels sélectionnés à la collection
-        using_software_ids = self.request.POST.getlist('using_software')
-        interested_software_ids = self.request.POST.getlist('interested_software')
-        
-        # Ajouter les logiciels utilisés
-        if using_software_ids:
-            form.instance.using_software.add(*using_software_ids)
-            
-        # Ajouter les logiciels souhaités
-        if interested_software_ids:
-            form.instance.interested_software.add(*interested_software_ids)
-            
-        messages.success(self.request, "Votre collection a été créée avec succès.")
-        return response
-    
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        # Personnaliser les widgets du formulaire
-        form.fields['title'].widget.attrs.update({
-            'class': 'w-full px-3 py-2 border rounded-md',
-            'placeholder': 'Titre de votre collection'
-        })
-        form.fields['description'].widget.attrs.update({
-            'class': 'w-full px-3 py-2 border rounded-md',
-            'rows': 3,
-            'placeholder': 'Description (facultative)'
-        })
-        return form
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Ajouter les sélections de l'utilisateur au contexte
-        context['using_software'] = Software.objects.filter(
-            user_selections__user=self.request.user,
-            user_selections__selection_type='using'
-        ).distinct()
-        context['interested_software'] = Software.objects.filter(
-            user_selections__user=self.request.user,
-            user_selections__selection_type='interested'
-        ).distinct()
-        return context
-
-class UserSoftwareCollectionDetailView(DetailView):
-    """
-    Vue pour afficher une collection de logiciels
-    """
-    model = UserSoftwareCollection
-    template_name = 'software_collection_detail.html'
-    context_object_name = 'collection'
-    
-    def get_object(self, queryset=None):
-        # Récupérer l'objet par son token de partage
-        token = self.kwargs.get('token')
-        return get_object_or_404(UserSoftwareCollection, share_token=token)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        collection = self.object
-        
-        # Ajouter le propriétaire de la collection au contexte
-        context['is_owner'] = self.request.user.is_authenticated and collection.user == self.request.user
-        
-        # URL de partage complète
-        context['share_url'] = self.request.build_absolute_uri(collection.get_absolute_url())
-        
-        return context
 
 @csrf_exempt
 def debug_email_test(request):

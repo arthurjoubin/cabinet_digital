@@ -44,25 +44,6 @@
   </div>
 
   <div class="p-4 sm:p-8 max-w-5xl mx-auto" x-data="{ activeTab: 'description' }">
-    <!-- Boutons d'actions pour les utilisateurs connectés -->
-    {% if user.is_authenticated %}
-    <div class="mb-6">
-        {% with user_selection_type=None %}
-            {% if software in user_using_software %}
-                {% with user_selection_type='using' %}
-                    {% include 'software_selection_buttons.html' %}
-                {% endwith %}
-            {% elif software in user_interested_software %}
-                {% with user_selection_type='interested' %}
-                    {% include 'software_selection_buttons.html' %}
-                {% endwith %}
-            {% else %}
-                {% include 'software_selection_buttons.html' %}
-            {% endif %}
-        {% endwith %}
-    </div>
-    {% endif %}
-    
     <div class="flex flex-col md:flex-row items-stretch justify-between gap-6 mb-8">
       <div class="flex flex-col md:flex-row items-center md:items-start flex-grow border p-6 bg-gray-50 rounded-xl">
         {% if software.logo %}
@@ -282,4 +263,25 @@
     </div>
   </div>
 </div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "{{ software.name }}",
+  "description": "{{ software.excerpt|striptags }}",
+  "image": "{% if software.logo %}{{ software.logo.url }}{% endif %}",
+  "url": "{{ request.build_absolute_uri }}",
+  "applicationCategory": "{{ software.category.all.0.name }}",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{{ software.average_rating|default:'0' }}",
+    "reviewCount": "{{ review_count|default:'0' }}"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ software.site }}"
+  }
+}
+</script>
 {% endblock %}

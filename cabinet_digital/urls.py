@@ -23,8 +23,7 @@ from cabinet_digital.views import (
     AIModelListView, AIModelDetailView, AIToolListView, AIToolDetailView,
     AIArticleListView, AIArticleDetailView, ProviderDetailView,
     CompleteProfileView, UserProfileView, UserReviewsView, ReviewCreateView, 
-    ReviewEditView, ReviewDeleteView, ReviewVoteView,
-    ToggleSoftwareSelectionView, UserSoftwareCollectionListView
+    ReviewEditView, ReviewDeleteView
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -101,17 +100,15 @@ urlpatterns = [
     path('debug/email-test/', views.debug_email_test, name='debug_email_test'),
     
     # Authentication URLs
-    path('accounts/', include('allauth.urls')),
-    path('accounts/profile/complete/', CompleteProfileView.as_view(), name='complete_profile'),
-    path('accounts/profile/', UserProfileView.as_view(), name='user_profile'),
-    path('accounts/profile/reviews/', UserReviewsView.as_view(), name='user_reviews'),
-    path('post-social-login/', views.post_social_login, name='post_social_login'),
+    path('account/', include('allauth.urls')),
+    path('account/profil/complete/', CompleteProfileView.as_view(), name='complete_profile'),
+    path('account/profil/', UserProfileView.as_view(), name='user_profile'),
+    path('account/profil/avis/', UserReviewsView.as_view(), name='user_reviews'),
     
     # Review URLs
     path('logiciels/<str:slug>/review/create/', ReviewCreateView.as_view(), name='review_create'),
     path('logiciels/<str:slug>/review/<int:pk>/edit/', ReviewEditView.as_view(), name='review_edit'),
     path('logiciels/<str:slug>/review/<int:pk>/delete/', ReviewDeleteView.as_view(), name='review_delete'),
-    path('review/<int:pk>/vote/', ReviewVoteView.as_view(), name='review_vote'),
     
     re_path(r'^(?P<old_path>categorie)/logiciel_(?P<slug>[^/]+)(?:/r/(?P<r_id>[^/]+))?/?$', 
     views.custom_redirect_view, 
@@ -127,10 +124,6 @@ urlpatterns = [
     path('outils/sftp-script-generateur/', views.sftp_generator, name='sftp_generator'),
     path('outils/tableau-amortissement-generateur/', views.amortissement_calculateur, name='amortissement_calculateur'),
     path('outils/', views.outils, name='outils'),
-    
-    # URLs pour les sélections de logiciels
-    path('software/selection/toggle/', ToggleSoftwareSelectionView.as_view(), name='toggle_software_selection'),
-    path('mes_logiciels/', UserSoftwareCollectionListView.as_view(), name='mes_logiciels'),
     
     path('ia/modeles/', AIModelListView.as_view(), name='ai_model_list'),
     path('ia/modeles/<slug:slug>/', AIModelDetailView.as_view(), name='ai_model_detail'),

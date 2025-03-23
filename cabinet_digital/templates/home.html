@@ -81,8 +81,85 @@ Cabinet Digital - Les meilleurs logiciels pour PME et experts-comptables
     <div class="bg-white border-2 border-gray-800/10 rounded-3xl p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] max-w-5xl mx-auto">
       <div class="flex flex-col md:flex-row items-center gap-8">
         <div class="flex-1">
+          <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full mb-4">Communauté</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Choisissez grâce aux avis vérifiés</h2>
+          <p class="text-gray-600 mb-6">Des centaines d'avis authentiques pour vous aider à choisir le logiciel qui correspond réellement à vos besoins. Partagez votre expérience et aidez la communauté à faire des choix éclairés.</p>
+          <div class="flex flex-wrap gap-3">
+            <a href="{% url 'software_list' %}" class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              Consulter les avis
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              </svg>
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'user_reviews' %}" class="inline-flex items-center bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+              Mes avis
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              </svg>
+            </a>
+            {% else %}
+            <a href="{% url 'account_login' %}" class="inline-flex items-center bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+              Donner mon avis
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              </svg>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        <div class="w-full md:w-1/3 rounded-xl shadow-lg overflow-hidden">
+          <img src="{{ avis_screenshot }}" alt="Avis utilisateurs" class="w-full h-auto">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="my-12">
+    <div class="bg-white border-2 border-gray-800/10 rounded-3xl p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] max-w-5xl mx-auto">
+      <div class="flex flex-col md:flex-row-reverse items-center gap-8">
+        <div class="flex-1">
+          <span class="inline-block bg-purple-100 text-purple-800 text-xs font-semibold px-3 py-1 rounded-full mb-4">Personnalisé</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Créez votre sélection personnalisée</h2>
+          <p class="text-gray-600 mb-6">Marquez les logiciels que vous utilisez ou qui vous intéressent pour créer votre propre sélection. Comparez facilement les options et partagez votre liste avec vos collaborateurs.</p>
+          <div class="flex flex-wrap gap-3">
+            {% if user.is_authenticated %}
+            <a href="{% url 'user_reviews' %}" class="inline-flex items-center bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+              Mes avis
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              </svg>
+            </a>
+            {% else %}
+            <a href="{% url 'account_login' %}" class="inline-flex items-center bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+              Donner mon avis
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              </svg>
+            </a>
+            {% endif %}
+            <a href="{% url 'software_list' %}" class="inline-flex items-center bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+              Explorer les logiciels
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="w-full md:w-1/3 rounded-xl shadow-lg overflow-hidden">
+          <img src="{{ selection_screenshot }}" alt="Sélection de logiciels" class="w-full h-auto">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="my-12">
+    <div class="bg-white border-2 border-gray-800/10 rounded-3xl p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] max-w-5xl mx-auto">
+      <div class="flex flex-col md:flex-row items-center gap-8">
+        <div class="flex-1">
           <span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full mb-4">Nouveau</span>
-          <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Intelligence Artificielle pour votre entreprise</h2>
+          <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Découvrez les outils d'Intelligence Artificielle pour votre entreprise</h2>
           <p class="text-gray-600 mb-6">Découvrez notre sélection d'outils d'IA pour automatiser vos tâches et augmenter votre productivité.</p>
           <div class="flex flex-wrap gap-3">
             <a href="{% url 'ai_tool_list' %}" class="inline-flex items-center bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors">
@@ -106,59 +183,30 @@ Cabinet Digital - Les meilleurs logiciels pour PME et experts-comptables
     </div>
   </section>
 
-  <section class="my-12">
-    <div class="bg-white border-2 border-gray-800/10 rounded-3xl p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] max-w-5xl mx-auto">
-      <div class="text-center mb-8">
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Outils gratuits</h2>
-        <p class="text-gray-600 mt-2">Des outils pratiques pour vos prises de décision</p>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <a href="{% url 'roi_calculateur' %}" class="group p-4 bg-amber-50 rounded-xl border border-amber-200 hover:border-amber-300 transition-all">
-          <div class="text-amber-600 mb-3">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10H9m3-7v4m3-4v4m3-4v4M9 3h6m0 0h2a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h2"></path>
-            </svg>
-          </div>
-          <h3 class="font-semibold text-gray-900">ROI Logiciel</h3>
-          <p class="text-sm text-gray-600 mt-1">Calculez la rentabilité</p>
-        </a>
-        <a href="{% url 'immobilier_calculateur' %}" class="group p-4 bg-amber-50 rounded-xl border border-amber-200 hover:border-amber-300 transition-all">
-          <div class="text-amber-600 mb-3">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-            </svg>
-          </div>
-          <h3 class="font-semibold text-gray-900">Achat vs Location</h3>
-          <p class="text-sm text-gray-600 mt-1">Simulateur immobilier</p>
-        </a>
-        <a href="{% url 'sftp_generator' %}" class="group p-4 bg-amber-50 rounded-xl border border-amber-200 hover:border-amber-300 transition-all">
-          <div class="text-amber-600 mb-3">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-          </div>
-          <h3 class="font-semibold text-gray-900">Scripts SFTP</h3>
-          <p class="text-sm text-gray-600 mt-1">Automatisez vos transferts</p>
-        </a>
-        <a href="{% url 'amortissement_calculateur' %}" class="group p-4 bg-amber-50 rounded-xl border border-amber-200 hover:border-amber-300 transition-all">
-          <div class="text-amber-600 mb-3">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-          </div>
-          <h3 class="font-semibold text-gray-900">Amortissement</h3>
-          <p class="text-sm text-gray-600 mt-1">Calculez vos actifs</p>
-        </a>
-      </div>
-      <div class="text-center mt-8">
-        <a href="{% url 'outils' %}" class="inline-flex items-center bg-black text-white px-6 py-3 rounded-lg hover:bg-amber-600 transition-colors">
-          Voir tous les outils
-          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-          </svg>
-        </a>
-      </div>
-    </div>
-  </section>
 </main>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Quels types de logiciels propose Cabinet Digital ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cabinet Digital propose plus de 200 logiciels pour experts-comptables et PME dans différentes catégories comme la production comptable, la facturation, la gestion financière et bien d'autres."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Comment choisir le bon logiciel pour mon entreprise ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cabinet Digital vous aide à choisir les logiciels les plus adaptés à vos besoins grâce à des fiches détaillées, des comparatifs indépendants et des avis d'utilisateurs."
+      }
+    }
+  ]
+}
+</script>
 {% endblock %}

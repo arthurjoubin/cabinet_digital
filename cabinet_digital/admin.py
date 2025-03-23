@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI, UserProfile, Review, ReviewImage, ReviewVote, UserSoftwareSelection, UserSoftwareCollection
+from .models import Software, SoftwareCategory, Actualites, Tag, Metier, AIModel, AITool, AIArticle, AIToolCategory, ProviderAI, UserProfile, Review, ReviewImage
 from django.db import models
 from django import forms
 from django.utils.html import format_html
@@ -272,10 +272,11 @@ class ReviewImageInline(admin.TabularInline):
 
 @admin.register(Review)
 class ReviewAdmin(ModelAdmin):
-    list_display = ['title', 'software', 'user_display', 'rating', 'status', 'created_at', 'vote_display']
+    list_display = ['title', 'software', 'user_display', 'rating', 'status', 'created_at']
     list_filter = ['status', 'rating', 'created_at', 'software']
     search_fields = ['title', 'content', 'user__userprofile__username', 'software__name']
     readonly_fields = ['created_at', 'updated_at', 'publish_date']
+    list_editable = ['status', 'software', 'rating']
     actions = ['publish_reviews', 'reject_reviews', 'test_email_notification']
     inlines = [ReviewImageInline]
     
@@ -294,13 +295,7 @@ class ReviewAdmin(ModelAdmin):
     
     def user_display(self, obj):
         return obj.user.userprofile.username
-    user_display.short_description = 'Utilisateur'
-    
-    def vote_display(self, obj):
-        upvotes = obj.upvotes()
-        downvotes = obj.downvotes()
-        return f"👍 {upvotes} | 👎 {downvotes}"
-    vote_display.short_description = 'Votes'
+    user_display.short_description = 'Pseudo public'
     
     def publish_reviews(self, request, queryset):
         updated = queryset.update(status='published', publish_date=timezone.now())
@@ -343,53 +338,5 @@ class UserProfileAdmin(ModelAdmin):
     def review_count(self, obj):
         return obj.user.reviews.count()
     review_count.short_description = 'Nombre d\'avis'
-
-
-@admin.register(ReviewVote)
-class ReviewVoteAdmin(ModelAdmin):
-    list_display = ['user_display', 'review_title', 'vote_display', 'created_at']
-    list_filter = ['vote', 'created_at']
-    search_fields = ['user__userprofile__username', 'review__title']
-    
-    def user_display(self, obj):
-        return obj.user.userprofile.username
-    user_display.short_description = 'Utilisateur'
-    
-    def review_title(self, obj):
-        return obj.review.title
-    review_title.short_description = 'Avis'
-    
-    def vote_display(self, obj):
-        return '👍' if obj.vote == 1 else '👎'
-    vote_display.short_description = 'Vote'
-
-@admin.register(UserSoftwareSelection)
-class UserSoftwareSelectionAdmin(ModelAdmin):
-    list_display = ['user_display', 'software', 'selection_type', 'created_at']
-    list_filter = ['selection_type', 'created_at']
-    search_fields = ['user__userprofile__username', 'software__name']
-    
-    def user_display(self, obj):
-        return obj.user.userprofile.username
-    user_display.short_description = 'Utilisateur'
-
-@admin.register(UserSoftwareCollection)
-class UserSoftwareCollectionAdmin(ModelAdmin):
-    list_display = ['title', 'user_display', 'created_at', 'using_count', 'interested_count']
-    list_filter = ['created_at']
-    search_fields = ['title', 'user__userprofile__username']
-    filter_horizontal = ['using_software', 'interested_software']
-    
-    def user_display(self, obj):
-        return obj.user.userprofile.username
-    user_display.short_description = 'Utilisateur'
-    
-    def using_count(self, obj):
-        return obj.using_software.count()
-    using_count.short_description = 'Logiciels utilisés'
-    
-    def interested_count(self, obj):
-        return obj.interested_software.count()
-    interested_count.short_description = 'Logiciels souhaités'
 
 

@@ -321,32 +321,23 @@ class Review(models.Model):
         verbose_name_plural = "Avis"
         ordering = ['-publish_date', '-created_at']
         unique_together = ['user', 'software']
-    
+
     def __str__(self):
-        return f"{self.user.userprofile.username} - {self.software.name} - {self.get_rating_display()}"
-    
+        return f"{self.user.username} - {self.title}"
+
     def save(self, *args, **kwargs):
         # If review is being published for the first time, set publish date
         if self.status == 'published' and not self.publish_date:
             self.publish_date = timezone.now()
         super().save(*args, **kwargs)
-    
-    def can_be_edited(self):
-        """Check if the review can still be edited (within 24h window)"""
-        if not self.publish_date:
-            return True
-        edit_window = timezone.now() - timezone.timedelta(hours=settings.REVIEW_EDIT_WINDOW_HOURS)
-        return self.publish_date > edit_window
-    
-    def upvotes(self):
-        return self.votes.filter(vote=1).count()
-    
-    def downvotes(self):
-        return self.votes.filter(vote=-1).count()
-    
-    def vote_score(self):
-        return self.upvotes() - self.downvotes()
 
+    def can_be_edited(self):
+        """Check if review can still be edited by the user"""
+        if self.status != 'published':
+            return True
+        # Allow edits for up to 30 days after publishing
+        time_since_publish = timezone.now() - self.publish_date
+        return time_since_publish.days <= 30
 
 class ReviewImage(models.Model):
     """
@@ -360,71 +351,3 @@ class ReviewImage(models.Model):
         ordering = ['order']
         verbose_name = "Image d'avis"
         verbose_name_plural = "Images d'avis"
-
-
-class ReviewVote(models.Model):
-    """
-    Votes on reviews (upvote/downvote)
-    """
-    VOTE_CHOICES = (
-        (1, 'Upvote'),
-        (-1, 'Downvote'),
-    )
-    
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='review_votes')
-    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='votes')
-    vote = models.SmallIntegerField(choices=VOTE_CHOICES)
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        verbose_name = "Vote d'avis"
-        verbose_name_plural = "Votes d'avis"
-        unique_together = ['user', 'review']
-        
-    def __str__(self):
-        return f"{self.user.userprofile.username} - {'👍' if self.vote == 1 else '👎'} - {self.review.software.name}"
-
-class UserSoftwareSelection(models.Model):
-    """
-    Modèle pour stocker les logiciels sélectionnés par l'utilisateur
-    """
-    USER_SELECTION_TYPE = (
-        ('using', 'Logiciels utilisés'),
-        ('interested', 'Logiciels souhaités'),
-    )
-    
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='software_selections')
-    software = models.ForeignKey(Software, on_delete=models.CASCADE, related_name='user_selections')
-    selection_type = models.CharField(max_length=10, choices=USER_SELECTION_TYPE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        verbose_name = "Sélection de logiciel"
-        verbose_name_plural = "Sélections de logiciels"
-        unique_together = ['user', 'software', 'selection_type']
-        
-    def __str__(self):
-        return f"{self.user.userprofile.username} - {self.software.name} - {self.get_selection_type_display()}"
-
-class UserSoftwareCollection(models.Model):
-    """
-    Modèle pour les collections de logiciels partagées par l'utilisateur
-    """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='software_collections')
-    title = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
-    using_software = models.ManyToManyField(Software, related_name='in_using_collections', blank=True)
-    interested_software = models.ManyToManyField(Software, related_name='in_interested_collections', blank=True)
-    share_token = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        verbose_name = "Collection de logiciels"
-        verbose_name_plural = "Collections de logiciels"
-        
-    def __str__(self):
-        return f"{self.user.userprofile.username} - {self.title}"
-        
-    def get_absolute_url(self):
-        return reverse('mes_logiciels')
