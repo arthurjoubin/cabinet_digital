@@ -47,11 +47,7 @@ REDIRECTIONS = {
 
 def home(request):
     context = {
-        'avis_screenshot': '/static/marketing/avis_screenshot.webp',
-        'selection_screenshot': '/static/marketing/selection_screenshot.webp',
-        'screenshot_1': '/static/marketing/screenshot_1.webp',
-        'screenshot_2': '/static/marketing/screenshot_2.webp',
-        'screenshot_3': '/static/marketing/screenshot_3.webp',
+        'avis_screenshot': '/static/marketing/avis_screenshot.png',
     }
     return render(request, 'home.html', context)
 
@@ -81,6 +77,25 @@ class CategoryListView(ListView):
         # Ajouter la liste des métiers pour le filtre
         context['metiers'] = Metier.objects.all().order_by('name')
         context['selected_metier'] = self.request.GET.get('metier')
+        
+        # Ajouter les éléments du breadcrumb
+        breadcrumb = [
+            {'title': 'Catégories', 'url': None}
+        ]
+        
+        # Si un métier est sélectionné, l'ajouter au breadcrumb
+        selected_metier = self.request.GET.get('metier')
+        if selected_metier:
+            try:
+                metier = Metier.objects.get(slug=selected_metier)
+                breadcrumb = [
+                    {'title': metier.name, 'url': reverse('metier_detail', kwargs={'slug': metier.slug})},
+                    {'title': 'Catégories', 'url': None}
+                ]
+            except Metier.DoesNotExist:
+                pass
+                
+        context['breadcrumb_items'] = breadcrumb
         return context
 
 class CategoryDetailView(DetailView):
@@ -108,6 +123,22 @@ class CategoryDetailView(DetailView):
         context['canonical_url'] = self.request.build_absolute_uri(self.object.get_absolute_url())
         # Ajouter le métier au contexte
         context['metier'] = category.metier
+        
+        # Ajouter les éléments du breadcrumb
+        breadcrumb = []
+        
+        # Si la catégorie a un métier associé, l'ajouter au breadcrumb
+        if category.metier:
+            breadcrumb.append({
+                'title': category.metier.name, 
+                'url': reverse('metier_detail', kwargs={'slug': category.metier.slug})
+            })
+        
+        # Ajouter la catégorie actuelle au breadcrumb
+        breadcrumb.append({'title': category.name, 'url': None})
+        
+        context['breadcrumb_items'] = breadcrumb
+        
         return context
 
 class SoftwareListView(ListView):
@@ -115,11 +146,6 @@ class SoftwareListView(ListView):
     template_name = 'software_list.html'
     context_object_name = 'softwares'
     paginate_by = 12
-
-    def get_template_names(self):
-        if self.request.headers.get('HX-Request'):
-            return ['template_card_software_list_partial.html']
-        return [self.template_name]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -130,7 +156,56 @@ class SoftwareListView(ListView):
         context['search_query'] = self.request.GET.get('search', '')
         context['current_sort'] = self.request.GET.get('sort', 'alpha')
         context['metiers'] = Metier.objects.all().order_by('name')
-        context['selected_metier'] = self.request.GET.get('metier')
+        selected_metier = self.request.GET.get('metier')
+        context['selected_metier'] = selected_metier
+        
+        # Ajouter les éléments du breadcrumb - Par défaut Accueil > Logiciels
+        breadcrumb = [
+            {'title': 'Logiciels', 'url': None}
+        ]
+        
+        # Si un métier est sélectionné, l'ajouter au breadcrumb
+        if selected_metier:
+            try:
+                metier = Metier.objects.get(slug=selected_metier)
+                breadcrumb = [
+                    {'title': metier.name, 'url': None}
+                ]
+                
+                # Si une catégorie est aussi sélectionnée
+                selected_category = self.request.GET.get('categorie')
+                if selected_category:
+                    try:
+                        category = SoftwareCategory.objects.get(slug=selected_category)
+                        breadcrumb = [
+                            {'title': metier.name, 'url': reverse('metier_detail', kwargs={'slug': metier.slug})},
+                            {'title': category.name, 'url': None}
+                        ]
+                    except SoftwareCategory.DoesNotExist:
+                        pass
+            except Metier.DoesNotExist:
+                pass
+        else:
+            # Si seulement une catégorie est sélectionnée
+            selected_category = self.request.GET.get('categorie')
+            if selected_category:
+                try:
+                    category = SoftwareCategory.objects.get(slug=selected_category)
+                    breadcrumb = [
+                        {'title': category.name, 'url': None}
+                    ]
+                    
+                    # Si la catégorie a un métier associé
+                    if category.metier:
+                        breadcrumb = [
+                            {'title': category.metier.name, 'url': reverse('metier_detail', kwargs={'slug': category.metier.slug})},
+                            {'title': category.name, 'url': None}
+                        ]
+                except SoftwareCategory.DoesNotExist:
+                    pass
+        
+        context['breadcrumb_items'] = breadcrumb
+                
         return context
 
     def get_queryset(self):
@@ -169,6 +244,12 @@ class ActualitesListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['tags'] = Tag.objects.all()
+        
+        # Ajouter les éléments du breadcrumb
+        context['breadcrumb_items'] = [
+            {'title': 'Actualités', 'url': None}
+        ]
+        
         return context
 
 class ActualitesDetailView(DetailView):
@@ -189,11 +270,30 @@ class ActualitesDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Ajouter les éléments du breadcrumb
+        context['breadcrumb_items'] = [
+            {'title': 'Actualités', 'url': reverse('actualites')},
+            {'title': self.object.title, 'url': None}
+        ]
         return context
 
 def alternative_detail(request, slug):
     software = get_object_or_404(Software, slug=slug)
-    alternatives = Software.objects.filter(category__in=software.category.all()).exclude(id=software.id).distinct()
+    categories = software.category.all()
+    
+    # Récupérer les alternatives avec un compteur de catégories communes
+    alternatives = Software.objects.filter(
+        category__in=categories,
+        is_published=True
+    ).exclude(
+        id=software.id
+    ).annotate(
+        common_categories=Count('category', filter=Q(category__in=categories))
+    ).order_by(
+        '-common_categories',  # D'abord par nombre de catégories communes
+        '-is_top_pick',        # Ensuite par top pick
+        'name'                # Enfin par ordre alphabétique
+    ).distinct()
     
     context = {
         'software': software,
@@ -257,7 +357,15 @@ class SoftwareDetailView(DetailView):
         alternatives = Software.objects.filter(
             category__in=categories, 
             is_published=True
-        ).exclude(id=software.id).distinct()[:5]
+        ).exclude(
+            id=software.id
+        ).annotate(
+            common_categories=Count('category', filter=Q(category__in=categories))
+        ).order_by(
+            '-common_categories',  # D'abord par nombre de catégories communes
+            '-is_top_pick',        # Ensuite par top pick
+            'name'                # Enfin par ordre alphabétique
+        ).distinct()[:6]
         context['alternatives'] = alternatives
         
         # Vérifier si l'utilisateur a déjà un avis sur ce logiciel
@@ -281,6 +389,31 @@ class SoftwareDetailView(DetailView):
         else:
             context['days_since'] = 0
             
+        # Ajouter les éléments du breadcrumb
+        breadcrumb = []
+        
+        # Si le logiciel a des catégories, ajouter la première au breadcrumb
+        if software.category.all().exists():
+            category = software.category.first()
+            
+            # Si la catégorie a un métier, l'ajouter au breadcrumb
+            if category.metier:
+                breadcrumb.append({
+                    'title': category.metier.name, 
+                    'url': reverse('metier_detail', kwargs={'slug': category.metier.slug})
+                })
+            
+            # Ajouter la catégorie au breadcrumb
+            breadcrumb.append({
+                'title': category.name, 
+                'url': reverse('category_detail', kwargs={'slug': category.slug})
+            })
+        
+        # Ajouter le logiciel au breadcrumb
+        breadcrumb.append({'title': software.name, 'url': None})
+            
+        context['breadcrumb_items'] = breadcrumb
+        
         return context
 
 from django.views.generic import TemplateView
@@ -705,6 +838,9 @@ def actualites(request):
         'actualites': actualites,
         'tags': tags,
         'selected_tag': selected_tag,
+        'breadcrumb_items': [
+            {'title': 'Actualités', 'url': None}
+        ]
     }
     
     return render(request, 'actualites.html', context)
@@ -878,6 +1014,11 @@ class MetierDetailView(DetailView):
         
         context['softwares'] = page_obj
         context['page_obj'] = page_obj
+        
+        # Ajouter les éléments du breadcrumb
+        context['breadcrumb_items'] = [
+            {'title': metier.name, 'url': None}
+        ]
         
         return context
 

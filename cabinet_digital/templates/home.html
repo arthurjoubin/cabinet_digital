@@ -108,8 +108,8 @@ Cabinet Digital - Les meilleurs logiciels pour PME et experts-comptables
             {% endif %}
           </div>
         </div>
-        <div class="w-full md:w-1/3 rounded-xl shadow-lg overflow-hidden">
-          <img src="{{ avis_screenshot }}" alt="Avis utilisateurs" class="w-full h-auto">
+        <div class="w-full md:w-1/3 overflow-hidden">
+          <img src="{{ avis_screenshot }}" alt="Avis utilisateurs" class="w-full h-auto rounded-lg border-2 border-gray-200 object-cover hover:border-gray-300 transition-all duration-300">
         </div>
       </div>
     </div>
@@ -117,37 +117,22 @@ Cabinet Digital - Les meilleurs logiciels pour PME et experts-comptables
 
   <section class="my-12">
     <div class="bg-white border-2 border-gray-800/10 rounded-3xl p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] max-w-5xl mx-auto">
-      <div class="flex flex-col md:flex-row-reverse items-center gap-8">
+      <div class="flex flex-col md:flex-row items-center gap-8">
+        <div class="w-full md:w-1/3 overflow-hidden order-last md:order-first">
+          <img src="{% static 'marketing/actualites.png' %}" alt="Actualités" class="w-full h-auto rounded-lg border-2 border-gray-200 object-cover hover:border-gray-300 transition-all duration-300">
+        </div>
         <div class="flex-1">
-          <span class="inline-block bg-purple-100 text-purple-800 text-xs font-semibold px-3 py-1 rounded-full mb-4">Personnalisé</span>
-          <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Créez votre sélection personnalisée</h2>
-          <p class="text-gray-600 mb-6">Marquez les logiciels que vous utilisez ou qui vous intéressent pour créer votre propre sélection. Comparez facilement les options et partagez votre liste avec vos collaborateurs.</p>
-          <div class="flex flex-wrap gap-3">
-            {% if user.is_authenticated %}
-            <a href="{% url 'user_reviews' %}" class="inline-flex items-center bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
-              Mes avis
-              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-              </svg>
-            </a>
-            {% else %}
-            <a href="{% url 'account_login' %}" class="inline-flex items-center bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
-              Donner mon avis
-              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-              </svg>
-            </a>
-            {% endif %}
-            <a href="{% url 'software_list' %}" class="inline-flex items-center bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
-              Explorer les logiciels
+          <span class="inline-block bg-sky-100 text-sky-800 text-xs font-semibold px-3 py-1 rounded-full mb-4">Tendances</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Restez informé des dernières actualités</h2>
+          <p class="text-gray-600 mb-6">Suivez les tendances du marché, les évolutions réglementaires et les innovations logicielles qui impactent les experts-comptables et les PME.</p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <a href="{% url 'actualites' %}" class="inline-flex items-center bg-sky-600 text-white px-4 py-2 rounded-lg hover:bg-sky-700 transition-colors">
+              Lire nos actualités
               <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
               </svg>
             </a>
           </div>
-        </div>
-        <div class="w-full md:w-1/3 rounded-xl shadow-lg overflow-hidden">
-          <img src="{{ selection_screenshot }}" alt="Sélection de logiciels" class="w-full h-auto">
         </div>
       </div>
     </div>
@@ -158,7 +143,7 @@ Cabinet Digital - Les meilleurs logiciels pour PME et experts-comptables
     <div class="bg-white border-2 border-gray-800/10 rounded-3xl p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] max-w-5xl mx-auto">
       <div class="flex flex-col md:flex-row items-center gap-8">
         <div class="flex-1">
-          <span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full mb-4">Nouveau</span>
+          <span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full mb-4">Intelligence Artificielle</span>
           <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">Découvrez les outils d'Intelligence Artificielle pour votre entreprise</h2>
           <p class="text-gray-600 mb-6">Découvrez notre sélection d'outils d'IA pour automatiser vos tâches et augmenter votre productivité.</p>
           <div class="flex flex-wrap gap-3">
@@ -177,7 +162,7 @@ Cabinet Digital - Les meilleurs logiciels pour PME et experts-comptables
           </div>
         </div>
         <div class="w-full md:w-1/3">
-          <img src="{% static 'marketing/ia_side_image.webp' %}" alt="Intelligence Artificielle" class="w-full h-auto rounded-xl shadow-lg">
+          <img src="{% static 'marketing/ia_side_image.png' %}" alt="Intelligence Artificielle" class="w-full h-auto rounded-lg border-2 border-gray-200 object-cover hover:border-gray-300 transition-all duration-300">
         </div>
       </div>
     </div>
