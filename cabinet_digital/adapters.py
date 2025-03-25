@@ -3,6 +3,7 @@ from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.exceptions import ImmediateHttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
+import uuid
 
 class NoSignupAccountAdapter(DefaultAccountAdapter):
     """
@@ -35,6 +36,12 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         Personnaliser les données utilisateur lors de l'inscription
         """
         user = super().populate_user(request, sociallogin, data)
+        
+        # Ajouter un facteur aléatoire pour éviter les conflits de noms d'utilisateur
+        if data.get('email'):
+            username_base = data['email'].split('@')[0]
+            user.username = f"{username_base}_{uuid.uuid4().hex[:8]}"
+        
         return user
     
     def get_connect_redirect_url(self, request, socialaccount):

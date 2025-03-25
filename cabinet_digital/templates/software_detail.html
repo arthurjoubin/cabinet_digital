@@ -243,16 +243,19 @@
       <div x-show="activeTab === 'alternatives'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="p-1">
         <div class="max-w-5xl mx-auto">
           <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 text-center md:text-left">Logiciels similaires</h2>
-          {% if similar_softwares %}
+          {% if alternatives %}
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {% for similar_software in similar_softwares %}
+            {% for similar_software in alternatives %}
               <div class="col-span-1">
                 {% include 'template_card_software.html' with software=similar_software %}
               </div>
             {% endfor %}
           </div>
           <div class="flex justify-center mt-6 sm:mt-8">
-            <a href="{% url 'alternative_detail' software.slug %}" class="inline-block px-4 py-2 bg-white text-black border-2 border-gray-700 text-sm font-medium rounded-md hover:bg-gray-100 transition-colors duration-300">
+            <a href="{% url 'alternative_detail' software.slug %}" class="inline-flex items-center px-5 py-2.5 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 shadow-sm transition-all duration-300 hover:shadow-md">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
               Voir toutes les alternatives
             </a>
           </div>

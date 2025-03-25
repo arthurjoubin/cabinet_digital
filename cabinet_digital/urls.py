@@ -101,6 +101,7 @@ urlpatterns = [
     
     # Authentication URLs
     path('account/', include('allauth.urls')),
+    path('account/login/', views.custom_login_view, name='account_login'),
     path('account/profil/complete/', CompleteProfileView.as_view(), name='complete_profile'),
     path('account/profil/', UserProfileView.as_view(), name='user_profile'),
     path('account/profil/avis/', UserReviewsView.as_view(), name='user_reviews'),
@@ -138,6 +139,7 @@ urlpatterns += [
     path('404/', views.Custom404View.as_view(), name='404'),
 ]
 handler404 = 'cabinet_digital.views.custom_404_view'
+handler429 = 'cabinet_digital.views.ratelimited_error'
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

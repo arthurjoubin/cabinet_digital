@@ -27,8 +27,9 @@ from django.contrib import messages
 from django.db import transaction
 import uuid
 from django import forms
-from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail, get_connection
+import re
+from django_ratelimit.decorators import ratelimit
 
 
 logger = logging.getLogger(__name__)
@@ -1039,6 +1040,27 @@ class CompleteProfileView(LoginRequiredMixin, FormView):
             help_texts = {
                 'username': 'Ce nom sera visible publiquement avec vos avis et commentaires.'
             }
+        
+        def clean_username(self):
+            username = self.cleaned_data['username']
+            
+            # Vérifier la longueur minimale
+            if len(username) < 3:
+                raise forms.ValidationError("Le nom d'utilisateur doit comporter au moins 3 caractères.")
+            
+            # Vérifier les caractères autorisés
+            if not re.match(r'^[a-zA-Z0-9_]+$', username):
+                raise forms.ValidationError("Le nom d'utilisateur ne peut contenir que des lettres, des chiffres et des tirets bas (_).")
+            
+            # Vérifier l'unicité (en excluant l'instance actuelle pour les modifications)
+            if self.instance and self.instance.pk:
+                if UserProfile.objects.filter(username=username).exclude(pk=self.instance.pk).exists():
+                    raise forms.ValidationError("Ce nom d'utilisateur est déjà pris.")
+            else:
+                if UserProfile.objects.filter(username=username).exists():
+                    raise forms.ValidationError("Ce nom d'utilisateur est déjà pris.")
+            
+            return username
     
     form_class = ProfileForm
     
@@ -1071,6 +1093,27 @@ class UserProfileView(LoginRequiredMixin, UpdateView):
             widgets = {
                 'username': forms.TextInput(attrs={'class': 'w-full px-3 py-2 border rounded-md'})
             }
+        
+        def clean_username(self):
+            username = self.cleaned_data['username']
+            
+            # Vérifier la longueur minimale
+            if len(username) < 3:
+                raise forms.ValidationError("Le nom d'utilisateur doit comporter au moins 3 caractères.")
+            
+            # Vérifier les caractères autorisés
+            if not re.match(r'^[a-zA-Z0-9_]+$', username):
+                raise forms.ValidationError("Le nom d'utilisateur ne peut contenir que des lettres, des chiffres et des tirets bas (_).")
+            
+            # Vérifier l'unicité (en excluant l'instance actuelle pour les modifications)
+            if self.instance and self.instance.pk:
+                if UserProfile.objects.filter(username=username).exclude(pk=self.instance.pk).exists():
+                    raise forms.ValidationError("Ce nom d'utilisateur est déjà pris.")
+            else:
+                if UserProfile.objects.filter(username=username).exists():
+                    raise forms.ValidationError("Ce nom d'utilisateur est déjà pris.")
+            
+            return username
     
     form_class = ProfileForm
     
@@ -1160,6 +1203,44 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
                 'content': forms.Textarea(attrs={'class': 'w-full px-3 py-2 border rounded-md', 'rows': 6}),
                 'rating': forms.RadioSelect()
             }
+        
+        def clean_title(self):
+            title = self.cleaned_data['title']
+            
+            # Vérifier la longueur maximale
+            if len(title) > 100:
+                raise forms.ValidationError("Le titre ne doit pas dépasser 100 caractères.")
+            
+            # Vérifier l'absence de liens
+            url_patterns = [
+                'http://', 'https://', 'www.', '.com', '.fr', '.org', '.net',
+                '.io', '.co', '.eu', '.info', '.biz', '<a href', '</a>'
+            ]
+            
+            for pattern in url_patterns:
+                if pattern.lower() in title.lower():
+                    raise forms.ValidationError("Le titre ne doit pas contenir de liens ou d'URLs.")
+            
+            return title
+        
+        def clean_content(self):
+            content = self.cleaned_data['content']
+            
+            # Vérifier la longueur maximale
+            if len(content) > 2000:
+                raise forms.ValidationError("Le contenu de l'avis ne doit pas dépasser 2000 caractères.")
+            
+            # Vérifier l'absence de liens
+            url_patterns = [
+                'http://', 'https://', 'www.', '.com', '.fr', '.org', '.net',
+                '.io', '.co', '.eu', '.info', '.biz', '<a href', '</a>'
+            ]
+            
+            for pattern in url_patterns:
+                if pattern.lower() in content.lower():
+                    raise forms.ValidationError("Le contenu de l'avis ne doit pas contenir de liens ou d'URLs.")
+            
+            return content
     
     form_class = ReviewForm
     
@@ -1240,6 +1321,44 @@ class ReviewEditView(LoginRequiredMixin, UpdateView):
                 'content': forms.Textarea(attrs={'class': 'w-full px-3 py-2 border rounded-md', 'rows': 6}),
                 'rating': forms.RadioSelect()
             }
+        
+        def clean_title(self):
+            title = self.cleaned_data['title']
+            
+            # Vérifier la longueur maximale
+            if len(title) > 100:
+                raise forms.ValidationError("Le titre ne doit pas dépasser 100 caractères.")
+            
+            # Vérifier l'absence de liens
+            url_patterns = [
+                'http://', 'https://', 'www.', '.com', '.fr', '.org', '.net',
+                '.io', '.co', '.eu', '.info', '.biz', '<a href', '</a>'
+            ]
+            
+            for pattern in url_patterns:
+                if pattern.lower() in title.lower():
+                    raise forms.ValidationError("Le titre ne doit pas contenir de liens ou d'URLs.")
+            
+            return title
+        
+        def clean_content(self):
+            content = self.cleaned_data['content']
+            
+            # Vérifier la longueur maximale
+            if len(content) > 2000:
+                raise forms.ValidationError("Le contenu de l'avis ne doit pas dépasser 2000 caractères.")
+            
+            # Vérifier l'absence de liens
+            url_patterns = [
+                'http://', 'https://', 'www.', '.com', '.fr', '.org', '.net',
+                '.io', '.co', '.eu', '.info', '.biz', '<a href', '</a>'
+            ]
+            
+            for pattern in url_patterns:
+                if pattern.lower() in content.lower():
+                    raise forms.ValidationError("Le contenu de l'avis ne doit pas contenir de liens ou d'URLs.")
+            
+            return content
     
     form_class = ReviewForm
     
@@ -1338,11 +1457,14 @@ class ReviewDeleteView(LoginRequiredMixin, DeleteView):
         return super().dispatch(request, *args, **kwargs)
 
 
-@csrf_exempt
 def debug_email_test(request):
     """Debug view to test email sending directly"""
     if not settings.DEBUG:
         return HttpResponse("This view is only available in DEBUG mode", status=403)
+    
+    # Check for CSRF token in POST requests
+    if request.method == 'POST' and not request.POST.get('csrfmiddlewaretoken'):
+        return HttpResponse("CSRF token manquant", status=403)
     
     logger.info("Email debug view accessed")
     
@@ -1391,3 +1513,14 @@ def debug_email_test(request):
     except Exception as e:
         logger.error(f"Failed to send test email: {str(e)}")
         return HttpResponse(f"Failed to send test email: {str(e)}", status=500)
+
+def ratelimited_error(request, exception):
+    """View to handle rate-limited requests"""
+    return render(request, '429.html', status=429)
+
+@ratelimit(key='ip', rate='5/m', method=['POST'], block=True)
+def custom_login_view(request):
+    """Custom login view with rate limiting"""
+    # This is a wrapper for allauth's login view
+    from allauth.account.views import LoginView
+    return LoginView.as_view()(request)

@@ -34,6 +34,19 @@ def create_user_profile(sender, request, user, **kwargs):
 def process_review_image(sender, instance, **kwargs):
     """Process review images before saving"""
     if instance.image and hasattr(instance.image, 'file'):
+        # Check file MIME type for security
+        try:
+            import magic
+            file_mime = magic.from_buffer(instance.image.read(1024), mime=True)
+            instance.image.seek(0)  # Reset file pointer
+            
+            allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+            if file_mime not in allowed_types:
+                from django.core.exceptions import ValidationError
+                raise ValidationError('Type de fichier non autorisé. Seuls les images JPEG, PNG, WebP et GIF sont acceptées.')
+        except ImportError:
+            logger.warning("python-magic not installed, skipping MIME type validation")
+        
         # Generate new filename with uuid to avoid collisions
         img = Image.open(instance.image)
         

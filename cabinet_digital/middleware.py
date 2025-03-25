@@ -1,6 +1,8 @@
 from django.shortcuts import redirect
 from django.urls import resolve, reverse
 from django.conf import settings
+from cabinet_digital.models import UserProfile
+import uuid
 
 class ProfileCompletionMiddleware:
     """
@@ -32,10 +34,16 @@ class ProfileCompletionMiddleware:
                     
                     # Redirect to profile completion if not in exempt URLs
                     if current_url not in exempt_urls and not request.path.startswith('/admin/'):
+                        # Store the URL to redirect back to after profile completion
+                        request.session['post_profile_redirect'] = request.get_full_path()
                         return redirect(reverse('complete_profile'))
-            except:
-                # If user doesn't have a profile yet, they'll be redirected on next request
-                pass
+            except UserProfile.DoesNotExist:
+                # Créer un profil pour cet utilisateur
+                UserProfile.objects.create(
+                    user=request.user,
+                    username=f"{request.user.email.split('@')[0]}_{uuid.uuid4().hex[:4]}"
+                )
+                return redirect(reverse('complete_profile'))
                 
         response = self.get_response(request)
         return response 
