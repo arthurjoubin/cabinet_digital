@@ -384,13 +384,16 @@
                                     </svg>
                                     Experts Comptables
                                 </div>
-                                <svg class="w-4 h-4 transition-transform duration-200" 
-                                     :class="{'rotate-180': expertsOpen}"
-                                     fill="none" 
-                                     stroke="currentColor" 
-                                     viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
+                                <div class="flex items-center">
+                                    <span class="text-sm font-medium mr-2" x-text="expertsOpen ? 'Masquer' : 'Afficher'"></span>
+                                    <svg class="w-4 h-4 transition-transform duration-200" 
+                                         :class="{'rotate-180': expertsOpen}"
+                                         fill="none" 
+                                         stroke="currentColor" 
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </div>
                             </button>
                             <div x-show="expertsOpen" x-cloak class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2">
                                 {% for category in categories %}
@@ -414,13 +417,16 @@
                                     </svg>
                                     PME
                                 </div>
-                                <svg class="w-4 h-4 transition-transform duration-200" 
-                                     :class="{'rotate-180': pmeOpen}"
-                                     fill="none" 
-                                     stroke="currentColor" 
-                                     viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
+                                <div class="flex items-center">
+                                    <span class="text-sm font-medium mr-2" x-text="pmeOpen ? 'Masquer' : 'Afficher'"></span>
+                                    <svg class="w-4 h-4 transition-transform duration-200" 
+                                         :class="{'rotate-180': pmeOpen}"
+                                         fill="none" 
+                                         stroke="currentColor" 
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </div>
                             </button>
                             <div x-show="pmeOpen" x-cloak class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2">
                                 {% for category in categories %}
