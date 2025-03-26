@@ -35,15 +35,7 @@
         
         <!-- Content -->
         <div class="p-6">
-            {% if messages %}
-            <div class="mb-6">
-                {% for message in messages %}
-                <div class="{% if message.tags == 'success' %}bg-green-50 border-green-200 text-green-800{% elif message.tags == 'error' %}bg-red-50 border-red-200 text-red-800{% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %} p-4 mb-4 rounded-lg border">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
+
             
             <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
                 <svg class="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

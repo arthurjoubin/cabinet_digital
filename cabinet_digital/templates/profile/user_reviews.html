@@ -10,15 +10,6 @@
         </div>
         
         <div class="p-6">
-            {% if messages %}
-            <div class="mb-6">
-                {% for message in messages %}
-                <div class="{% if message.tags == 'success' %}bg-green-50 border-green-200 text-green-800{% elif message.tags == 'error' %}bg-red-50 border-red-200 text-red-800{% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %} p-4 mb-4 rounded-lg border">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
             
             {% if not user.userprofile.username %}
             <div class="bg-yellow-50 border border-yellow-300 rounded-lg p-4 mb-6">
