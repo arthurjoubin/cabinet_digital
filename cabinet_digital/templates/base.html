@@ -305,7 +305,6 @@
         <!-- Menu mobile -->
         <div x-show="mobileMenuOpen" 
              x-cloak
-             @click.away="mobileMenuOpen = false"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0 transform -translate-y-2"
              x-transition:enter-end="opacity-100 transform translate-y-0"
@@ -314,6 +313,14 @@
              x-transition:leave-end="opacity-0 transform -translate-y-2"
              class="lg:hidden fixed inset-0 bg-white z-40 overflow-y-auto pt-16 pb-6" 
              id="mobile-menu">
+            <!-- Close button -->
+            <button @click="mobileMenuOpen = false" 
+                    class="absolute top-3 right-4 p-2 rounded-md text-gray-500 hover:text-gray-800 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                <span class="sr-only">Fermer le menu</span>
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
             <div class="space-y-2 px-4 max-w-md mx-auto">
                 <!-- Section Logiciels Mobile -->
                 <div x-data="{ open: false }" class="relative">
@@ -348,7 +355,11 @@
                 </div>
 
                 <!-- Section Catégories Mobile -->
-                <div x-data="{ open: false }" class="relative mt-3">
+                <div x-data="{ 
+                    open: false,
+                    expertsOpen: false,
+                    pmeOpen: false
+                }" class="relative mt-3">
                     <button @click="open = !open"
                             class="flex w-full items-center justify-between rounded-lg px-4 py-3 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 shadow-sm border border-gray-100"
                             :class="{ 'bg-sky-50 text-sky-600 border-sky-200': currentPath.startsWith('/categories/'), 'bg-sky-50 text-sky-600 border-sky-200': open }">
@@ -366,13 +377,24 @@
                          class="mt-2 space-y-4">
                         <!-- Experts Comptables Section -->
                         <div class="px-3 bg-sky-50 rounded-lg p-4 mx-2 border border-sky-100">
-                            <h4 class="text-base font-bold text-sky-700 mb-3 border-b border-sky-200 pb-2 flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10H9m3-7v4m3-4v4m3-4v4M9 3h6m0 0h2a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h2" />
+                            <button @click="expertsOpen = !expertsOpen"
+                                    class="w-full flex items-center justify-between text-base font-bold text-sky-700 mb-3 border-b border-sky-200 pb-2">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10H9m3-7v4m3-4v4m3-4v4M9 3h6m0 0h2a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h2" />
+                                    </svg>
+                                    <span>Experts Comptables</span>
+                                    <span class="ml-2 text-xs font-normal px-2 py-0.5 bg-sky-200 text-sky-800 rounded-full">Afficher</span>
+                                </div>
+                                <svg class="w-4 h-4 transition-transform duration-200" 
+                                     :class="{'rotate-180': expertsOpen}"
+                                     fill="none" 
+                                     stroke="currentColor" 
+                                     viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
-                                Experts Comptables
-                            </h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2">
+                            </button>
+                            <div x-show="expertsOpen" x-cloak class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2 animate-fadeIn">
                                 {% for category in categories %}
                                     {% if category.metier and category.metier.slug == 'experts_comptables' %}
                                         <a href="{% url 'category_detail' category.slug %}" 
@@ -386,13 +408,24 @@
                         
                         <!-- PME Section -->
                         <div class="px-3 bg-emerald-50 rounded-lg p-4 mx-2 border border-emerald-100">
-                            <h4 class="text-base font-bold text-emerald-700 mb-3 border-b border-emerald-200 pb-2 flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            <button @click="pmeOpen = !pmeOpen"
+                                    class="w-full flex items-center justify-between text-base font-bold text-emerald-700 mb-3 border-b border-emerald-200 pb-2">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                    <span>PME</span>
+                                    <span class="ml-2 text-xs font-normal px-2 py-0.5 bg-emerald-200 text-emerald-800 rounded-full">Afficher</span>
+                                </div>
+                                <svg class="w-4 h-4 transition-transform duration-200" 
+                                     :class="{'rotate-180': pmeOpen}"
+                                     fill="none" 
+                                     stroke="currentColor" 
+                                     viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
-                                PME
-                            </h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2">
+                            </button>
+                            <div x-show="pmeOpen" x-cloak class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2 animate-fadeIn">
                                 {% for category in categories %}
                                     {% if category.metier and category.metier.slug == 'pme' %}
                                         <a href="{% url 'category_detail' category.slug %}" 

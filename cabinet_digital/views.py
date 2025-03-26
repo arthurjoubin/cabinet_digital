@@ -308,9 +308,7 @@ class ActualitesDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         # Ajouter les éléments du breadcrumb
         context['breadcrumb_items'] = [
-            {'title': 'Actualités', 'url': reverse('actualites')},
-            {'title': self.object.title, 'url': None}
-        ]
+            {'title': 'Actualités', 'url': reverse('actualites')}        ]
         return context
 
 def alternative_detail(request, slug):
