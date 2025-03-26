@@ -14,19 +14,9 @@
 
       <div class="mb-6 bg-blue-50 rounded-md p-4 text-blue-800 border border-blue-200">
         <h2 class="font-semibold text-lg mb-2">Bienvenue sur Cabinet Digital !</h2>
-        <p class="text-sm">Pour finaliser votre inscription, vous devez choisir un <strong>nom d'affichage</strong>.</p>
-        <p class="text-sm mt-2"><span class="bg-yellow-100 px-1">Important :</span> Ce nom sera visible publiquement lorsque vous publierez des avis ou des commentaires.</p>
+        <p class="text-sm">Pour finaliser votre inscription, vous devez choisir un <strong>nom d'affichage</strong>, visible uniquement sur vos avis.</p>
       </div>
 
-      {% if messages %}
-      <div class="mb-4">
-        {% for message in messages %}
-        <div class="p-4 rounded-md {% if message.tags == 'error' %}bg-red-50 text-red-700{% else %}bg-green-50 text-green-700{% endif %}">
-          {{ message }}
-        </div>
-        {% endfor %}
-      </div>
-      {% endif %}
 
       <form method="post" class="space-y-6">
         {% csrf_token %}
@@ -46,7 +36,10 @@
             <span>Nom d'affichage</span>
             <span class="ml-1 bg-red-100 text-red-600 text-xs px-1 rounded">Requis</span>
           </label>
-          {{ form.username }}
+          <div class="relative">
+            {{ form.username }}
+            <div id="username-feedback" class="mt-1 text-sm"></div>
+          </div>
           <p class="text-sm text-gray-500">Choisissez un nom qui vous représente. Il sera visible lorsque vous publiez des avis.</p>
         </div>
         
@@ -57,4 +50,44 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const usernameField = document.getElementById('{{ form.username.id_for_label }}');
+    const feedbackDiv = document.getElementById('username-feedback');
+    
+    usernameField.addEventListener('keyup', debounce(function() {
+      const username = usernameField.value.trim();
+      
+      if (username.length < 1) {
+        feedbackDiv.textContent = '';
+        return;
+      }
+      
+      fetch(`{% url 'check_username' %}?username=${username}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.is_taken) {
+            feedbackDiv.textContent = data.message;
+            feedbackDiv.className = 'mt-1 text-sm text-red-600';
+          } else if (!data.is_valid) {
+            feedbackDiv.textContent = data.message;
+            feedbackDiv.className = 'mt-1 text-sm text-amber-600';
+          } else {
+            feedbackDiv.textContent = data.message;
+            feedbackDiv.className = 'mt-1 text-sm text-green-600';
+          }
+        });
+    }, 300));
+    
+    // Fonction debounce pour limiter les appels API
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+  });
+</script>
 {% endblock %} 

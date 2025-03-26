@@ -133,6 +133,7 @@ urlpatterns = [
     path('ia/outils/<slug:slug>/', AIToolDetailView.as_view(), name='ai_tool_detail'),
     path('ia/guides/', AIArticleListView.as_view(), name='ai_article_list'),
     path('ia/guides/<slug:slug>/', AIArticleDetailView.as_view(), name='ai_article_detail'),
+    path('account/check-username/', views.check_username, name='check_username'),
 ]
 
 urlpatterns += [

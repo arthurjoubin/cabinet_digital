@@ -62,7 +62,10 @@
                             Nom d'affichage
                             {% if not user.userprofile.username %}<span class="ml-1 bg-red-100 text-red-600 text-xs px-1 rounded">Requis</span>{% endif %}
                         </label>
-                        {{ form.username }}
+                        <div class="relative">
+                            {{ form.username }}
+                            <div id="username-feedback" class="mt-1 text-sm"></div>
+                        </div>
                         <p class="mt-1 text-sm text-gray-500">Ce nom sera visible publiquement avec vos avis et interactions.</p>
                     </div>
                     
@@ -131,4 +134,44 @@
         </div>
     </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const usernameField = document.getElementById('{{ form.username.id_for_label }}');
+    const feedbackDiv = document.getElementById('username-feedback');
+    
+    usernameField.addEventListener('keyup', debounce(function() {
+      const username = usernameField.value.trim();
+      
+      if (username.length < 1) {
+        feedbackDiv.textContent = '';
+        return;
+      }
+      
+      fetch(`{% url 'check_username' %}?username=${username}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.is_taken) {
+            feedbackDiv.textContent = data.message;
+            feedbackDiv.className = 'mt-1 text-sm text-red-600';
+          } else if (!data.is_valid) {
+            feedbackDiv.textContent = data.message;
+            feedbackDiv.className = 'mt-1 text-sm text-amber-600';
+          } else {
+            feedbackDiv.textContent = data.message;
+            feedbackDiv.className = 'mt-1 text-sm text-green-600';
+          }
+        });
+    }, 300));
+    
+    // Fonction debounce pour limiter les appels API
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+  });
+</script>
 {% endblock %} 

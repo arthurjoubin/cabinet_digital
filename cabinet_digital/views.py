@@ -46,6 +46,36 @@ REDIRECTIONS = {
     ('article', 'congres-de-l-ordre-experts-comptables-2023-guide-complet', 'rec0TrJ0pZJzkfmxL'): '/actualites/guide-du-congres-de-lordre-des-experts-comptables/',
 }
 
+def check_username(request):
+    """Check if a username is already taken"""
+    username = request.GET.get('username', '')
+    
+    # Ignorer la validation si c'est l'utilisateur actuel
+    exclude_user = None
+    if request.user.is_authenticated:
+        try:
+            exclude_user = request.user.userprofile.id
+        except UserProfile.DoesNotExist:
+            pass
+    
+    # Vérifier si le nom d'utilisateur est déjà pris
+    if exclude_user:
+        is_taken = UserProfile.objects.filter(username=username).exclude(id=exclude_user).exists()
+    else:
+        is_taken = UserProfile.objects.filter(username=username).exists()
+    
+    # Vérifier les règles de validation
+    is_valid = len(username) >= 3 and re.match(r'^[a-zA-Z0-9_]+$', username)
+    
+    return JsonResponse({
+        'is_taken': is_taken,
+        'is_valid': is_valid,
+        'message': 'Ce nom d\'utilisateur est déjà pris.' if is_taken else (
+            'Nom d\'utilisateur invalide. Utilisez au moins 3 caractères (lettres, chiffres ou _).' if not is_valid else 
+            'Nom d\'utilisateur disponible ✓'
+        )
+    })
+
 def home(request):
     context = {
         'avis_screenshot': '/static/marketing/avis_screenshot.png',
