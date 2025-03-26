@@ -67,14 +67,13 @@
       fetch(`{% url 'check_username' %}?username=${username}`)
         .then(response => response.json())
         .then(data => {
+          feedbackDiv.textContent = data.message;
+          
           if (data.is_taken) {
-            feedbackDiv.textContent = data.message;
             feedbackDiv.className = 'mt-1 text-sm text-red-600';
           } else if (!data.is_valid) {
-            feedbackDiv.textContent = data.message;
             feedbackDiv.className = 'mt-1 text-sm text-amber-600';
           } else {
-            feedbackDiv.textContent = data.message;
             feedbackDiv.className = 'mt-1 text-sm text-green-600';
           }
         });
