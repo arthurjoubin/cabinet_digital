@@ -994,7 +994,7 @@ class MetierDetailView(DetailView):
         metier = self.object
         
         # Récupérer les catégories liées à ce métier
-        context['categories'] = SoftwareCategory.objects.filter(
+        context['metier_categories'] = SoftwareCategory.objects.filter(
             metier=metier,
             is_published=True
         ).annotate(

@@ -18,7 +18,7 @@ Les meilleurs modèles d'IA pour les entreprises (2025) - Cabinet Digital
 
 {% block content %}
 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-    <h1 class="custom-header-emerald">Les meilleurs modèles d'IA à utiliser en entreprise (2025)</h1>
+    {% include "partials/custom_header.html" with header_text="modèles" header_prefix="Les meilleurs " header_suffix="d'IA à utiliser en entreprise (2025)" %}
     <div id="model-list-content" class="w-full">
         <div id="model-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {% for model in models %}

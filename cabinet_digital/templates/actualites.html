@@ -17,8 +17,7 @@ Actualités des logiciels pour experts-comptables et PME - Cabinet Digital
 {% block content %}
 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
     {% include 'partials/breadcrumb.html' %}
-    <h1 class="custom-header">Actualités</h1>
-    
+    {% include "partials/custom_header.html" with header_text="actualités" header_prefix="Dernières " header_suffix="des logiciels" %}
 
     <div class="grid gap-6 md:gap-8 md:grid-cols-2 lg:grid-cols-3">
         {% for actualite in actualites %}

@@ -26,7 +26,7 @@
         </h1>
     </div>
 
-    {% if categories %}
+    {% if metier_categories %}
     <div class="space-y-8 mb-16">
         <div class="relative">
             <div class="absolute inset-0 flex items-center" aria-hidden="true">
@@ -38,7 +38,7 @@
         </div>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {% for category in categories %}
+            {% for category in metier_categories %}
                 <div class="group [&:hover_#numlogiciel]:bg-white">
                     <a href="{% url 'category_detail' category.slug %}" class="block h-full">
                         <div class="bg-white border border-gray-200 rounded-lg hover:bg-sky-50 p-4 transition-all duration-300 group-hover:border-sky-200 h-full flex flex-col justify-between relative">
@@ -115,7 +115,7 @@
     </div>
     {% endif %}
 
-    {% if not categories and not softwares %}
+    {% if not metier_categories and not softwares %}
     <div class="text-center py-12">
         <p class="text-gray-500 text-lg">
             Aucun logiciel ou catégorie n'est disponible pour ce métier pour le moment.

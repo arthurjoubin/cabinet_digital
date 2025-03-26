@@ -17,7 +17,7 @@ Cabinet Digital - Les catégories de logiciels pour experts-comptables et PME
 {% block content %}
 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
     {% include 'partials/breadcrumb.html' %}
-    <h1 class="custom-header">Catégories de logiciels</h1>
+    {% include "partials/custom_header.html" with header_text="catégories" header_prefix="" header_suffix="de logiciels" %}
 
     <!-- Filtres par métier -->
     <div class="mb-8">

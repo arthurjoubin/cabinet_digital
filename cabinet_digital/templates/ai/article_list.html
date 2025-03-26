@@ -16,7 +16,7 @@ Articles IA pour experts-comptables et PME - Cabinet Digital
 
 {% block content %}
 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-    <h1 class="custom-header-emerald">Articles IA</h1>
+    {% include "partials/custom_header.html" with header_text="articles" header_prefix="" header_suffix="sur l'intelligence artificielle" %}
 
     <div class="grid gap-6 md:gap-8 md:grid-cols-2 lg:grid-cols-3">
         {% for article in articles %}
