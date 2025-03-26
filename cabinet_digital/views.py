@@ -1547,9 +1547,8 @@ def ratelimited_error(request, exception):
     """View to handle rate-limited requests"""
     return render(request, '429.html', status=429)
 
-@ratelimit(key='ip', rate='5/m', method=['POST'], block=True)
 def custom_login_view(request):
-    """Custom login view with rate limiting"""
+    """Custom login view without rate limiting"""
     # This is a wrapper for allauth's login view
     from allauth.account.views import LoginView
     return LoginView.as_view()(request)

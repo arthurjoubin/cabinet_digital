@@ -140,7 +140,6 @@ urlpatterns += [
     path('404/', views.Custom404View.as_view(), name='404'),
 ]
 handler404 = 'cabinet_digital.views.custom_404_view'
-handler429 = 'cabinet_digital.views.ratelimited_error'
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
