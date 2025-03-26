@@ -33,6 +33,12 @@ import re
 
 logger = logging.getLogger(__name__)
 
+# Simple dummy decorator to replace django-ratelimit without the dependency
+def ratelimit(group=None, key=None, rate=None, method=None, block=False):
+    def decorator(fn):
+        return fn
+    return decorator
+
 REDIRECTIONS = {
     ('article', 'meilleur-logiciel-gestion-financière', 'recWaFwovIysDlxQG'): '/categories/gestion_financiere/',
     ('article', 'guide-facture-electronique', 'recXxEZlXjyGr0lw3'): '/actualites/facture-electronique-guide-complet/',
@@ -1543,12 +1549,12 @@ def debug_email_test(request):
         logger.error(f"Failed to send test email: {str(e)}")
         return HttpResponse(f"Failed to send test email: {str(e)}", status=500)
 
-def ratelimited_error(request, exception):
-    """View to handle rate-limited requests"""
-    return render(request, '429.html', status=429)
-
 def custom_login_view(request):
     """Custom login view without rate limiting"""
     # This is a wrapper for allauth's login view
     from allauth.account.views import LoginView
     return LoginView.as_view()(request)
+
+def ratelimited_error(request, exception):
+    """Simple view to handle rate-limited requests"""
+    return render(request, '404.html', status=429)  # Using 404 template with 429 status
