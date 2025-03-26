@@ -4,57 +4,72 @@
 {% block title %}Alternatives à {{ software.name }} | Cabinet Digital{% endblock %}
 
 {% block meta_description %}
-<meta name="description" content="Découvrez les meilleures alternatives à {{ software.name }}. Comparez les fonctionnalités et trouvez la solution idéale pour votre entreprise.">
-<meta property="og:title" content="Alternatives à {{ software.name }} - Cabinet Digital">
-<meta property="og:description" content="Découvrez les meilleures alternatives à {{ software.name }}. Comparez les fonctionnalités et trouvez la solution idéale pour votre entreprise.">
+<meta name="description" content="Découvrez les meilleures alternatives à {{ software.name }}. Comparez les fonctionnalités, prix et caractéristiques pour trouver la solution idéale pour votre entreprise.">
+<meta property="og:title" content="Alternatives à {{ software.name }} - Comparatif complet | Cabinet Digital">
+<meta property="og:description" content="Découvrez les meilleures alternatives à {{ software.name }}. Comparez les fonctionnalités, prix et caractéristiques pour trouver la solution idéale pour votre entreprise.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
 <meta property="og:site_name" content="Cabinet Digital">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% if not canonical_url %}
+<link rel="canonical" href="{{ request.build_absolute_uri }}" />
+{% endif %}
 {% endblock %}
 
 {% block content %}
 <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-12">
     <div class="p-4 sm:p-8 max-w-5xl mx-auto">
-        <div class="text-center mb-12">
-                <h1 class="text-3xl font-bold mb-6">
-                    Alternatives à
-                    <span class="bg-black text-white px-3 py-1 rounded-lg inline-block">
-                        {{ software.name }}
-                    </span>
-                </h1>
+        <header class="text-center mb-12">
+            <h1 class="text-3xl font-bold mb-6">
+                Alternatives à
+                <span class="bg-black text-white px-3 py-1 rounded-lg inline-block">
+                    {{ software.name }}
+                </span>
+            </h1>
 
-                <a href="{% url 'software_detail' software.slug %}" 
-                   class="inline-flex items-center px-6 py-2.5 bg-sky-50 text-black text-sm font-semibold rounded-full hover:bg-sky-100 transition-all duration-200">
-                    Voir la fiche de {{ software.name }}
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
-            </div>
+            <a href="{% url 'software_detail' software.slug %}" 
+               class="inline-flex items-center px-6 py-2.5 bg-sky-50 text-black text-sm font-semibold rounded-full hover:bg-sky-100 transition-all duration-200"
+               aria-label="Voir la fiche détaillée de {{ software.name }}">
+                Voir la fiche de {{ software.name }}
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </a>
+        </header>
 
-            <div class="space-y-8">
-                <div class="relative">
-                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                        <div class="w-full border-t border-gray-300"></div>
-                    </div>
-                    <div class="relative flex justify-center">
-                        <h2 class="px-4 text-2xl font-semibold bg-white">Les meilleures alternatives</h2>
-                    </div>
+        <div class="space-y-8">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div class="w-full border-t border-gray-300"></div>
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {% for alternative in alternatives %}
-                        <div class="col-span-1">
-                            {% include 'template_card_software.html' with software=alternative %}
-                        </div>
-                    {% empty %}
-                        <div class="col-span-full py-12">
-                            <p class="text-center text-gray-500 text-lg">
-                                Aucune alternative trouvée pour le moment.
+                <div class="relative flex justify-center">
+                    <h2 class="px-4 text-2xl font-semibold bg-white" id="alternatives-heading">Alternatives à {{ software.name }}</h2>
+                </div>
+            </div>
+            
+            <!-- Introduction explicative des alternatives -->
+            <div class="prose max-w-none mb-6">
+                <p>Voici une sélection des meilleures alternatives à <strong>{{ software.name }}</strong> disponibles sur le marché. Ces logiciels offrent des fonctionnalités similaires mais peuvent se différencier par leurs prix, leurs interfaces ou des fonctionnalités spécifiques. Comparez ces solutions pour trouver celle qui correspond le mieux à vos besoins.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for alternative in alternatives %}
+                    <div class="col-span-1">
+                        <div class="mb-2">
+                            <h3 class="text-lg font-medium text-gray-900">{{ alternative.name }}</h3>
+                            <p class="text-sm text-gray-500">
+                                Alternative à {{ software.name }} pour {% for category in alternative.category.all %}{{ category.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
                             </p>
                         </div>
-                    {% endfor %}
-                </div>
+                        {% include 'template_card_software.html' with software=alternative %}
+                    </div>
+                {% empty %}
+                    <div class="col-span-full py-12">
+                        <p class="text-center text-gray-500 text-lg">
+                            Aucune alternative trouvée pour le moment.
+                        </p>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>
