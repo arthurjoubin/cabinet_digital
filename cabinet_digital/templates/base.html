@@ -306,234 +306,212 @@
         <div x-show="mobileMenuOpen" 
              x-cloak
              x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
+             x-transition:enter-start="opacity-0 transform -translate-y-2"
+             x-transition:enter-end="opacity-100 transform translate-y-0"
              x-transition:leave="transition ease-in duration-150"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             class="lg:hidden fixed inset-0 z-50" 
+             x-transition:leave-start="opacity-100 transform translate-y-0"
+             x-transition:leave-end="opacity-0 transform -translate-y-2"
+             class="lg:hidden fixed inset-0 bg-white z-40 overflow-y-auto" 
              id="mobile-menu">
-            <!-- Overlay de fond -->
-            <div class="absolute inset-0 bg-black bg-opacity-50" @click="mobileMenuOpen = false"></div>
-            
-            <!-- Contenu du menu -->
-            <div class="absolute inset-y-0 right-0 max-w-full flex">
-                <div class="relative w-screen max-w-md bg-white h-full overflow-y-auto pb-12">
-                    <!-- Header du menu mobile -->
-                    <div class="flex items-center justify-between px-4 pt-5 pb-2 border-b border-gray-200">
-                        <a href="{% url 'home' %}" class="flex items-center">
-                            <img src="{% static 'cabinet_logos/logo_cabinetdigital.png' %}" alt="Cabinet Digital logo" class="h-8 w-auto mr-3">
-                            <span class="text-xl font-bold text-black">Cabinet Digital</span>
+            <div class="sticky top-0 flex justify-between items-center p-4 border-b border-gray-200 bg-white">
+                <div class="flex items-center">
+                    <img src="{% static 'cabinet_logos/logo_cabinetdigital.png' %}" alt="Cabinet Digital logo" class="h-6 w-auto mr-2">
+                    <span class="text-lg font-bold">Cabinet Digital</span>
+                </div>
+                <button @click="mobileMenuOpen = false" class="p-2 rounded-md hover:bg-gray-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-2 px-4 max-w-md mx-auto py-4">
+                <!-- Section Logiciels Mobile -->
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open"
+                            class="flex w-full items-center justify-between rounded-lg px-4 py-3 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 shadow-sm border border-gray-100"
+                            :class="{ 'bg-sky-50 text-sky-600 border-sky-200': currentPath.startsWith('/metiers/') || currentPath.startsWith('/logiciels/'), 'bg-sky-50 text-sky-600 border-sky-200': open }">
+                        <span class="text-lg">Logiciels</span>
+                        <svg class="w-5 h-5 transition-transform duration-200" 
+                             :class="{'rotate-180': open}"
+                             fill="none" 
+                             stroke="currentColor" 
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="open"
+                         x-cloak
+                         class="mt-2 space-y-1 pl-2 border-l-2 border-sky-200 ml-4">
+                        <a href="{% url 'software_list' %}" 
+                           class="block rounded-lg px-4 py-2.5 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600">
+                            Tous les logiciels
                         </a>
-                        <button @click="mobileMenuOpen = false" 
-                                class="p-2 rounded-md text-gray-500 hover:text-gray-800 hover:bg-gray-100">
-                            <span class="sr-only">Fermer le menu</span>
-                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="mt-2 px-4 space-y-3">
-                        <!-- Section Logiciels Mobile -->
-                        <div x-data="{ open: false }" class="border-b border-gray-200 py-3">
-                            <button @click="open = !open"
-                                    class="flex w-full items-center justify-between text-lg font-semibold text-gray-900"
-                                    :class="{ 'text-sky-600': currentPath.startsWith('/metiers/') || currentPath.startsWith('/logiciels/'), 'text-sky-600': open }">
-                                <span>Logiciels</span>
-                                <svg class="w-5 h-5 transition-transform duration-200" 
-                                    :class="{'rotate-180': open}"
-                                    fill="none" 
-                                    stroke="currentColor" 
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </button>
-                            <div x-show="open"
-                                x-cloak
-                                class="mt-3 space-y-2 pl-2">
-                                <a href="{% url 'software_list' %}" 
-                                class="block py-2 text-base font-medium text-gray-900 hover:text-sky-600">
-                                    Tous les logiciels
-                                </a>
-                                <a href="{% url 'metier_detail' slug='experts_comptables' %}" 
-                                class="block py-2 text-base font-medium text-gray-900 hover:text-sky-600">
-                                    Logiciels experts comptables
-                                </a>
-                                <a href="{% url 'metier_detail' slug='pme' %}" 
-                                class="block py-2 text-base font-medium text-gray-900 hover:text-sky-600">
-                                    Logiciels PME
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Section Catégories Mobile -->
-                        <div x-data="{ 
-                            open: false,
-                            expertsOpen: false,
-                            pmeOpen: false
-                        }" class="border-b border-gray-200 py-3">
-                            <button @click="open = !open"
-                                    class="flex w-full items-center justify-between text-lg font-semibold text-gray-900"
-                                    :class="{ 'text-sky-600': currentPath.startsWith('/categories/'), 'text-sky-600': open }">
-                                <span>Catégories</span>
-                                <svg class="w-5 h-5 transition-transform duration-200" 
-                                    :class="{'rotate-180': open}"
-                                    fill="none" 
-                                    stroke="currentColor" 
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </button>
-                            <div x-show="open"
-                                x-cloak
-                                class="mt-3 space-y-4">
-                                <!-- Experts Comptables Section -->
-                                <div class="bg-sky-50 rounded-lg p-4 border border-sky-100">
-                                    <button @click="expertsOpen = !expertsOpen"
-                                            class="w-full flex items-center justify-between text-base font-semibold text-sky-700 mb-2">
-                                        <div class="flex items-center gap-2">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10H9m3-7v4m3-4v4m3-4v4M9 3h6m0 0h2a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h2" />
-                                            </svg>
-                                            <span>Experts Comptables</span>
-                                            <span class="ml-1 text-xs px-2 py-0.5 bg-sky-200 text-sky-800 rounded-full">Afficher</span>
-                                        </div>
-                                        <svg class="w-4 h-4 transition-transform duration-200" 
-                                            :class="{'rotate-180': expertsOpen}"
-                                            fill="none" 
-                                            stroke="currentColor" 
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                        </svg>
-                                    </button>
-                                    <div x-show="expertsOpen" 
-                                         x-cloak 
-                                         class="mt-2 grid grid-cols-1 gap-1 pl-2 border-t border-sky-200 pt-2">
-                                        {% for category in categories %}
-                                            {% if category.metier and category.metier.slug == 'experts_comptables' %}
-                                                <a href="{% url 'category_detail' category.slug %}" 
-                                                class="block py-2 text-base font-medium text-gray-900 hover:text-sky-600">
-                                                    {{ category.name }}
-                                                </a>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                                
-                                <!-- PME Section -->
-                                <div class="bg-emerald-50 rounded-lg p-4 border border-emerald-100">
-                                    <button @click="pmeOpen = !pmeOpen"
-                                            class="w-full flex items-center justify-between text-base font-semibold text-emerald-700 mb-2">
-                                        <div class="flex items-center gap-2">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                            </svg>
-                                            <span>PME</span>
-                                            <span class="ml-1 text-xs px-2 py-0.5 bg-emerald-200 text-emerald-800 rounded-full">Afficher</span>
-                                        </div>
-                                        <svg class="w-4 h-4 transition-transform duration-200" 
-                                            :class="{'rotate-180': pmeOpen}"
-                                            fill="none" 
-                                            stroke="currentColor" 
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                        </svg>
-                                    </button>
-                                    <div x-show="pmeOpen" 
-                                         x-cloak 
-                                         class="mt-2 grid grid-cols-1 gap-1 pl-2 border-t border-emerald-200 pt-2">
-                                        {% for category in categories %}
-                                            {% if category.metier and category.metier.slug == 'pme' %}
-                                                <a href="{% url 'category_detail' category.slug %}" 
-                                                class="block py-2 text-base font-medium text-gray-900 hover:text-emerald-600">
-                                                    {{ category.name }}
-                                                </a>
-                                            {% endif %}
-                                        {% endfor %}
-                                        
-                                        <!-- Pour les catégories sans métier spécifique -->
-                                        {% for category in categories %}
-                                            {% if not category.metier %}
-                                                <a href="{% url 'category_detail' category.slug %}" 
-                                                class="block py-2 text-base font-medium text-gray-900 hover:text-emerald-600">
-                                                    {{ category.name }}
-                                                </a>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Section News Mobile -->
-                        <a href="{% url 'actualites' %}" 
-                        class="block py-3 text-lg font-semibold text-gray-900 hover:text-sky-600 border-b border-gray-200"
-                        :class="{ 'text-sky-600': currentPath.startsWith('/actualites/') }">
-                            News logiciels
+                        <a href="{% url 'metier_detail' slug='experts_comptables' %}" 
+                           class="block rounded-lg px-4 py-2.5 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600">
+                            Logiciels experts comptables
                         </a>
-
-                        {% if user.is_authenticated %}
-                        <!-- User Account Mobile Menu -->
-                        <div x-data="{ open: false }" class="py-3 border-b border-gray-200">
-                            <button @click="open = !open"
-                                    class="flex w-full items-center justify-between text-lg font-semibold text-gray-900"
-                                    :class="{ 'text-gray-900': open }">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                    <span>{{ user.userprofile.username }}</span>
-                                </div>
-                                <svg class="w-5 h-5 transition-transform duration-200" 
-                                    :class="{'rotate-180': open}"
-                                    fill="none" 
-                                    stroke="currentColor" 
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </button>
-                            <div x-show="open"
-                                x-cloak
-                                class="mt-3 space-y-2 pl-2">
-                                <a href="{% url 'user_profile' %}" 
-                                class="flex items-center gap-2 py-2 text-base font-medium text-gray-900 hover:text-gray-600">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                                Mon profil
-                                </a>
-                                <a href="{% url 'user_reviews' %}" 
-                                class="flex items-center gap-2 py-2 text-base font-medium text-gray-900 hover:text-gray-600">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                                </svg>
-                                Mes avis
-                                </a>
-                                <a href="{% url 'contact' %}" 
-                                class="flex items-center gap-2 py-2 text-base font-medium text-gray-900 hover:text-gray-600">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                </svg>
-                                Contact
-                                </a>
-                                <div class="border-t border-gray-100 my-2"></div>
-                                <a href="{% url 'account_logout' %}" 
-                                class="flex items-center gap-2 py-2 text-base font-medium text-red-600 hover:text-red-800">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                </svg>
-                                Se déconnecter
-                                </a>
-                            </div>
-                        </div>
-                        {% else %}
-                        <a href="{% url 'contact' %}" class="block w-full text-center py-3 px-4 text-white bg-black border border-black text-lg font-medium hover:bg-white hover:text-black transition-all duration-300 rounded-lg mt-6">
-                            Contact
+                        <a href="{% url 'metier_detail' slug='pme' %}" 
+                           class="block rounded-lg px-4 py-2.5 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600">
+                            Logiciels PME
                         </a>
-                        {% endif %}
                     </div>
                 </div>
+
+                <!-- Section Catégories Mobile -->
+                <div x-data="{ open: false, expertsOpen: false, pmeOpen: false }" class="relative mt-3">
+                    <button @click="open = !open"
+                            class="flex w-full items-center justify-between rounded-lg px-4 py-3 text-base font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 shadow-sm border border-gray-100"
+                            :class="{ 'bg-sky-50 text-sky-600 border-sky-200': currentPath.startsWith('/categories/'), 'bg-sky-50 text-sky-600 border-sky-200': open }">
+                        <span class="text-lg">Catégories</span>
+                        <svg class="w-5 h-5 transition-transform duration-200" 
+                             :class="{'rotate-180': open}"
+                             fill="none" 
+                             stroke="currentColor" 
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="open"
+                         x-cloak
+                         class="mt-2 space-y-4">
+                        <!-- Experts Comptables Section -->
+                        <div class="px-3 bg-sky-50 rounded-lg p-4 mx-2 border border-sky-100">
+                            <button @click="expertsOpen = !expertsOpen"
+                                   class="w-full text-left text-base font-bold text-sky-700 mb-3 border-b border-sky-200 pb-2 flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10H9m3-7v4m3-4v4m3-4v4M9 3h6m0 0h2a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h2" />
+                                    </svg>
+                                    Experts Comptables
+                                </div>
+                                <svg class="w-4 h-4 transition-transform duration-200" 
+                                     :class="{'rotate-180': expertsOpen}"
+                                     fill="none" 
+                                     stroke="currentColor" 
+                                     viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div x-show="expertsOpen" x-cloak class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2">
+                                {% for category in categories %}
+                                    {% if category.metier and category.metier.slug == 'experts_comptables' %}
+                                        <a href="{% url 'category_detail' category.slug %}" 
+                                           class="block rounded-lg px-3 py-2 text-base font-medium text-gray-900 hover:bg-sky-100 hover:text-sky-600 transition-colors">
+                                            {{ category.name }}
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- PME Section -->
+                        <div class="px-3 bg-emerald-50 rounded-lg p-4 mx-2 border border-emerald-100">
+                            <button @click="pmeOpen = !pmeOpen"
+                                   class="w-full text-left text-base font-bold text-emerald-700 mb-3 border-b border-emerald-200 pb-2 flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                    PME
+                                </div>
+                                <svg class="w-4 h-4 transition-transform duration-200" 
+                                     :class="{'rotate-180': pmeOpen}"
+                                     fill="none" 
+                                     stroke="currentColor" 
+                                     viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div x-show="pmeOpen" x-cloak class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2">
+                                {% for category in categories %}
+                                    {% if category.metier and category.metier.slug == 'pme' %}
+                                        <a href="{% url 'category_detail' category.slug %}" 
+                                           class="block rounded-lg px-3 py-2 text-base font-medium text-gray-900 hover:bg-emerald-100 hover:text-emerald-600 transition-colors">
+                                            {{ category.name }}
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                <!-- Pour les catégories sans métier spécifique -->
+                                {% for category in categories %}
+                                    {% if not category.metier %}
+                                        <a href="{% url 'category_detail' category.slug %}" 
+                                           class="block rounded-lg px-3 py-2 text-base font-medium text-gray-900 hover:bg-emerald-100 hover:text-emerald-600 transition-colors">
+                                            {{ category.name }}
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section News Mobile -->
+                <a href="{% url 'actualites' %}" 
+                   class="block rounded-lg px-4 py-3 text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 mt-3 shadow-sm border border-gray-100 transition-colors"
+                   :class="{ 'bg-sky-50 text-sky-600 border-sky-200': currentPath.startsWith('/actualites/') }">
+                    News logiciels
+                </a>
+
+                {% if user.is_authenticated %}
+                <!-- User Account Mobile Menu -->
+                <div x-data="{ open: false }" class="relative mt-3">
+                    <button @click="open = !open"
+                            class="flex w-full items-center justify-between rounded-lg px-4 py-3 text-base font-semibold text-gray-900 hover:bg-gray-50 hover:text-gray-900 shadow-sm border border-gray-100"
+                            :class="{ 'bg-gray-50 border-gray-200': open }">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span class="text-lg">{{ user.userprofile.username }}</span>
+                        </div>
+                        <svg class="w-5 h-5 transition-transform duration-200" 
+                             :class="{'rotate-180': open}"
+                             fill="none" 
+                             stroke="currentColor" 
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="open"
+                         x-cloak
+                         class="mt-2 space-y-1 pl-2 border-l-2 border-gray-200 ml-4">
+                        <a href="{% url 'user_profile' %}" 
+                           class="flex items-center gap-2 rounded-lg px-4 py-2.5 text-base font-semibold text-gray-900 hover:bg-gray-50 hover:text-gray-900">
+                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                           </svg>
+                           Mon profil
+                        </a>
+                        <a href="{% url 'user_reviews' %}" 
+                           class="flex items-center gap-2 rounded-lg px-4 py-2.5 text-base font-semibold text-gray-900 hover:bg-gray-50 hover:text-gray-900">
+                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                           </svg>
+                           Mes avis
+                        </a>
+                        <a href="{% url 'contact' %}" 
+                           class="flex items-center gap-2 rounded-lg px-4 py-2.5 text-base font-semibold text-gray-900 hover:bg-gray-50 hover:text-gray-900">
+                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                           </svg>
+                           Contact
+                        </a>
+                        <div class="border-t border-gray-100 my-2 mx-6"></div>
+                        <a href="{% url 'account_logout' %}" 
+                           class="flex items-center gap-2 rounded-lg px-4 py-2.5 text-base font-semibold text-red-600 hover:bg-red-50 hover:text-red-700">
+                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                           </svg>
+                           Se déconnecter
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <a href="{% url 'contact' %}" class="block w-full text-center text-white bg-black border border-black px-6 py-3 text-lg font-medium hover:bg-white hover:text-black transition-all duration-300 rounded-lg shadow-sm mt-5">
+                    Contact
+                </a>
+                {% endif %}
             </div>
         </div>
     </header>
