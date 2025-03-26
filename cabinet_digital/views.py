@@ -29,7 +29,6 @@ import uuid
 from django import forms
 from django.core.mail import send_mail, get_connection
 import re
-from django_ratelimit.decorators import ratelimit
 
 
 logger = logging.getLogger(__name__)
