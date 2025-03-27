@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_save, post_delete
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from allauth.account.signals import user_signed_up
@@ -6,11 +6,12 @@ from django.conf import settings
 from PIL import Image
 import os
 from io import BytesIO
-from .models import UserProfile, ReviewImage, Review
+from .models import UserProfile, ReviewImage, Review, SoftwareCategory, Software
 import uuid
 import random
 import string
 import logging
+from django.core.cache import cache
 
 logger = logging.getLogger('cabinet_digital')
 
@@ -70,7 +71,7 @@ def process_review_image(sender, instance, **kwargs):
             filename,
             ContentFile(webp_io.getvalue()),
             save=False  # Don't save yet to avoid recursion
-        ) 
+        )
 
 
 @receiver(post_save, sender=Review)
@@ -80,4 +81,37 @@ def notify_on_review_creation(sender, instance, created, **kwargs):
     if created:  # Seulement pour les nouveaux avis, pas les mises à jour
         logger.info(f"New review detected, sending notification for review #{instance.id}")
         from cabinet_digital.utils import send_new_review_notification
-        send_new_review_notification(instance) 
+        send_new_review_notification(instance)
+    
+    # Invalidate caches related to software
+    cache.delete(f'software_{instance.software.id}_avg_rating')
+    cache.delete(f'software_{instance.software.id}_review_count')
+    cache.delete(f'software_card_{instance.software.id}')  # Invalider le cache de la carte
+
+@receiver([post_save, post_delete], sender=SoftwareCategory)
+def invalidate_category_cache(sender, instance, **kwargs):
+    """Invalidate category cache when a category is saved or deleted"""
+    cache.delete('header_categories')
+    
+    # Invalider les cartes des logiciels associés à cette catégorie
+    for software in instance.categories_softwares_link.all():
+        cache.delete(f'software_card_{software.id}')
+
+@receiver([post_save, post_delete], sender=Software)
+def invalidate_software_related_caches(sender, instance, **kwargs):
+    """Invalidate related caches when a software is saved or deleted"""
+    cache.delete('header_categories')  # Because software count might change
+    
+    # Invalidate rating caches
+    cache.delete(f'software_{instance.id}_avg_rating')
+    cache.delete(f'software_{instance.id}_review_count')
+    cache.delete(f'software_card_{instance.id}')  # Invalider le cache de la carte
+
+@receiver(post_delete, sender=Review)
+def invalidate_review_caches(sender, instance, **kwargs):
+    """Invalidate caches related to software when a review is deleted"""
+    # Invalidate caches related to software
+    if hasattr(instance, 'software') and instance.software:
+        cache.delete(f'software_{instance.software.id}_avg_rating')
+        cache.delete(f'software_{instance.software.id}_review_count')
+        cache.delete(f'software_card_{instance.software.id}')  # Invalider le cache de la carte 

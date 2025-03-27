@@ -1,49 +1,77 @@
 from django.shortcuts import redirect
-from django.urls import resolve, reverse
-from django.conf import settings
-from cabinet_digital.models import UserProfile
-import uuid
+from django.urls import reverse
+import logging
+
+logger = logging.getLogger('cabinet_digital')
 
 class ProfileCompletionMiddleware:
     """
-    Middleware to ensure users have completed their profile after social login.
-    Redirects to the profile completion view if profile is incomplete and they're
-    trying to access pages that require a complete profile.
+    Middleware that redirects users to the profile completion page
+    if they haven't completed their profile yet.
     """
-
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        # Process request
-        if request.user.is_authenticated:
-            # Check if user has profile with a username
-            try:
-                profile = request.user.userprofile
-                if not profile.username:
-                    # Get current URL
-                    current_url = resolve(request.path_info).url_name
-                    
-                    # List of URLs that don't require complete profile
-                    exempt_urls = [
-                        'complete_profile',
-                        'logout',
-                        'account_logout',
-                        'admin:index',
-                    ]
-                    
-                    # Redirect to profile completion if not in exempt URLs
-                    if current_url not in exempt_urls and not request.path.startswith('/admin/'):
-                        # Store the URL to redirect back to after profile completion
-                        request.session['post_profile_redirect'] = request.get_full_path()
-                        return redirect(reverse('complete_profile'))
-            except UserProfile.DoesNotExist:
-                # Créer un profil pour cet utilisateur
-                UserProfile.objects.create(
-                    user=request.user,
-                    username=f"{request.user.email.split('@')[0]}_{uuid.uuid4().hex[:4]}"
-                )
-                return redirect(reverse('complete_profile'))
+        # Désactiver temporairement la redirection
+        return self.get_response(request)
+        
+        # Code original commenté ci-dessous
+        """
+        # Skip checks if user is not authenticated
+        if not request.user.is_authenticated:
+            return self.get_response(request)
+        
+        # Check if user has a profile
+        if not hasattr(request.user, 'userprofile'):
+            return self.get_response(request)
+            
+        # Admin users can bypass
+        if request.user.is_staff:
+            return self.get_response(request)
+        
+        # Skip middleware for excluded paths
+        excluded_paths = [
+            '/complete-profile/',
+            '/accounts/logout/',
+            '/static/',
+            '/media/',
+            '/api/',
+            '/user/profile/update/',
+            '/admin',
+        ]
+        
+        # Check if the current path is excluded
+        current_path = request.path_info
+        for path in excluded_paths:
+            if current_path.startswith(path):
+                return self.get_response(request)
                 
+        # Check if profile is incomplete
+        profile = request.user.userprofile
+        
+        # Check if username is temporary - needs to be set by user
+        if profile.username.find('_') > 0:
+            # Temporary username detected
+            # If we're not on the complete_profile page, redirect there
+            if current_path != reverse('complete_profile'):
+                return redirect('complete_profile')
+        """    
+        # response = self.get_response(request)
+        # return response
+
+class AnonymousUserCacheMiddleware:
+    """
+    Middleware that skips cache middleware if the user is authenticated.
+    Must be placed before the UpdateCacheMiddleware and after the FetchFromCacheMiddleware.
+    """
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Skip cache for authenticated users
+        if request.user.is_authenticated:
+            request._cache_update_cache = False
+
         response = self.get_response(request)
         return response 

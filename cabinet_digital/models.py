@@ -5,6 +5,7 @@ from tinymce.models import HTMLField
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from django.conf import settings
+from django.core.cache import cache
 import uuid
 
 class SoftwareCategory(models.Model):
@@ -80,10 +81,18 @@ class Software(models.Model):
         
     def average_rating(self):
         """Get the average rating for this software"""
-        reviews = self.reviews.filter(status='published')
-        if reviews.exists():
-            return reviews.aggregate(models.Avg('rating'))['rating__avg']
-        return None
+        cache_key = f'software_{self.id}_avg_rating'
+        cached_rating = cache.get(cache_key)
+        
+        if cached_rating is None:
+            reviews = self.reviews.filter(status='published')
+            if reviews.exists():
+                cached_rating = reviews.aggregate(models.Avg('rating'))['rating__avg']
+                cache.set(cache_key, cached_rating, 3600)  # Cache for 1 hour
+            else:
+                cached_rating = None
+                
+        return cached_rating
         
     def average_rating_int(self):
         """Get the integer part of the average rating"""
@@ -109,7 +118,14 @@ class Software(models.Model):
         
     def review_count(self):
         """Get the number of published reviews for this software"""
-        return self.reviews.filter(status='published').count()
+        cache_key = f'software_{self.id}_review_count'
+        cached_count = cache.get(cache_key)
+        
+        if cached_count is None:
+            cached_count = self.reviews.filter(status='published').count()
+            cache.set(cache_key, cached_count, 3600)  # Cache for 1 hour
+                
+        return cached_count
         
     def get_star_rating(self):
         """Get the rating as a string of stars"""

@@ -29,6 +29,8 @@ import uuid
 from django import forms
 from django.core.mail import send_mail, get_connection
 import re
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 
 logger = logging.getLogger(__name__)
@@ -341,6 +343,12 @@ class SoftwareDetailView(DetailView):
     model = Software
     template_name = 'software_detail.html'
     context_object_name = 'software'
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Only cache for anonymous users
+        if not request.user.is_authenticated:
+            return cache_page(60 * 15)(super().dispatch)(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
     
     def get_queryset(self):
         # Préchargement des catégories pour l'affichage
