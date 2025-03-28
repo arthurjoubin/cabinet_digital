@@ -229,7 +229,7 @@
                 <a href="{% url 'actualites' %}" 
                    class="text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 transition-all duration-300 px-4 py-2.5 rounded-md inline-flex items-center gap-2"
                    :class="{ 'bg-sky-50 text-sky-600': currentPath.startsWith('/actualites/') }">
-                    <span>News logiciels</span>
+                    <span>Actualités logiciels</span>
                 </a>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
@@ -456,7 +456,7 @@
                 <a href="{% url 'actualites' %}" 
                    class="block rounded-lg px-4 py-3 text-lg font-semibold text-gray-900 hover:bg-sky-50 hover:text-sky-600 mt-3 shadow-sm border border-gray-100 transition-colors"
                    :class="{ 'bg-sky-50 text-sky-600 border-sky-200': currentPath.startsWith('/actualites/') }">
-                    News logiciels
+                    Actualités logiciels
                 </a>
 
                 {% if user.is_authenticated %}
