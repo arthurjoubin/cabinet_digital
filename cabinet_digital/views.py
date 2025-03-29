@@ -187,60 +187,12 @@ class SoftwareListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['categories'] = SoftwareCategory.objects.annotate(
-            software_count=Count('categories_softwares_link')
-        ).order_by(Lower('name'))
-        context['selected_category'] = self.request.GET.get('categorie')
         context['search_query'] = self.request.GET.get('search', '')
-        context['current_sort'] = self.request.GET.get('sort', 'alpha')
-        context['metiers'] = Metier.objects.all().order_by('name')
-        selected_metier = self.request.GET.get('metier')
-        context['selected_metier'] = selected_metier
         
         # Ajouter les éléments du breadcrumb - Par défaut Accueil > Logiciels
         breadcrumb = [
             {'title': 'Logiciels', 'url': None}
         ]
-        
-        # Si un métier est sélectionné, l'ajouter au breadcrumb
-        if selected_metier:
-            try:
-                metier = Metier.objects.get(slug=selected_metier)
-                breadcrumb = [
-                    {'title': metier.name, 'url': None}
-                ]
-                
-                # Si une catégorie est aussi sélectionnée
-                selected_category = self.request.GET.get('categorie')
-                if selected_category:
-                    try:
-                        category = SoftwareCategory.objects.get(slug=selected_category)
-                        breadcrumb = [
-                            {'title': metier.name, 'url': reverse('metier_detail', kwargs={'slug': metier.slug})},
-                            {'title': category.name, 'url': None}
-                        ]
-                    except SoftwareCategory.DoesNotExist:
-                        pass
-            except Metier.DoesNotExist:
-                pass
-        else:
-            # Si seulement une catégorie est sélectionnée
-            selected_category = self.request.GET.get('categorie')
-            if selected_category:
-                try:
-                    category = SoftwareCategory.objects.get(slug=selected_category)
-                    breadcrumb = [
-                        {'title': category.name, 'url': None}
-                    ]
-                    
-                    # Si la catégorie a un métier associé
-                    if category.metier:
-                        breadcrumb = [
-                            {'title': category.metier.name, 'url': reverse('metier_detail', kwargs={'slug': category.metier.slug})},
-                            {'title': category.name, 'url': None}
-                        ]
-                except SoftwareCategory.DoesNotExist:
-                    pass
         
         context['breadcrumb_items'] = breadcrumb
                 
@@ -249,21 +201,8 @@ class SoftwareListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-is_top_pick', Lower('name'))
         queryset = queryset.filter(is_published=True, slug__isnull=False).exclude(slug='')
-        category = self.request.GET.get('categorie')
         search = self.request.GET.get('search')
-        sort = self.request.GET.get('sort')
-        metier = self.request.GET.get('metier')
 
-        # Apply sorting
-        if sort == 'views':
-            queryset = queryset.order_by('-unique_views')
-        elif sort == 'alpha':
-            queryset = queryset.order_by('name')
-
-        if category and category != 'None':
-            queryset = queryset.filter(category__slug=category)
-        if metier and metier != 'None':
-            queryset = queryset.filter(Q(metier__slug=metier) | Q(category__metier__slug=metier))
         if search and search.strip():
             queryset = queryset.filter(
                 Q(name__icontains=search) | 
@@ -373,7 +312,8 @@ class SoftwareDetailView(DetailView):
         obj = get_object_or_404(queryset, slug=clean_slug)
         
         # Incrémenter les vues seulement si ce n'est pas un utilisateur authentifié
-        if not self.request.user.is_staff:
+        # et si ce n'est pas un robot
+        if not self.request.user.is_staff and not self.request.user_agent.is_bot:
             obj.unique_views += 1
             obj.save(update_fields=['unique_views'])
             

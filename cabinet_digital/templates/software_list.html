@@ -17,115 +17,35 @@ Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital
 {% block content %}
 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200" x-data="{
     searchQuery: '{{ search_query }}',
-    selectedCategory: '{{ selected_category }}',
-    selectedMetier: '{{ selected_metier }}',
-    currentSort: '{{ current_sort|default:'alpha' }}',
     isLoading: false,
     
     submitForm() {
         this.isLoading = true;
-        window.location.href = `{% url 'software_list' %}?categorie=${this.selectedCategory}&metier=${this.selectedMetier}&search=${this.searchQuery}&sort=${this.currentSort}`;
+        window.location.href = `{% url 'software_list' %}?search=${this.searchQuery}`;
     }
 }">
     {% include 'partials/breadcrumb.html' %}
     {% include "partials/custom_header.html" with header_text="logiciels" header_prefix="Tous les " %}
 
-    <div class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:gap-3 mb-4 border-b pb-4">
-        <!-- Tri -->
-        <div class="w-auto">
-            <button 
-                @click="currentSort = (currentSort === 'views' ? 'alpha' : 'views'); submitForm()"
-                class="w-full px-4 py-3 bg-white text-gray-700 border border-gray-200 rounded-lg hover:border-sky-100 hover:bg-sky-50 font-medium transition-all duration-300 flex items-center justify-center gap-2">
-                
-                <template x-if="currentSort !== 'views'">
-                    <div class="flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                        <span>Trier par vues</span>
-                    </div>
-                </template>
-
-                <template x-if="currentSort === 'views'">
-                    <div class="flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-                        </svg>
-                        <span>Trier par ordre alphabétique</span>
-                    </div>
-                </template>
-            </button>
-        </div>
-
-        <!-- Filtre par métier -->
-        <div class="w-auto">
-            <div class="relative">
-                <label for="metier-filter" class="sr-only">Filtrer par métier</label>
-                <select 
-                    id="metier-filter" 
-                    x-model="selectedMetier"
-                    @change="submitForm()"
-                    class="hover:cursor-pointer w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-100 appearance-none transition-all duration-300 hover:border-sky-100">
-                    <option value="" class="text-sky-700 bg-sky-50 font-medium">Tous les métiers</option>
-                    {% for metier in metiers %}
-                        <option value="{{ metier.slug }}" class="text-black font-medium">
-                            {{ metier.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
-                    <svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path d="M7 10l5 5 5-5z"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filtre par catégorie -->
-        <div class="w-auto">
-            <div class="relative">
-                <label for="category-filter" class="sr-only">Filtrer par catégorie</label>
-                <select 
-                    id="category-filter" 
-                    x-model="selectedCategory"
-                    @change="submitForm()"
-                    class="hover:cursor-pointer w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-100 appearance-none transition-all duration-300 hover:border-sky-100">
-                    <option value="" class="text-sky-700 bg-sky-50 font-medium">Toutes les catégories</option>
-                    {% for category in categories %}
-                        {% if category.software_count > 0 %}
-                            <option value="{{ category.slug }}" class="text-black font-medium">
-                                {{ category.name }} ({{ category.software_count }})
-                            </option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
-                    <svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path d="M7 10l5 5 5-5z"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recherche -->
-        <div class="w-auto flex-grow">
-            <div class="flex flex-col sm:flex-row">
+    <div class="flex justify-center mb-8 max-w-3xl mx-auto">
+        <div class="w-full">
+            <form @submit.prevent="submitForm()" class="relative">
                 <label for="search-input" class="sr-only">Rechercher un logiciel</label>
                 <input 
                     type="text" 
                     id="search-input" 
                     x-model="searchQuery"
-                    @keyup.enter="submitForm()"
-                    placeholder="Rechercher un logiciel" 
-                    class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-200 rounded-lg sm:rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-100">
+                    placeholder="Rechercher un logiciel..." 
+                    class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-100 focus:border-sky-300 transition duration-200">
                 <button 
                     @click="submitForm()"
-                    type="button" 
-                    class="w-full sm:w-auto mt-2 sm:mt-0 px-6 py-3 bg-black text-white rounded-lg sm:rounded-l-none hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 transition duration-300">
-                    Rechercher
+                    type="submit" 
+                    class="absolute inset-y-0 right-0 px-4 flex items-center bg-black text-white rounded-r-lg hover:bg-gray-800 focus:outline-none transition duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
                 </button>
-            </div>
+            </form>
         </div>
     </div>
 
@@ -144,7 +64,7 @@ Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital
         <div class="flex flex-col items-center mt-8">            
             <nav class="inline-flex rounded-md shadow-sm" aria-label="Pagination">
                 {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&categorie={{ selected_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if selected_metier %}&metier={{ selected_metier }}{% endif %}" 
+                <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" 
                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50">
                     Précédent
                 </a>
@@ -155,7 +75,7 @@ Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital
                 {% endif %}
                 
                 {% if page_obj.number > 4 %}
-                <a href="?page=1{% if selected_category %}&categorie={{ selected_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if selected_metier %}&metier={{ selected_metier }}{% endif %}" 
+                <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}" 
                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">
                     1
                 </a>
@@ -167,7 +87,7 @@ Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital
                         <option value="" selected disabled>...</option>
                         {% for num in page_obj.paginator.page_range %}
                             {% if num > 1 and num < page_obj.number|add:'-3' %}
-                            <option value="?page={{ num }}{% if selected_category %}&categorie={{ selected_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if selected_metier %}&metier={{ selected_metier }}{% endif %}">
+                            <option value="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">
                                 {{ num }}
                             </option>
                             {% endif %}
@@ -189,7 +109,7 @@ Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital
                         {{ num }}
                     </span>
                     {% else %}
-                    <a href="?page={{ num }}{% if selected_category %}&categorie={{ selected_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if selected_metier %}&metier={{ selected_metier }}{% endif %}" 
+                    <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}" 
                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">
                         {{ num }}
                     </a>
@@ -206,7 +126,7 @@ Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital
                         <option value="" selected disabled>...</option>
                         {% for num in page_obj.paginator.page_range %}
                             {% if num > page_obj.number|add:'3' and num < page_obj.paginator.num_pages %}
-                            <option value="?page={{ num }}{% if selected_category %}&categorie={{ selected_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if selected_metier %}&metier={{ selected_metier }}{% endif %}">
+                            <option value="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">
                                 {{ num }}
                             </option>
                             {% endif %}
@@ -219,14 +139,14 @@ Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital
                     </div>
                 </div>
                 {% endif %}
-                <a href="?page={{ page_obj.paginator.num_pages }}{% if selected_category %}&categorie={{ selected_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if selected_metier %}&metier={{ selected_metier }}{% endif %}" 
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}" 
                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">
                     {{ page_obj.paginator.num_pages }}
                 </a>
                 {% endif %}
                 
                 {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}{% if selected_category %}&categorie={{ selected_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if selected_metier %}&metier={{ selected_metier }}{% endif %}" 
+                <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" 
                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50">
                     Suivant
                 </a>
