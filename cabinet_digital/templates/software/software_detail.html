@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}
+{% if active_tab == 'integrators' %}
+Découvrir les intégrateurs de {{ software.name }} | Cabinet Digital
+{% else %}
+{{ software.name }} | Découvrir la fiche de la solution
+{% endif %}
+{% endblock %}
+
+{% block meta_description %}
+{% if active_tab == 'integrators' %}
+<meta name="description" content="Découvrir les intégrateurs de {{ software.name }}. Trouvez un expert certifié pour l'implémentation, la formation et le support de votre solution {{ software.name }}.">
+<meta property="og:title" content="Intégrateurs de {{ software.name }} - Experts spécialisés | Cabinet Digital">
+<meta property="og:description" content="Découvrir les intégrateurs de {{ software.name }}. Trouvez un expert certifié pour l'implémentation, la formation et le support de votre solution {{ software.name }}.">
+{% else %}
+<meta name="description" content="Découvrez {{ software.name }}: {{ software.excerpt|striptags|truncatechars:120 }} Voir ses alternatives.">
+<meta property="og:title" content="{{ software.name }} - Prix, Alternatives | Cabinet Digital">
+<meta property="og:description" content="Découvrez {{ software.name }}: {{ software.excerpt|striptags|truncatechars:120 }} Voir ses alternatives.">
+{% endif %}
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% if not canonical_url %}
+<link rel="canonical" href="{{ request.build_absolute_uri }}" />
+{% endif %}
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="Cabinet Digital">
+<meta property="article:modified_time" content="{{ software.last_modified|date:'c' }}">
+<meta name="twitter:card" content="summary_large_image">
+{% if active_tab == 'integrators' %}
+<meta name="twitter:title" content="Intégrateurs {{ software.name }} - Experts spécialisés">
+<meta name="twitter:description" content="Découvrez les intégrateurs spécialisés dans {{ software.name }}. Trouvez un expert certifié pour l'implémentation, la formation et le support de votre solution {{ software.name }}.">
+{% else %}
+<meta name="twitter:title" content="{{ software.name }} | Découvrir la fiche de la solution">
+<meta name="twitter:description" content="{{ software.excerpt|striptags|truncatechars:120 }}">
+{% endif %}
+<meta name="twitter:image" content="{% if software.logo %}{{ request.scheme }}://{{ request.get_host }}{{ software.logo.url }}{% else %}{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}{% endif %}">
+{% endblock %}
+
+{% block extra_head %}
+{% if active_tab == 'integrators' %}
+<link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{% url 'software_integrators_seo' software.slug %}" />
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-12">
+  <div class="p-4 sm:p-6 border-b-2 border-gray-200">
+    {% include 'partials/breadcrumb.html' %}
+    <div class="flex flex-col space-y-4">
+      <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4">
+        <a href="{% url 'software_list' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium border-2 text-black rounded-lg hover:bg-gray-100 transition-colors duration-300">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Retour à la liste des logiciels
+        </a>
+
+    
+        <a href="{{ software.site }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center">
+          Visiter leur site
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-4 sm:p-8 max-w-5xl mx-auto" x-data="{
+         activeTab: (() => {
+           const hash = window.location.hash.substring(1);
+           if (hash === 'alternatives') return 'alternatives';
+           if (hash === 'integrators') return 'integrators'; 
+           if (hash === 'articles') return 'articles';
+           return '{{ active_tab|default:'description' }}';
+         })()
+       }"
+       x-init="
+         // Écouter les changements d'onglets pour mettre à jour l'URL
+         $watch('activeTab', function(newTab) {
+           if (newTab === 'alternatives' || newTab === 'integrators' || newTab === 'articles') {
+             window.history.replaceState(null, null, '#' + newTab);
+           } else {
+             window.history.replaceState(null, null, window.location.pathname);
+           }
+         });
+       ">
+    <div class="flex flex-col md:flex-row items-stretch justify-between gap-6 mb-8">
+      <div class="flex flex-col md:flex-row items-center md:items-start flex-grow border p-6 bg-gray-50 rounded-xl">
+        {% if software.logo %}
+        <div class="w-24 h-24 mb-4 md:mb-0 md:mr-6 flex-shrink-0">
+          <img src="{{ MEDIA_URL }}{{ software.logo.url }}" alt="{{ software.name }}" class="w-full h-full object-contain">
+        </div>
+        {% endif %}
+        <div class="flex-grow text-center md:text-left">
+          <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">{{ software.name }}</h1>
+          <p class="text-gray-700 text-base leading-relaxed">{{ software.excerpt|safe }}</p>
+          {% include 'partials/category_tags.html' with categories=software.category.all|published_only title='Catégories' url_name='category_detail' %}
+          
+          {% include 'partials/entity_tags.html' with entities=integrators entity_type='integrator' title='Intégrateurs partenaires' url_name='integrator_detail' %}
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-6 sm:my-8 border-t-2 border-gray-200">
+
+    <!-- Tabs Navigation -->
+    <div class="mb-6 sm:mb-8 overflow-x-auto">
+      <nav class="flex justify-start sm:justify-center border-b-2 border-gray-200 pb-1 min-w-max sm:min-w-full" aria-label="Tabs">
+        <button 
+          @click="activeTab = 'description'" 
+          :class="{ 'bg-sky-100 text-black border-sky-500': activeTab === 'description', 'bg-gray-50 text-gray-600 hover:bg-gray-100': activeTab !== 'description' }"
+          class="mx-1 sm:mx-2 py-2 sm:py-3 px-3 sm:px-5 text-sm sm:text-base font-medium rounded-t-lg border-t border-l border-r border-gray-200 flex items-center space-x-1 sm:space-x-2 transition-all duration-200 flex-shrink-0">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span class="whitespace-nowrap">Description</span>
+        </button>
+        
+        {% if integrators %}
+        <button 
+          @click="activeTab = 'integrators'" 
+          :class="{ 'bg-sky-100 text-black border-sky-500': activeTab === 'integrators', 'bg-gray-50 text-gray-600 hover:bg-gray-100': activeTab !== 'integrators' }"
+          class="mx-1 sm:mx-2 py-2 sm:py-3 px-3 sm:px-5 text-sm sm:text-base font-medium rounded-t-lg border-t border-l border-r border-gray-200 flex items-center space-x-1 sm:space-x-2 transition-all duration-200 flex-shrink-0">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+          </svg>
+          <span class="whitespace-nowrap">Intégrateurs</span>
+        </button>
+        {% endif %}
+        
+        <button 
+          @click="activeTab = 'alternatives'" 
+          :class="{ 'bg-sky-100 text-black border-sky-500': activeTab === 'alternatives', 'bg-gray-50 text-gray-600 hover:bg-gray-100': activeTab !== 'alternatives' }"
+          class="mx-1 sm:mx-2 py-2 sm:py-3 px-3 sm:px-5 text-sm sm:text-base font-medium rounded-t-lg border-t border-l border-r border-gray-200 flex items-center space-x-1 sm:space-x-2 transition-all duration-200 flex-shrink-0">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+          </svg>
+          <span class="whitespace-nowrap">Alternatives</span>
+        </button>
+        
+        {% if related_articles %}
+        <button 
+          @click="activeTab = 'articles'" 
+          :class="{ 'bg-sky-100 text-black border-sky-500': activeTab === 'articles', 'bg-gray-50 text-gray-600 hover:bg-gray-100': activeTab !== 'articles' }"
+          class="mx-1 sm:mx-2 py-2 sm:py-3 px-3 sm:px-5 text-sm sm:text-base font-medium rounded-t-lg border-t border-l border-r border-gray-200 flex items-center space-x-1 sm:space-x-2 transition-all duration-200 flex-shrink-0">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+          </svg>
+          <span class="whitespace-nowrap">Articles</span>
+        </button>
+        {% endif %}
+        
+
+      </nav>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Description Tab -->
+      <div x-show="activeTab === 'description'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+        <div class="prose max-w-none text-gray-700 leading-relaxed">
+          <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 text-center md:text-left">Présentation de <span class="bg-black text-white rounded px-2"> {{ software.name }} </span></h2>
+          <div class="text-left relative">
+            {{ software.description|markdown_to_html }}
+          </div>
+          
+        </div>
+      </div>
+
+
+
+      <!-- Integrators Tab -->
+      {% if integrators %}
+      <div x-show="activeTab === 'integrators'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="p-1">
+        <div class="max-w-5xl mx-auto">
+          <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 text-center md:text-left">Intégrateurs partenaires pour {{ software.name }}</h2>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {% for integrator in integrators %}
+              <div class="col-span-1">
+                {% include 'integrators/integrator_card.html' with integrator=integrator %}
+              </div>
+            {% endfor %}
+          </div>
+          
+          <div class="flex justify-center mt-8">
+            <a href="{% url 'software_integrators' software.slug %}" class="inline-flex items-center px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors duration-300">
+              Voir tous les intégrateurs
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Alternatives Tab -->
+      <div x-show="activeTab === 'alternatives'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="p-1">
+        <div class="max-w-5xl mx-auto">
+          <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 text-center md:text-left">Alternatives à {{ software.name }}</h2>
+          
+          <!-- Introduction explicative des alternatives -->
+          <div class="prose max-w-none mb-6">
+            <p class="text-gray-700">Voici une sélection des meilleures alternatives à <strong>{{ software.name }}</strong> disponibles sur le marché. Ces logiciels offrent des fonctionnalités similaires mais peuvent se différencier par leurs prix, leurs interfaces ou des fonctionnalités spécifiques. Comparez ces solutions pour trouver celle qui correspond le mieux à vos besoins.</p>
+          </div>
+          
+          {% if alternatives %}
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {% for similar_software in alternatives %}
+              <div class="col-span-1">
+                {% include 'software/template_card_software.html' with software=similar_software %}
+              </div>
+            {% endfor %}
+          </div>
+          
+          <!-- Lien vers la page dédiée -->
+          <div class="flex justify-center mt-8">
+            <a href="{% url 'alternative_detail' software.slug %}" 
+               class="inline-flex items-center px-6 py-3 bg-black text-white text-sm font-semibold rounded-full hover:bg-gray-800 transition-all duration-200">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+              Voir la page dédiée à ses alternatives
+            </a>
+          </div>
+          {% else %}
+          <p class="text-gray-600 text-center">Aucun logiciel similaire trouvé.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Articles Tab -->
+      {% if related_articles %}
+      <div x-show="activeTab === 'articles'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+        <div class="max-w-5xl mx-auto">
+          <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 text-center md:text-left">
+            Articles liés à l'éditeur {% if software.company %}{{ software.company.name }}{% endif %}
+          </h2>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for article in related_articles %}
+              <article class="rounded-lg overflow-hidden shadow-md border border-gray-200 transition-all duration-300 hover:shadow-lg">
+                <a href="{% url 'actualite_detail' article.slug %}" class="block no-underline text-inherit">
+                  <div class="p-5">
+                    <h3 class="font-bold text-lg mb-2 line-clamp-2 text-gray-900">{{ article.title }}</h3>
+                    
+                    <div class="text-sm text-gray-600 mb-3">
+                      {{ article.pub_date|date:"d M Y" }}
+                    </div>
+                    
+                    {% if article.excerpt %}
+                      <p class="text-gray-700 text-sm line-clamp-3">{{ article.excerpt|striptags }}</p>
+                    {% endif %}
+                    
+                    <div class="mt-4 flex justify-end">
+                      <span class="inline-flex items-center text-sm font-medium text-black">
+                        Lire l'article
+                        <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              </article>
+            {% endfor %}
+          </div>
+          
+          {% if software.company %}
+          <div class="flex justify-center mt-6">
+            <a href="{% url 'actualites' %}" class="inline-flex items-center px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors duration-300">
+              Voir toutes les actualités de logiciels
+              <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              </svg>
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ software.name }}",
+  "description": "{{ software.excerpt|striptags }}",
+  "image": "{% if software.logo %}{{ request.scheme }}://{{ request.get_host }}{{ software.logo.url }}{% endif %}",
+  "url": "{{ request.build_absolute_uri }}",
+  "category": "{% for category in software.category.all %}{{ category.name }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+}
+</script>
+{% endblock %}

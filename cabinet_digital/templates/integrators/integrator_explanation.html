@@ -1,0 +1,14 @@
+<!-- What is an Integrator - Reusable explanation component -->
+<div x-data="{ open: false }" class="bg-gray-50 rounded-lg border border-gray-200 mb-6 mx-auto max-w-4xl shadow-sm overflow-hidden">
+  <button @click="open = !open" class="w-full px-5 py-4 flex items-center justify-between text-left focus:outline-none hover:bg-gray-100 transition-colors">
+    <h2 class="text-lg font-semibold text-gray-800">Quel est l'intérêt d'un intégrateur d'ERP ?</h2>
+    <svg :class="{'rotate-180 text-sky-600': open, 'rotate-0': !open}" class="w-5 h-5 text-gray-500 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </button>
+  <div x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform -translate-y-2" x-transition:enter-end="opacity-100 transform translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 transform translate-y-0" x-transition:leave-end="opacity-0 transform -translate-y-2" class="p-4 border-t border-gray-200 bg-white">
+    <p class="text-sm text-gray-700 mb-3"><strong>Les intégrateurs ERP </strong> sont des entreprises spécialisées qui accompagnent les organisations dans l'<strong>implémentation</strong>, la <strong>personnalisation</strong> et le <strong>déploiement</strong> de solutions logicielles pour leur gestion d'entreprise.</p>
+    <p class="text-sm text-gray-700 mb-3">Ces <strong>partenaires techniques</strong> agissent comme intermédiaires entre les éditeurs de logiciels et les entreprises utilisatrices. Ils possèdent l'<strong>expertise technique</strong> pour adapter les solutions aux besoins spécifiques, assurer la <strong>formation des utilisateurs</strong> et garantir une <strong>intégration harmonieuse</strong> avec les systèmes existants.</p>
+    <p class="text-sm text-gray-700">Les intégrateurs se spécialisent généralement par <strong>secteur d'activité</strong> (industrie, services, etc.) ou par <strong>type de solution</strong> (ERP, comptabilité, CRM, etc.), offrant ainsi une <strong>expertise précieuse</strong> pour optimiser l'implémentation et maximiser le <strong>retour sur investissement</strong> des solutions logicielles.</p>
+  </div>
+</div> 

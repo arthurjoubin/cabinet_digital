@@ -1,0 +1,96 @@
+<div class="flex flex-col items-center mt-8">            
+    <nav class="inline-flex rounded-md shadow-sm mb-8" aria-label="Pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&{{ search_param|default:'search' }}={{ search_query }}{% endif %}{% if filter_param and filter_value %}&{{ filter_param }}={{ filter_value }}{% endif %}" 
+           class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50">
+            Précédent
+        </a>
+        {% else %}
+        <span class="px-4 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-300 rounded-l-md">
+            Précédent
+        </span>
+        {% endif %}
+        
+        {% if page_obj.number > 4 %}
+        <a href="?page=1{% if search_query %}&{{ search_param|default:'search' }}={{ search_query }}{% endif %}{% if filter_param and filter_value %}&{{ filter_param }}={{ filter_value }}{% endif %}" 
+           class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">
+            1
+        </a>
+        {% if page_obj.number > 5 %}
+        <div class="relative inline-block">
+            <select 
+                onchange="if(this.value) window.location.href=this.value"
+                class="appearance-none px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-none cursor-pointer">
+                <option value="" selected disabled>...</option>
+                {% for num in page_obj.paginator.page_range %}
+                    {% if num > 1 and num < page_obj.number|add:'-3' %}
+                    <option value="?page={{ num }}{% if search_query %}&{{ search_param|default:'search' }}={{ search_query }}{% endif %}{% if filter_param and filter_value %}&{{ filter_param }}={{ filter_value }}{% endif %}">
+                        {{ num }}
+                    </option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1 text-gray-700">
+                <svg class="fill-current h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M7 10l5 5 5-5z"/>
+                </svg>
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+            {% if num > page_obj.number|add:'-4' and num < page_obj.number|add:'4' %}
+            {% if num == page_obj.number %}
+            <span class="px-4 py-2 text-sm font-medium text-white bg-sky-600 border border-sky-600">
+                {{ num }}
+            </span>
+            {% else %}
+            <a href="?page={{ num }}{% if search_query %}&{{ search_param|default:'search' }}={{ search_query }}{% endif %}{% if filter_param and filter_value %}&{{ filter_param }}={{ filter_value }}{% endif %}" 
+               class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">
+                {{ num }}
+            </a>
+            {% endif %}
+            {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.number < page_obj.paginator.num_pages|add:'-3' %}
+        {% if page_obj.number < page_obj.paginator.num_pages|add:'-4' %}
+        <div class="relative inline-block">
+            <select 
+                onchange="if(this.value) window.location.href=this.value"
+                class="appearance-none px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-none cursor-pointer">
+                <option value="" selected disabled>...</option>
+                {% for num in page_obj.paginator.page_range %}
+                    {% if num > page_obj.number|add:'3' and num < page_obj.paginator.num_pages %}
+                    <option value="?page={{ num }}{% if search_query %}&{{ search_param|default:'search' }}={{ search_query }}{% endif %}{% if filter_param and filter_value %}&{{ filter_param }}={{ filter_value }}{% endif %}">
+                        {{ num }}
+                    </option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1 text-gray-700">
+                <svg class="fill-current h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M7 10l5 5 5-5z"/>
+                </svg>
+            </div>
+        </div>
+        {% endif %}
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&{{ search_param|default:'search' }}={{ search_query }}{% endif %}{% if filter_param and filter_value %}&{{ filter_param }}={{ filter_value }}{% endif %}" 
+           class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">
+            {{ page_obj.paginator.num_pages }}
+        </a>
+        {% endif %}
+        
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&{{ search_param|default:'search' }}={{ search_query }}{% endif %}{% if filter_param and filter_value %}&{{ filter_param }}={{ filter_value }}{% endif %}" 
+           class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50">
+            Suivant
+        </a>
+        {% else %}
+        <span class="px-4 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-300 rounded-r-md">
+            Suivant
+        </span>
+        {% endif %}
+    </nav>
+</div> 

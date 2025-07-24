@@ -1,0 +1,390 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_obj.paginator.count }} Intégrations logicielles - Passerelles entre ERP, CRM et Comptabilité{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="Découvrez {{ page_obj.paginator.count }} intégrations logicielles pour connecter vos ERP, CRM et logiciels comptables. Passerelles développées par des intégrateurs experts pour optimiser vos workflows.">
+<meta name="keywords" content="intégration logiciel comptable, passerelle ERP, synchronisation CRM, connexion logiciels, workflow automation, intégrateur expert">
+<meta property="og:title" content="{{ page_obj.paginator.count }} Intégrations Logicielles Expert - Cabinet Digital">
+<meta property="og:description" content="Catalogue complet de {{ page_obj.paginator.count }} intégrations logicielles pour connecter ERP, CRM et outils comptables. Solutions développées par des intégrateurs certifiés.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-white">
+  <div class="max-w-7xl mx-auto px-6 py-6">
+    {% include 'partials/breadcrumb.html' %}
+    
+    <div class="text-center mb-1">
+      <h1 class="text-3xl font-bold mb-3 text-center">
+        Toutes les
+        <span class="bg-black text-white px-3 py-1 rounded-lg inline-block">
+          intégrations
+        </span>
+        logicielles
+      </h1>
+      <p class="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+        Découvrez toutes les passerelles entre vos outils comptables et optimisez vos workflows grâce à nos intégrations référencées.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Main Content -->
+<main class="bg-white" x-data="{
+    searchQuery: '{{ filters.search|default:'' }}',
+    isLoading: false,
+    
+    submitForm() {
+        this.isLoading = true;
+        const form = document.getElementById('filter-form');
+        form.submit();
+    }
+}">
+  <div class="max-w-7xl mx-auto px-6">
+
+    <!-- Search and Filter Section -->
+    <section class="mb-6">
+      <!-- Integration count centered -->
+      <div class="text-center mb-4">
+        <div class="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-full border border-gray-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span class="font-medium">{{ page_obj.paginator.count }} intégration{% if page_obj.paginator.count > 1 %}s{% endif %} référencée{% if page_obj.paginator.count > 1 %}s{% endif %}</span>
+        </div>
+      </div>
+
+      <form id="filter-form" method="get" class="max-w-5xl mx-auto space-y-4">
+        <!-- Filtres et actions -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+          <div class="p-6">
+            <div class="flex flex-col lg:flex-row lg:items-center gap-3">
+              <!-- Filtres -->
+              <div class="flex flex-col sm:flex-row gap-1 flex-1">
+                <select name="source" class="pl-4 pr-8 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white shadow-sm min-w-[180px] transition-all duration-200">
+                  <option value="">Filtrer par source</option>
+                  {% for logiciel in logiciels_source %}
+                    <option value="{{ logiciel.id }}" {% if filters.source == logiciel.id|stringformat:"s" %}selected{% endif %} title="{{ logiciel.name }}">
+                      {{ logiciel.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+
+                <select name="destination" class="pl-4 pr-8 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white shadow-sm min-w-[180px] transition-all duration-200">
+                  <option value="">Filtrer par destination</option>
+                  {% for logiciel in logiciels_destination %}
+                    <option value="{{ logiciel.id }}" {% if filters.destination == logiciel.id|stringformat:"s" %}selected{% endif %} title="{{ logiciel.name }}">
+                      {{ logiciel.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+
+                <select name="module" class="pl-4 pr-8 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white shadow-sm min-w-[180px] transition-all duration-200">
+                  <option value="">Filtrer par module</option>
+                  {% for module in modules %}
+                    <option value="{{ module.id }}" {% if filters.module == module.id|stringformat:"s" %}selected{% endif %} title="{{ module.nom }}">
+                      {{ module.nom }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Barre de recherche -->
+              <div class="relative flex-1">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                </div>
+                <input type="text" 
+                       name="search" 
+                       value="{{ filters.search }}" 
+                       x-model="searchQuery"
+                       placeholder="Rechercher..."
+                       class="w-full pl-12 pr-4 py-3 border-2 border-gray-400 rounded-lg text-sm placeholder-gray-500 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+              </div>
+
+              <!-- Boutons -->
+              <div class="flex gap-3">
+                <a href="{% url 'integration_list' %}" class="inline-flex items-center justify-center px-4 py-3 border-2 border-gray-400 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200">
+                  <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  Réinitialiser
+                </a>
+                <button type="submit" class="inline-flex items-center justify-center px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 text-sm font-medium shadow-sm transition-all duration-200">
+                  <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                  Rechercher
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Request Button Section -->
+    <section class="mb-8">
+      <div class="flex justify-center">
+        <div class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl px-3 py-2">
+          <div class="flex-shrink-0">
+            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <div class="text-left">
+            <p class="text-sm font-medium text-blue-900">Vous développez des intégrations ?</p>
+          </div>
+          <a href="{% url 'contact_integration' %}" 
+             class="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap">
+            Proposer votre solution
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Integrations Grid -->
+    <section id="integration-list-content" aria-label="Liste des intégrations">
+      {% if page_obj %}
+        <div id="integration-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-6">
+          {% for integration in page_obj %}
+          <div class="h-full">
+            <a href="{{ integration.get_absolute_url }}" class="block no-underline text-inherit">
+              <article class="bg-white border border-gray-300 rounded-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:bg-sky-50 p-4 h-full flex flex-col relative group cursor-pointer">
+
+                <header class="flex flex-col items-center mb-3">
+                  <!-- Logos et flèche -->
+                  <div class="flex items-center justify-center gap-4 mb-4">
+                    <div class="flex items-center justify-center" title="{{ integration.logiciel_source.name }}">
+                      {% if integration.logiciel_source.logo %}
+                      <div class="w-12 h-12 flex items-center justify-center">
+                        <img loading="lazy" src="{{ integration.logiciel_source.logo.url }}" alt="{{ integration.logiciel_source.name }}" class="max-w-full max-h-full object-contain">
+                      </div>
+                      {% else %}
+                      <div class="w-12 h-12 bg-sky-100 rounded flex items-center justify-center">
+                        <span class="text-sm font-bold text-sky-600">{{ integration.logiciel_source.name|slice:":1" }}</span>
+                      </div>
+                      {% endif %}
+                    </div>
+                    
+                    <svg class="w-6 h-6 text-gray-400 group-hover:translate-x-1 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                    
+                    <div class="flex items-center justify-center" title="{{ integration.logiciel_destination.name }}">
+                      {% if integration.logiciel_destination.logo %}
+                      <div class="w-12 h-12 flex items-center justify-center">
+                        <img loading="lazy" src="{{ integration.logiciel_destination.logo.url }}" alt="{{ integration.logiciel_destination.name }}" class="max-w-full max-h-full object-contain">
+                      </div>
+                      {% else %}
+                      <div class="w-12 h-12 bg-emerald-100 rounded flex items-center justify-center">
+                        <span class="text-sm font-bold text-emerald-600">{{ integration.logiciel_destination.name|slice:":1" }}</span>
+                      </div>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <p class="text-sm text-gray-500 text-center leading-normal line-clamp-2">{{ integration.description|truncatechars:80 }}</p>
+                </header>
+
+                <!-- Intégrateur -->
+                <div class="mb-3">
+                  <div class="flex items-center justify-center text-sm text-gray-500">
+                    <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                    <span class="truncate">{{ integration.integrateur.nom }}</span>
+                  </div>
+                </div>
+
+                <!-- Modules -->
+                {% if integration.modules.exists %}
+                <div class="mb-3">
+                  <div class="flex flex-wrap justify-center gap-1">
+                    {% for module in integration.modules.all|slice:":3" %}
+                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-md border border-blue-200">
+                      {{ module.nom }}
+                    </span>
+                    {% endfor %}
+                    {% if integration.modules.count > 3 %}
+                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-md border border-gray-200">
+                      +{{ integration.modules.count|add:"-3" }}
+                    </span>
+                    {% endif %}
+                  </div>
+                </div>
+                {% endif %}
+
+                <!-- Type -->
+                {% if integration.type_integration %}
+                <div class="mt-auto pt-2">
+                  <div class="flex justify-center">
+                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-md border border-gray-200">
+                      {{ integration.type_integration.nom }}
+                    </span>
+                  </div>
+                </div>
+                {% endif %}
+              </article>
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-16 bg-gray-50 rounded-xl border border-gray-200">
+          <div class="max-w-md mx-auto">
+            <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <h3 class="text-xl font-semibold text-black mb-3">Aucune intégration trouvée</h3>
+            <p class="text-gray-600 mb-6">Aucune intégration ne correspond à vos critères de recherche.</p>
+            <a href="{% url 'integration_list' %}" 
+               class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              Réinitialiser les filtres
+            </a>
+          </div>
+        </div>
+      {% endif %}
+      
+      <!-- Pagination -->
+      {% if page_obj.has_other_pages %}
+        <nav aria-label="Navigation des pages" class="mt-8">
+          {% include "partials/pagination.html" with search_param="search" search_query=filters.search %}
+        </nav>
+      {% endif %}
+    </section>
+
+    <!-- Additional SEO Content -->
+    <section class="mt-8 bg-gray-50 rounded-xl p-6 border border-gray-200">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-2xl font-bold text-black mb-6 text-center">
+          Pourquoi utiliser des intégrations logicielles ?
+        </h2>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+          <div>
+            <h3 class="text-lg font-semibold text-black mb-3 flex items-center">
+              <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+              </div>
+              Automatisation des tâches
+            </h3>
+            <p class="text-gray-600 leading-relaxed">
+              Synchronisez automatiquement vos données entre logiciels et éliminez les saisies manuelles 
+              redondantes pour gagner du temps et réduire les erreurs.
+            </p>
+          </div>
+          
+          <div>
+            <h3 class="text-lg font-semibold text-black mb-3 flex items-center">
+              <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              Fiabilité des données
+            </h3>
+            <p class="text-gray-600 leading-relaxed">
+              Garantissez la cohérence et l'exactitude de vos informations grâce à des flux de données 
+              sécurisés et des mises à jour en temps réel.
+            </p>
+          </div>
+          
+          <div>
+            <h3 class="text-lg font-semibold text-black mb-3 flex items-center">
+              <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C20.168 18.477 18.582 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+              </div>
+              Productivité accrue
+            </h3>
+            <p class="text-gray-600 leading-relaxed">
+              Optimisez vos workflows en connectant vos outils métier et concentrez-vous sur 
+              les tâches à plus forte valeur ajoutée.
+            </p>
+          </div>
+          
+          <div>
+            <h3 class="text-lg font-semibold text-black mb-3 flex items-center">
+              <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+              </div>
+              Vision globale
+            </h3>
+            <p class="text-gray-600 leading-relaxed">
+              Disposez d'une vue d'ensemble de votre activité grâce à des tableaux de bord 
+              consolidés alimentés par tous vos systèmes.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Intégrations logicielles - Passerelles ERP, CRM et Comptabilité",
+  "description": "Catalogue complet de {{ page_obj.paginator.count }} intégrations logicielles pour connecter ERP, CRM et outils comptables",
+  "url": "{{ request.build_absolute_uri }}",
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": {{ page_obj.paginator.count }},
+    "itemListElement": [
+      {% for integration in page_obj %}
+      {
+        "@type": "ListItem",
+        "position": {{ forloop.counter }},
+        "item": {
+          "@type": "SoftwareApplication",
+          "name": "Intégration {{ integration.logiciel_source.name }} → {{ integration.logiciel_destination.name }}",
+          "description": "{{ integration.description|striptags }}",
+          "url": "{{ request.scheme }}://{{ request.get_host }}{{ integration.get_absolute_url }}",
+          "provider": {
+            "@type": "Organization",
+            "name": "{{ integration.integrateur.nom }}"
+          },
+          "applicationCategory": "Business Software Integration"
+        }
+      }{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ]
+  },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Accueil",
+        "item": "{{ request.scheme }}://{{ request.get_host }}/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Intégrations",
+        "item": "{{ request.build_absolute_uri }}"
+      }
+    ]
+  }
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{% if tag.seo_title %}{{ tag.seo_title }}{% else %}Actualités {{ tag.name }} - Cabinet Digital{% endif %}
+{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="{% if tag.seo_description %}{{ tag.seo_description }}{% else %}Découvrez toutes les actualités liées à {{ tag.name }}. Restez informé des dernières tendances et nouveautés.{% endif %}">
+<meta property="og:title" content="{% if tag.seo_title %}{{ tag.seo_title }}{% else %}Actualités {{ tag.name }} - Cabinet Digital{% endif %}">
+<meta property="og:description" content="{% if tag.seo_description %}{{ tag.seo_description }}{% else %}Découvrez toutes les actualités liées à {{ tag.name }}. Restez informé des dernières tendances et nouveautés.{% endif %}">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
+<link rel="canonical" href="{{ request.build_absolute_uri }}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-br from-gray-50 to-white border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    {% include 'partials/breadcrumb.html' %}
+    
+    <div class="text-center">
+      {% if tag.seo_title %}
+        <h1 class="text-2xl sm:text-3xl font-bold mb-3">{{ tag.seo_title }}</h1>
+      {% else %}
+        <h1 class="text-2xl sm:text-3xl font-bold mb-3">
+          Actualités
+          <span class="inline-flex items-center px-3 py-1 rounded-md text-white" 
+                style="background-color: {% if tag.color %}{{ tag.color }}{% else %}#000000{% endif %};">
+            {{ tag.name }}
+          </span>
+        </h1>
+      {% endif %}
+      {% if tag.seo_description %}
+        <p class="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
+          {{ tag.seo_description }}
+        </p>
+      {% else %}
+        <p class="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
+          Découvrez toutes les actualités liées à {{ tag.name }}.
+        </p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Main Content -->
+<main class="bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+
+    <!-- Search and Filter Section -->
+    <section class="mb-6">
+      <!-- Articles count centered -->
+      <div class="text-center mb-4">
+        <div class="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-full border border-gray-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 01-2-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+          </svg>
+          <span class="font-medium">
+            {% if actualites %}
+              {{ page_obj.paginator.count }} actualité{{ page_obj.paginator.count|pluralize }} trouvée{{ page_obj.paginator.count|pluralize }}
+            {% else %}
+              Aucune actualité trouvée
+            {% endif %}
+          </span>
+        </div>
+      </div>
+
+      <form method="get" class="max-w-7xl mx-auto">
+        <!-- Barre de recherche et filtres compacts -->
+        <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+          <div class="flex flex-col lg:flex-row gap-4 lg:items-center">
+            <!-- Recherche à gauche (plus large) -->
+            <div class="flex-1 lg:max-w-lg">
+              <div class="relative">
+                <input type="text" name="search" value="{{ search_query|default:'' }}" 
+                       placeholder="Rechercher dans {{ tag.name }}..."
+                       class="w-full px-4 py-2.5 pl-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm">
+                <svg class="absolute left-3 top-3 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Filtres au centre -->
+            <div class="flex flex-wrap gap-3 lg:gap-4 justify-center">
+              <select name="date" class="px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm bg-white min-w-0 lg:min-w-[160px]">
+                <option value="">Date</option>
+                <option value="week" {% if selected_date == 'week' %}selected{% endif %}>Cette semaine</option>
+                <option value="month" {% if selected_date == 'month' %}selected{% endif %}>Ce mois</option>
+                <option value="year" {% if selected_date == 'year' %}selected{% endif %}>Cette année</option>
+              </select>
+            </div>
+
+            <!-- Boutons d'action à droite -->
+            <div class="flex gap-3 lg:flex-shrink-0">
+              <button type="submit" class="px-6 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition text-sm font-medium">
+                Filtrer
+              </button>
+              <a href="{% url 'tag_detail' tag.slug %}" class="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium">
+                Reset
+              </a>
+            </div>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- News Grid -->
+    <section id="news-list-content" aria-label="Liste des actualités {{ tag.name }}">
+      {% if actualites %}
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {% for actualite in actualites %}
+            <article class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-200 flex flex-col">
+              <a href="{% url 'actualite_detail' actualite.slug %}" class="flex flex-col h-full p-4">
+                <!-- Date and Tags Header -->
+                <div class="flex items-center justify-between mb-2">
+                  <time class="text-xs text-gray-500">{{ actualite.pub_date|date:"d M Y" }}</time>
+                  <div class="flex flex-wrap gap-1">
+                    {% for article_tag in actualite.tags.all|slice:":2" %}
+                    <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full" 
+                          style="background-color: {% if article_tag.color %}{{ article_tag.color }}20{% else %}#EBF5FF{% endif %}; 
+                                 color: {% if article_tag.color %}{{ article_tag.color }}{% else %}#1e40af{% endif %};">
+                      {{ article_tag.name }}
+                    </span>
+                    {% endfor %}
+                    {% if actualite.tags.all|length > 2 %}
+                    <span class="text-xs text-gray-400">+{{ actualite.tags.all|length|add:"-2" }}</span>
+                    {% endif %}
+                  </div>
+                </div>
+                
+                <!-- Title -->
+                <h2 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-sky-600 transition-colors">
+                  {{ actualite.title }}
+                </h2>
+                
+                <!-- Read more -->
+                <div class="flex items-center text-sky-600 text-sm font-medium group">
+                  <span>Lire la suite</span>
+                  <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </div>
+              </a>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-12 bg-white rounded-xl border border-gray-200">
+          <div class="max-w-md mx-auto px-4">
+            <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 01-2-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+            </svg>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucune actualité trouvée</h3>
+            <p class="text-gray-600 mb-4">Aucune actualité n'est encore disponible pour le tag "{{ tag.name }}".</p>
+            <a href="{% url 'actualites' %}" 
+               class="inline-flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              Voir toutes les actualités
+            </a>
+          </div>
+        </div>
+      {% endif %}
+      
+      <!-- Pagination -->
+      {% if is_paginated %}
+        <nav aria-label="Navigation des pages" class="mt-8">
+          {% include "partials/pagination.html" %}
+        </nav>
+      {% endif %}
+    </section>
+  </div>
+</main>
+{% endblock %} 

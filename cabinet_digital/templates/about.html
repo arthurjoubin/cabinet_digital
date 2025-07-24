@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}À propos de Cabinet Digital - Notre mission{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="Cabinet Digital est une plateforme indépendante créée pour aider les experts-comptables et PME à choisir les meilleurs logiciels de gestion. Découvrez notre mission et nos valeurs.">
+<meta property="og:title" content="À propos de Cabinet Digital - Notre mission">
+<meta property="og:description" content="Plateforme indépendante pour aider les experts-comptables et PME à choisir les meilleurs logiciels. Découvrez notre mission.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<link rel="canonical" href="{{ request.build_absolute_uri }}" />
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8 text-center">À propos de Cabinet Digital</h1>
+    
+    <div class="prose max-w-none">
+        <p class="text-lg mb-6">Cabinet Digital est une plateforme indépendante dédiée à aider les experts-comptables et les PME à trouver les logiciels les plus adaptés à leurs besoins.</p>
+        
+        <h2 class="text-2xl font-bold mt-8 mb-4">Notre mission</h2>
+        <p>Simplifier le choix de logiciels professionnels en proposant des comparatifs objectifs, des avis utilisateurs vérifiés et des guides pratiques.</p>
+        
+        <h2 class="text-2xl font-bold mt-8 mb-4">Nos valeurs</h2>
+        <ul>
+            <li><strong>Indépendance</strong> : Nous ne sommes affiliés à aucun éditeur de logiciel</li>
+            <li><strong>Transparence</strong> : Tous nos avis sont authentiques et vérifiés</li>
+            <li><strong>Expertise</strong> : Notre équipe connaît les besoins des professionnels</li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

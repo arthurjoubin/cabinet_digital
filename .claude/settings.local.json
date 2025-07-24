@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python manage.py makemigrations:*)",
+      "Bash(python3 manage.py makemigrations:*)",
+      "Bash(ls:*)",
+      "Bash(python3:*)",
+      "Bash(grep:*)",
+      "Bash(rm:*)",
+      "Bash(rg:*)",
+      "Bash(find:*)",
+      "Bash(python manage.py seo_audit:*)",
+      "Bash(source:*)",
+      "Bash(python manage.py delete_all_integrations:*)",
+      "Bash(venv/bin/python manage.py delete_all_integrations:*)",
+      "Bash(VIRTUAL_ENV=/mnt/c/Users/arthu/OneDrive/Bureau/cabinetdigital/venv PATH=/mnt/c/Users/arthu/OneDrive/Bureau/cabinetdigital/venv/bin:$PATH python manage.py delete_all_integrations --confirm)",
+      "Bash(PYTHONPATH=/mnt/c/Users/arthu/OneDrive/Bureau/cabinetdigital/venv/lib/python3.12/site-packages /mnt/c/Users/arthu/OneDrive/Bureau/cabinetdigital/venv/bin/python manage.py delete_all_integrations --confirm)",
+      "Bash(pip3 install:*)",
+      "Bash(python manage.py:*)",
+      "Bash(./venv/bin/python manage.py shell:*)",
+      "Bash(venv/bin/python manage.py shell:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(true)",
+      "Bash(pkill:*)",
+      "Bash(export DJANGO_ENV=development)",
+      "Bash(sqlite3:*)",
+      "Bash(DJANGO_SETTINGS_MODULE=config.settings python3 -c \"import django; django.setup(); from django.urls import reverse; print(reverse(''contact_integrator''))\")",
+      "Bash(kill:*)",
+      "Bash(git checkout:*)",
+      "Bash(npm run build:css:*)",
+      "Bash(curl:*)"
+    ],
+    "deny": []
+  }
+}

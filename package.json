@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "@tailwindcss/typography": "^0.5.15"
+  },
+  "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.17"
+  },
+  "name": "cabinetdigital",
+  "version": "1.0.0",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tailwind": "npx tailwindcss -i ./static/src/input.css -o ./static/src/output.css --watch",
+    "tailwind:build": "NODE_ENV=production npx tailwindcss -i ./static/src/input.css -o ./static/src/output.css --minify",
+    "css:purge": "NODE_ENV=production npm run tailwind:build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

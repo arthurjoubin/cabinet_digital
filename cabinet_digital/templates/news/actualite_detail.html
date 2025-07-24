@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{{ actualite.title }} - Cabinet Digital
+{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="{{ actualite.excerpt }}">
+<meta property="og:title" content="{{ actualite.title }} - Cabinet Digital">
+<meta property="og:description" content="{{ actualite.excerpt }}">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
+{% endblock %}
+
+{% block content %}
+{% include "news/template_article.html" with variable=actualite custom_plural='actualités' breadcrumb_items=breadcrumb_items %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ actualite.title }}",
+  "description": "{{ actualite.excerpt|striptags }}",
+  "datePublished": "{{ actualite.pub_date|date:'c' }}",
+  "image": "{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}",
+  "author": {
+    "@type": "Organization",
+    "name": "Cabinet Digital"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Cabinet Digital",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{% static 'cabinet_logos/logo_cabinetdigital.png' %}"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ request.build_absolute_uri }}"
+  }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% load breadcrumb_tags %}
+
+<!-- Breadcrumb Navigation -->
+<nav class="flex mb-4" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        {% for item in breadcrumb_items %}
+            <li class="inline-flex items-center">
+                {% if not forloop.first %}
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                {% endif %}
+                
+                {% if item.is_current %}
+                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2" aria-current="page">
+                        {{ item.name }}
+                    </span>
+                {% else %}
+                    <a href="{{ item.url }}" class="{% if forloop.first %}text-sm font-medium text-gray-700 hover:text-sky-600{% else %}ml-1 text-sm font-medium text-gray-700 hover:text-sky-600 md:ml-2{% endif %} transition-colors duration-200">
+                        {{ item.name }}
+                    </a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ol>
+</nav>
+
+<!-- Schema.org Structured Data for Breadcrumbs -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {% for item in breadcrumb_items %}
+        {
+            "@type": "ListItem",
+            "position": {{ forloop.counter }},
+            "name": "{{ item.name|escapejs }}"{% if item.url %},
+            "item": "{{ item.url|escapejs }}"{% endif %}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]
+}
+</script>

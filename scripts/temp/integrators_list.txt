@@ -1,0 +1,170 @@
+LISTE DES INTÉGRATEURS
+Nombre total: 11
+================================================================================
+
+[1] 1Life
+    Slug: 1life
+    Statut: ✅ Publié
+    Extrait: Leader des ERP pour l'industrie, spécialisé dans Cegid Manufacturing PMI et Open-Prod.
+    Description: 1Life est un intégrateur leader des ERP pour l'industrie, notamment avec Cegid Manufacturing PMI et Open-Prod, une solution 100% française. Ils accompagnent plus de 1 000 PME industrielles en France, avec des bureaux à Lyon, Paris, Nantes et Montpellier, en se concentrant sur la gestion des processus industriels. (1Life - Site officiel)
+    🌐 Site web: https://www.1life.fr/
+    💼 Solutions partenaires: Cegid Manufacturing PMI, Open-Prod
+
+--------------------------------------------------------------------------------
+
+[2] Absys Cyborg (Groupe Keyrus)
+    Slug: absys-cyborg-groupe-keyrus
+    Statut: ✅ Publié
+    Extrait: Filiale de Keyrus, acteur majeur de la transformation numérique. Intégrateur et revendeur de solutions de gestion pour la finance et l'administration depuis 38 ans.
+    Description: Absys Cyborg - Expert en transformation financière Filiale de Keyrus, acteur majeur de la transformation numérique. Intégrateur et revendeur de solutions de gestion pour la finance et l'administration depuis 38 ans (3 300 clients, 600 collaborateurs). Spécialisé en ERP financiers (Sage, Microsoft Dynamics), TMS (Kyriba), solutions comptables SaaS (Pennylane) et paie (Silae). Offre globale (déploiement, support). Solutions partenaires  Sage 100, X3, FRP 1000 Microsoft Dynamics 365 Kyriba (TMS) Silae (Paie) Pennylane, MyReport Expertise Absys Cyborg bénéficie de l'expertise en data et transformation digitale du groupe Keyrus, ce qui lui permet d'apporter une vision plus large aux projets d'implémentation ERP. Cette approche est particulièrement pertinente pour les entreprises cherchant à aller au-delà d'une simple migration vers un nouveau logiciel, pour embrasser une véritable transformation de leurs processus financiers.
+    🌐 Site web: https://www.absyscyborg.com
+    🏢 Éditeur partenaire: Sage
+    💼 Solutions partenaires: Sage (100, X3, FRP 1000) (éditeur); Microsoft Dynamics 365 (éditeur); Kyriba (TMS, éditeur); Silae (Paie, éditeur); Pennylane (éditeur); MyReport (éditeur)
+    💻 Logiciels (2): Docusign, Kyriba
+
+--------------------------------------------------------------------------------
+
+[3] Apogea (Groupe Proxiteam)
+    Slug: apogea-groupe-proxiteam
+    Statut: ✅ Publié
+    Extrait: Intégrateur leader de solutions de gestion (ERP, finance, paie, CRM, BI) depuis plus de 30 ans, au service des PME/ETI et collectivités.
+    Description: Apogea - Expertise globale en solutions de gestion Intégrateur leader de solutions de gestion (ERP, finance, paie, CRM, BI) depuis plus de 30 ans, au service des PME/ETI et collectivités. 400+ collaborateurs, 4 000+ clients. Partenaire privilégié de Sage, Cegid, Microsoft, Silae, Lucca, MyReport, Pennylane, etc. Offre des solutions sur mesure pour la finance et la trésorerie. Solutions partenaires  Sage 100, X3, etc. Silae (Paie), Lucca (RH) Cegid Microsoft Dynamics 365 MyReport, Pennylane  Expertise Le groupe Apogea se distingue par sa capacité à déployer une large gamme de solutions complémentaires, créant ainsi un écosystème digital complet pour ses clients. Leur approche intégrée permet de couvrir l'ensemble des besoins fonctionnels des entreprises, depuis la comptabilité jusqu'à la paie en passant par la BI et le CRM.
+    🌐 Site web: https://www.linkedin.com/company/apogea/
+    💼 Solutions partenaires: Sage (100, X3, etc.), Silae (Paie), Lucca (RH) (éditeurs); Cegid (éditeur); Microsoft Dynamics 365 (éditeur); MyReport, Pennylane (éditeurs/partenaires)
+    💻 Logiciels (1): Agicap
+
+--------------------------------------------------------------------------------
+
+[4] BDO France – Software & Services
+    Slug: bdo-france-software-services
+    Statut: ✅ Publié
+    Extrait: Entité Conseil/ESN du réseau d'audit BDO, intégrateur de solutions de gestion pour PME/PMI.
+    Description: BDO France – L'expertise comptable au service de l'ERP
+                    Entité Conseil/ESN du réseau d'audit BDO, intégrateur de solutions de gestion pour PME/PMI. A sélectionné Sage 100 et Everwin comme piliers de son offre ERP. Cible TPE/PME souhaitant moderniser leur SI financier. Accompagnement personnalisé par des experts-comptables et consultants BDO.
+                    
+                    Solutions partenaires
+                    
+                        Sage 100 (ERP/finance)
+                        Everwin (ERP de gestion de projet)
+                    
+                    
+                    Expertise
+                    BDO France Software & Services bénéficie de l'expertise comptable et fiscale du réseau BDO, ce qui constitue un atout majeur dans l'implémentation des solutions financières. Cette double compétence technique et métier permet d'assurer une parfaite adéquation entre les outils déployés et les exigences réglementaires et fiscales.
+    🌐 Site web: https://www.bdo.fr
+    💼 Solutions partenaires: Sage 100 (ERP/finance, éditeur) ; Everwin (ERP de gestion de projet, éditeur)
+
+--------------------------------------------------------------------------------
+
+[5] Bworkshop
+    Slug: bworkshop
+    Statut: ✅ Publié
+    Extrait: Entreprise de conseil et d'intégration spécialisée dans les ERP pour les back-offices.
+    Description: Bworkshop est une entreprise de conseil et d'intégration spécialisée dans les ERP pour les back-offices, avec des partenaires comme Oracle JD Edwards, Netsuite et Kyriba. Ils aident les entreprises à améliorer leur compétitivité via des solutions cloud et des systèmes intégrés. (Bworkshop - Site officiel)
+    🌐 Site web: https://bworkshop.fr/
+    💼 Solutions partenaires: Oracle JD Edwards, Netsuite, Kyriba
+
+--------------------------------------------------------------------------------
+
+[6] CIAG (Toulouse)
+    Slug: ciag-toulouse
+    Statut: ✅ Publié
+    Extrait: ESN régionale (Toulouse) axée PME/PMI. Propose principalement Divalto Infinity et la gamme Anael Finance d'Infor.
+    Description: CIAG - Expertise régionale Toulouse
+                    ESN régionale (Toulouse) axée PME/PMI. Propose principalement Divalto Infinity et la gamme Anael Finance d'Infor. CIAG adapte ces ERP en fonction des métiers. Expertise en développement de modules métiers et en configuration sur-mesure. Accompagnement complet (audit, intégration, support).
+                    
+                    Solutions partenaires
+                    
+                        Divalto Infinity ERP
+                        Infor Anael Finance
+                        Infor Anael SIRH/Travail Temporaire
+                    
+                    
+                    Expertise
+                    CIAG a développé une forte expertise régionale, avec une connaissance approfondie du tissu économique du Sud-Ouest. Cette proximité leur permet d'offrir un accompagnement personnalisé aux PME de la région, avec une compréhension fine des enjeux locaux et sectoriels.
+    🌐 Site web: https://www.ciag.fr
+    💼 Solutions partenaires: Divalto (Infinity ERP, éditeur Divalto) ; Infor Anael Finance (éditeur); Infor Anael SIRH/Travail Temporaire
+
+--------------------------------------------------------------------------------
+
+[7] Captivea
+    Slug: captivea
+    Statut: ✅ Publié
+    Extrait: Intégrateur spécialisé sur le secteur financier et PME (crédit, assurance, banque). Odoo Gold Partner et partenaire Acumatica et Cegid.
+    Description: Captivea - Expertise Open Source et Cloud
+                    Intégrateur spécialisé sur le secteur financier et PME (crédit, assurance, banque). Odoo Gold Partner et partenaire Acumatica et Cegid. Oriente les PME/ETI vers ERP adaptés (Odoo, Acumatica) et solutions de gestion financière (Cegid), avec un fort accent sur conformité et automatisation (flux de trésorerie, reporting).
+                    
+                    Solutions partenaires
+                    
+                        Odoo (ERP open source)
+                        Acumatica (ERP cloud)
+                        Cegid XRP Flex (comptabilité)
+                    
+                    
+                    Expertise
+                    Captivea se distingue par son expertise sur les solutions open source et cloud, offrant ainsi une alternative aux ERP traditionnels. Leur approche privilégie la flexibilité et l'évolutivité, avec une attention particulière aux besoins spécifiques du secteur financier en matière de conformité réglementaire et de reporting.
+    🌐 Site web: https://www.captivea.com
+    💼 Solutions partenaires: Odoo (ERP, éditeur) ; Acumatica (ERP cloud, éditeur) ; Cegid XRP Flex (comptabilité, éditeur)
+
+--------------------------------------------------------------------------------
+
+[8] Groupe SRA
+    Slug: groupe-sra
+    Statut: ✅ Publié
+    Extrait: Intégrateur depuis 40+ ans auprès des TPE/PME (et grands groupes). Premier partenaire Sage en France et partenaire Cegid.
+    Description: Groupe SRA - Premier partenaire Sage en France Intégrateur depuis plus de 40 ans auprès des TPE/PME et grands groupes. Premier partenaire Sage en France (offrant toute la gamme Sage) et partenaire Cegid. Propose des solutions complètes incluant paie/RH, comptabilité et gestion de trésorerie (via Sage Eloficash, Agicap). Rayonnement national. Solutions partenaires  Sage X3, FRP 1000, Intacct, 100, Eloficash Cegid XRP Flex, Paie Microsoft Power BI Agicap, Pennylane  Expertise Le Groupe SRA s'est imposé comme l'un des leaders de l'intégration de solutions ERP et financières en France, avec une expertise particulière sur les solutions Sage. Leur connaissance approfondie des problématiques de gestion de trésorerie et de comptabilité en fait un partenaire privilégié pour les entreprises cherchant à optimiser leurs processus financiers.
+    🌐 Site web: https://groupe-sra.fr
+    💼 Solutions partenaires: Sage (X3, FRP 1000, Intacct, 100, Eloficash) (éditeur); Cegid (XRP Flex, Paie) (éditeur); Microsoft Power BI; Agicap, Pennylane (partenaires)
+
+--------------------------------------------------------------------------------
+
+[9] Koesio Data Solutions
+    Slug: koesio-data-solutions
+    Statut: ✅ Publié
+    Extrait: ESN issue du groupe Koesio (télécom). Intégrateur depuis ~20 ans spécialisé en solutions de gestion et data.
+    Description: Koesio Data Solutions - L'expertise IT au service de la gestion
+                    ESN issue du groupe Koesio (télécom). Intégrateur depuis ~20 ans spécialisé en solutions de gestion et data. Recommande et déploie des solutions Sage (ERP/finance) et BI (Microsoft Power BI) pour PME. Sert tout le territoire via un réseau d'agences. Accompagnement complet (audit, intégration, formation).
+                    
+                    Solutions partenaires
+                    
+                        Sage 100, FRP 1000, X3, Paie
+                        Microsoft Power BI
+                        Salesforce CRM
+                    
+                    
+                    Expertise
+                    Koesio Data Solutions se distingue par son appartenance à un groupe offrant une large gamme de services IT, ce qui lui permet de proposer une approche globale incluant l'infrastructure, la sécurité et les solutions de gestion. Cette synergie est particulièrement pertinente pour les entreprises souhaitant harmoniser l'ensemble de leur système d'information.
+    🌐 Site web: https://www.koesio.com
+    💼 Solutions partenaires: Sage (100, FRP 1000, X3, Paie) (éditeur); Microsoft Power BI (éditeur); Salesforce CRM (éditeur)
+
+--------------------------------------------------------------------------------
+
+[10] Mercuria
+    Slug: mercuria
+    Statut: ✅ Publié
+    Extrait: Intégrateur français de logiciels de gestion, spécialisé dans la comptabilité, la finance et les RH.
+    Description: Mercuria est un intégrateur français de logiciels de gestion, basé à Nantes, Paris, Rouen et Strasbourg. Ils se spécialisent dans les solutions pour la comptabilité, la finance, les RH (SIRH), la dématérialisation et le reporting. Ils travaillent avec des partenaires comme Sage, Lucca et ELO Digital Office, offrant des solutions innovantes pour les entreprises. (Mercuria - Site officiel)
+    🌐 Site web: https://www.mercuria.fr/
+    🏢 Éditeur partenaire: Sage
+    💼 Solutions partenaires: Sage, Lucca, ELO Digital Office
+
+--------------------------------------------------------------------------------
+
+[11] TGS France
+    Slug: tgs-france
+    Statut: ✅ Publié
+    Extrait: Intégrateur historique de Divalto (éditeur français). Équipe certifiée Platinum Divalto.
+    Description: TGS France - Expert Divalto
+                    Intégrateur historique de Divalto (éditeur français ERP). Équipe certifiée Platinum Divalto. Divalto Infinity couvre l'ensemble des fonctions gestion, dont comptabilité & finances. TGS France fait partie des 10 premiers intégrateurs Divalto en France, avec une expertise forte sur les métiers industriels et commerciaux.
+                    
+                    Solutions partenaires
+                    
+                        Divalto Infinity (ERP complet)
+                    
+                    
+                    Expertise
+                    TGS France a développé une expertise pointue sur les solutions Divalto, avec une équipe entièrement dédiée à cette technologie. Cette spécialisation leur permet d'offrir un niveau de service élevé et une connaissance approfondie des fonctionnalités et possibilités d'adaptation de cette solution ERP française.
+    🌐 Site web: https://www.tgs-france.fr
+    💼 Solutions partenaires: Divalto Infinity (ERP, éditeur Divalto)
+
+--------------------------------------------------------------------------------
+

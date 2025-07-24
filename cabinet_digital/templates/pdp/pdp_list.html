@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}La liste à jour des {{ paginator.count }} Plateformes de Dématérialisation Partenaires (PDP) accrédités | Cabinet Digital{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="Liste complète et à jour des {{ paginator.count }} Plateformes de Dématérialisation Partenaires (PDP) immatriculées pour la facturation électronique en France. Comparez les solutions pour respecter la réforme 2026-2027.">
+<meta property="og:title" content="Liste des {{ paginator.count }} PDP accrédités | Cabinet Digital">
+<meta property="og:description" content="Liste complète des {{ paginator.count }} Plateformes de Dématérialisation Partenaires immatriculées pour la facturation électronique obligatoire en France.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<link rel="canonical" href="{{ request.build_absolute_uri }}" />
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-white">
+  <div class="max-w-7xl mx-auto px-6 py-8">
+    {% include 'partials/breadcrumb.html' %}
+    
+    <div class="text-center mb-2">
+      <h1 class="text-3xl font-bold mb-4 text-center">
+        La liste à jour des
+        <span class="bg-black text-white px-3 py-1 rounded-lg inline-block">
+          {{ paginator.count }} PDP accrédités
+        </span>
+      </h1>
+      <p class="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+        Liste complète des Plateformes de Dématérialisation Partenaires (PDP) immatriculées pour la facturation électronique en France.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Main Content -->
+<main class="bg-white" x-data="{    
+    searchQuery: '{{ search_query|default:'' }}',
+    isLoading: false,
+    showSpecialtyList: false,
+    specialtyFilter: '{{ selected_specialty }}',
+    specialtySearchQuery: '',
+    open: false,
+    
+    selectSpecialty(slug, name) {
+        this.specialtyFilter = slug;
+        this.submitForm();
+    },
+        
+    submitForm() {
+        this.isLoading = true;
+        let url = '{% url 'pdp_list' %}?';
+        
+        if (this.searchQuery) {
+            url += `q=${encodeURIComponent(this.searchQuery)}&`;
+        }
+        
+        if (this.specialtyFilter) {
+            url += `specialty=${encodeURIComponent(this.specialtyFilter)}`;
+        }
+        
+        window.location.href = url;
+    }
+}">
+  <div class="max-w-7xl mx-auto px-6">
+    
+    <!-- PDP Explanation Component -->
+    {% include 'pdp/pdp_explanation.html' %}
+
+    <!-- Search and Filter Section -->
+    <section class="mb-6">
+      <!-- PDP count centered -->
+      <div class="text-center mb-4">
+        <div class="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-full border border-gray-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          </svg>
+          <span class="font-medium">{{ paginator.count }} plateforme{% if paginator.count > 1 %}s{% endif %} référencée{% if paginator.count > 1 %}s{% endif %}</span>
+        </div>
+      </div>
+
+      <form method="get" class="max-w-5xl mx-auto space-y-4">
+        <!-- Filtres et actions -->
+        {% if specialties %}
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+          <div class="p-6">
+            <div class="flex flex-col lg:flex-row lg:items-center gap-3">
+              <!-- Filtres -->
+              <div class="flex flex-col sm:flex-row gap-1 flex-1">
+                <select name="specialty" class="pl-4 pr-8 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white shadow-sm min-w-[200px] transition-all duration-200">
+                  <option value="">Filtrer par spécialité</option>
+                  {% for specialty in specialties %}
+                    <option value="{{ specialty.slug }}" {% if selected_specialty == specialty.slug %}selected{% endif %} title="{{ specialty.name }}">
+                      {{ specialty.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Barre de recherche -->
+              <div class="relative flex-1">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                </div>
+                <input type="text" 
+                       name="q" 
+                       value="{{ search_query }}" 
+                       placeholder="Rechercher..."
+                       class="w-full pl-12 pr-4 py-3 border-2 border-gray-400 rounded-lg text-sm placeholder-gray-500 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+              </div>
+
+              <!-- Boutons -->
+              <div class="flex gap-3">
+                <a href="{% url 'pdp_list' %}" class="inline-flex items-center justify-center px-4 py-3 border-2 border-gray-400 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200">
+                  <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  Réinitialiser
+                </a>
+                <button type="submit" class="inline-flex items-center justify-center px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 text-sm font-medium shadow-sm transition-all duration-200">
+                  <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                  Filtrer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </form>
+    </section>
+
+    <!-- PDP Grid -->
+    <section id="pdp-list-content" aria-label="Liste des plateformes">
+      {% if page_obj %}
+        <div id="pdp-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+          {% for pdp in page_obj %}
+            <div class="h-full">
+              {% include 'pdp/pdp_card.html' with pdp=pdp %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-16 bg-gray-50 rounded-xl border border-gray-200">
+          <div class="max-w-md mx-auto">
+            <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <h3 class="text-xl font-semibold text-black mb-3">Aucune plateforme trouvée</h3>
+            <p class="text-gray-600 mb-6">Aucune plateforme ne correspond à vos critères de recherche.</p>
+            <a href="{% url 'pdp_list' %}" 
+               class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              Réinitialiser les filtres
+            </a>
+          </div>
+        </div>
+      {% endif %}
+      
+      <!-- Pagination -->
+      {% if is_paginated %}
+        <nav aria-label="Navigation des pages" class="mt-8">
+          {% include "partials/pagination.html" with search_param="q" search_query=search_query filter_param="specialty" filter_value=selected_specialty %}
+        </nav>
+      {% endif %}
+    </section>
+  </div>
+</main>
+{% endblock %} 

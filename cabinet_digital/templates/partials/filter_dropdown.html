@@ -1,0 +1,70 @@
+<div class="relative mobile-filter-dropdown" @click.away="show{{ filter_name|capfirst }}List = false">
+    <div class="relative">
+        <button 
+            @click="show{{ filter_name|capfirst }}List = !show{{ filter_name|capfirst }}List" 
+            type="button"
+            class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent hover:border-gray-300 text-left flex justify-between items-center text-sm">
+            <span x-text="{{ filter_name }}Filter ? 
+                   (Array.from(document.querySelectorAll('#{{ filter_name }}-dropdown option')).find(opt => opt.value === {{ filter_name }}Filter)?.textContent || '{{ filter_title }}') : 
+                   '{{ filter_title }}'" class="truncate"></span>
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path x-show="!show{{ filter_name|capfirst }}List" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                <path x-show="show{{ filter_name|capfirst }}List" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+            </svg>
+        </button>
+    </div>
+    
+    <div x-show="show{{ filter_name|capfirst }}List" 
+         x-cloak
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 transform scale-95"
+         x-transition:enter-end="opacity-100 transform scale-100"
+         class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-80 rounded-md py-1 text-base overflow-auto focus:outline-none sm:text-sm border border-gray-200">
+        
+        {% if search_enabled %}
+        <!-- Barre de recherche pour les éléments -->
+        <div class="px-3 py-2 border-b border-gray-100">
+            <input 
+                type="text" 
+                x-model="{{ filter_name }}SearchQuery"
+                placeholder="Rechercher un {{ filter_label }}..." 
+                class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent">
+        </div>
+        {% endif %}
+        
+        <!-- Option "Tous les éléments" -->
+        <button 
+            @click="{{ filter_name }}Filter = ''; submitForm()"
+            class="w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 transition-colors duration-150 flex items-center justify-between">
+            <span>Tous les {{ all_label|default:filter_label }}s</span>
+            <span x-show="{{ filter_name }}Filter === ''" class="text-black">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </span>
+        </button>
+        
+        <!-- Liste des éléments -->
+        <div id="{{ filter_name }}-dropdown">
+            {% for item in items %}
+            <button 
+                @click="select{{ filter_name|capfirst }}('{{ item.slug|escapejs }}', '{{ item.name|escapejs }}')"
+                class="w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 transition-colors duration-150 flex items-center justify-between"
+                {% if search_enabled %}x-show="!{{ filter_name }}SearchQuery || '{{ item.name|escapejs }}'.toLowerCase().includes({{ filter_name }}SearchQuery.toLowerCase())"{% endif %}>
+                <div class="flex items-center">
+                    {% if show_color and item.color %}
+                    <span class="inline-block w-3 h-3 rounded-full mr-2" 
+                          style="background-color: {% if item.color %}{{ item.color }}{% else %}#EBF5FF{% endif %}"></span>
+                    {% endif %}
+                    <span>{{ item.name }}</span>
+                </div>
+                <span x-show="{{ filter_name }}Filter === '{{ item.slug|escapejs }}'" class="text-black">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </span>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+</div> 

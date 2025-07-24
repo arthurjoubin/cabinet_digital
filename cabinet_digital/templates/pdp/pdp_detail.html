@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ pdp.name }} | PDP{% if pdp.specialty %} spécialisée {{ pdp.specialty }}{% endif %} - Plateforme de Dématérialisation Partenaire | Cabinet Digital{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="Découvrez {{ pdp.name }}{% if pdp.company %} par {{ pdp.company.name }}{% endif %}{% if pdp.specialty %}, PDP spécialisée en {{ pdp.specialty }}{% endif %}. {{ pdp.excerpt|striptags|truncatechars:120 }}">
+<meta property="og:title" content="{{ pdp.name }} - PDP{% if pdp.specialty %} {{ pdp.specialty }}{% endif %} | Cabinet Digital">
+<meta property="og:description" content="Découvrez {{ pdp.name }}{% if pdp.company %} par {{ pdp.company.name }}{% endif %}{% if pdp.specialty %}, spécialisée en {{ pdp.specialty }}{% endif %}. Plateforme de Dématérialisation Partenaire immatriculée.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<link rel="canonical" href="{{ request.build_absolute_uri }}" />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ pdp.name }} - PDP{% if pdp.specialty %} {{ pdp.specialty }}{% endif %} | Cabinet Digital">
+<meta name="twitter:description" content="Découvrez {{ pdp.name }}{% if pdp.company %} par {{ pdp.company.name }}{% endif %}{% if pdp.specialty %}, spécialisée en {{ pdp.specialty }}{% endif %}. PDP immatriculée pour la facturation électronique.">
+<meta name="twitter:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta name="keywords" content="PDP, Plateforme de Dématérialisation Partenaire, facturation électronique, {{ pdp.name }}, {% if pdp.company %}{{ pdp.company.name }}{% endif %}{% if pdp.specialty %}, {{ pdp.specialty }}{% endif %}">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-12">
+  <!-- Banner indicating it's a PDP -->
+  <div class="bg-sky-700 text-white py-2 px-4 text-center">
+    <p class="text-sm md:text-base font-medium">
+      <span class="inline-flex items-center">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        Plateforme de Dématérialisation Partenaire (PDP) immatriculées sous réserve
+      </span>
+    </p>
+  </div>
+
+  <div class="p-4 sm:p-6 border-b-2 border-gray-200">
+    {% include 'partials/breadcrumb.html' %}
+    <div class="flex flex-col space-y-4">
+      <div class="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4">
+        <a href="{% url 'pdp_list' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium border-2 text-black rounded-lg hover:bg-gray-100 transition-colors duration-300">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Retour à la liste des PDP
+        </a>
+        
+        {% if pdp.site %}
+        <a href="{{ pdp.site }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center">
+          Visiter leur site
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+          </svg>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+    <div class="p-4 sm:p-8 max-w-5xl mx-auto" x-data="{ activeTab: 'similar' }">
+      <div class="flex flex-col md:flex-row items-center justify-center gap-6 mb-8">
+        <div class="flex flex-col items-center w-full border p-6 bg-gray-50 rounded-xl">
+          <div class="text-center">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">{{ pdp.name }}</h1>
+           
+            <div class="flex flex-wrap items-center justify-center gap-2 mb-3">
+              <span class="inline-flex items-center bg-gray-100 text-gray-800 px-3 py-1 rounded-md text-sm font-medium border border-gray-200">
+                <span class="font-semibold mr-1">Éditeur:</span>
+                {% if pdp.company %}
+                  {{ pdp.company.name }}
+                {% else %}
+                  {{ pdp.editor }}
+                {% endif %}
+              </span>
+              {% if pdp.specialty %}
+              <div class="flex flex-wrap items-center justify-center gap-2">
+                {% for tag in pdp.get_specialty_tags_list %}
+                <a href="{% url 'pdp_specialty_detail' tag|slugify %}" class="inline-flex items-center bg-sky-100 text-sky-700 px-3 py-1 rounded-md text-sm font-medium hover:bg-sky-200 transition-colors border border-sky-200">
+                  <span class="font-semibold mr-1">Spécialité:</span> {{ tag|capfirst }}
+                </a>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+            
+            <!-- Description moved here -->
+            <div class="prose max-w-none text-gray-700 leading-relaxed mt-4">
+              <div class="text-left relative">
+                {{ pdp.excerpt|safe }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- What is a PDP? -->
+      {% include 'pdp/pdp_explanation.html' %}
+      <hr class="my-6 sm:my-8 border-t-2 border-gray-200">
+
+
+
+    <!-- Tabs Navigation -->
+    <div class="mb-6 sm:mb-8 overflow-x-auto">
+      <nav class="flex justify-center border-b-2 border-gray-200 pb-1 min-w-full" aria-label="Tabs">
+        
+        {% if connected_softwares %}
+        <button 
+          @click="activeTab = 'connected_softwares'" 
+          :class="{ 'bg-sky-100 text-black border-sky-500': activeTab === 'connected_softwares', 'bg-gray-50 text-gray-600 hover:bg-gray-100': activeTab !== 'connected_softwares' }"
+          class="mx-1 sm:mx-2 py-2 sm:py-3 px-3 sm:px-5 text-sm sm:text-base font-medium rounded-t-lg border-t border-l border-r border-gray-200 flex items-center space-x-1 sm:space-x-2 transition-all duration-200 flex-shrink-0">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+          </svg>
+          <span class="whitespace-nowrap">Solutions connectées</span>
+        </button>
+        {% endif %}
+        
+        {% if integrators %}
+        <button 
+          @click="activeTab = 'integrators'" 
+          :class="{ 'bg-sky-100 text-black border-sky-500': activeTab === 'integrators', 'bg-gray-50 text-gray-600 hover:bg-gray-100': activeTab !== 'integrators' }"
+          class="mx-1 sm:mx-2 py-2 sm:py-3 px-3 sm:px-5 text-sm sm:text-base font-medium rounded-t-lg border-t border-l border-r border-gray-200 flex items-center space-x-1 sm:space-x-2 transition-all duration-200 flex-shrink-0">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span class="whitespace-nowrap">Intégrateurs partenaires</span>
+        </button>
+        {% endif %}
+        
+
+        
+        {% if software_integrators %}
+        <button 
+          @click="activeTab = 'software_integrators'" 
+          :class="{ 'bg-sky-100 text-black border-sky-500': activeTab === 'software_integrators', 'bg-gray-50 text-gray-600 hover:bg-gray-100': activeTab !== 'software_integrators' }"
+          class="mx-1 sm:mx-2 py-2 sm:py-3 px-3 sm:px-5 text-sm sm:text-base font-medium rounded-t-lg border-t border-l border-r border-gray-200 flex items-center space-x-1 sm:space-x-2 transition-all duration-200 flex-shrink-0">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+          </svg>
+          <span class="whitespace-nowrap">Intégrateurs</span>
+        </button>
+        {% endif %}
+        
+        <button 
+          @click="activeTab = 'similar'" 
+          :class="{ 'bg-sky-100 text-black border-sky-500': activeTab === 'similar', 'bg-gray-50 text-gray-600 hover:bg-gray-100': activeTab !== 'similar' }"
+          class="mx-1 sm:mx-2 py-2 sm:py-3 px-3 sm:px-5 text-sm sm:text-base font-medium rounded-t-lg border-t border-l border-r border-gray-200 flex items-center space-x-1 sm:space-x-2 transition-all duration-200 flex-shrink-0">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+          </svg>
+          <span class="whitespace-nowrap">Alternatives</span>
+        </button>
+        
+
+        {% if company_software %}
+        <button 
+          @click="activeTab = 'company_software'" 
+          :class="{ 'bg-sky-100 text-black border-sky-500': activeTab === 'company_software', 'bg-gray-50 text-gray-600 hover:bg-gray-100': activeTab !== 'company_software' }"
+          class="mx-1 sm:mx-2 py-2 sm:py-3 px-3 sm:px-5 text-sm sm:text-base font-medium rounded-t-lg border-t border-l border-r border-gray-200 flex items-center space-x-1 sm:space-x-2 transition-all duration-200 flex-shrink-0">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+          </svg>
+          <span class="whitespace-nowrap">Logiciels de {{ pdp.company.name }}</span>
+        </button>
+        {% endif %}
+      </nav>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+
+      <!-- Connected Software Tab -->
+      {% if connected_softwares %}
+      <div x-show="activeTab === 'connected_softwares'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+        <div class="max-w-5xl mx-auto">
+          <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 text-center md:text-left">Solutions connectées à {{ pdp.name }}</h2>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {% for software in connected_softwares %}
+              <div class="col-span-1">
+                {% include 'software/template_card_software.html' with software=software %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Integrators Tab -->
+      {% if integrators %}
+      <div x-show="activeTab === 'integrators'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+        <div class="max-w-5xl mx-auto">
+          <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 text-center md:text-left">Intégrateurs partenaires de {{ pdp.name }}</h2>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {% for integrator in integrators %}
+              <div class="col-span-1">
+                {% include 'integrators/integrator_card.html' with integrator=integrator %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+
+
+      <!-- Software Integrators Tab -->
+      {% if software_integrators %}
+      <div x-show="activeTab === 'software_integrators'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+        <div class="max-w-5xl mx-auto">
+          <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 text-center md:text-left">Intégrateurs de {{ pdp.company.name }}</h2>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {% for integrator in software_integrators %}
+              <div class="col-span-1">
+                {% include 'integrators/integrator_card.html' with integrator=integrator %}
+              </div>
+            {% endfor %}
+          </div>
+          
+          <div class="flex justify-center mt-6 sm:mt-8">
+            <a href="{% url 'integrator_list' %}" class="inline-flex items-center px-5 py-2.5 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 shadow-sm transition-all duration-300 hover:shadow-md">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+              Voir tous les partenaires
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Similar PDPs Tab -->
+      <div x-show="activeTab === 'similar'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+        <div class="max-w-5xl mx-auto">
+          <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 text-center md:text-left">Alternatives à {{ pdp.name }}</h2>
+          
+          {% if similar_pdps %}
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {% for similar in similar_pdps %}
+              <div class="col-span-1 h-full">
+                {% include 'pdp/pdp_card.html' with pdp=similar %}
+              </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="text-center py-8">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.5-.816-6.207-2.175C5.25 12.09 5.25 11.906 5.25 11.719V6.375c0-.621.504-1.125 1.125-1.125h11.25c.621 0 1.125.504 1.125 1.125v5.344c0 .187 0 .371-.043.556z"></path>
+              </svg>
+              <p class="text-gray-600 text-lg">Aucune alternative disponible pour le moment</p>
+              <p class="text-gray-500 text-sm mt-2">Découvrez d'autres PDP dans notre catalogue complet</p>
+            </div>
+          </div>
+          {% endif %}
+              
+          <div class="flex justify-center mt-6 sm:mt-8">
+            <a href="{% url 'pdp_list' %}" class="inline-flex items-center px-5 py-2.5 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 shadow-sm transition-all duration-300 hover:shadow-md">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+              Voir toutes les PDP
+            </a>
+          </div>
+        </div>
+      </div>
+
+     
+
+      <!-- Company Software Tab -->
+      {% if company_software %}
+      <div x-show="activeTab === 'company_software'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+        <div class="max-w-5xl mx-auto">
+          <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 text-center md:text-left">Logiciels édités par {{ pdp.company.name }}</h2>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {% for software in company_software %}
+              <div class="col-span-1">
+                  {% include 'software/template_card_software.html' with software=software %}
+              </div>
+            {% endfor %}
+          </div>
+          
+          <div class="flex justify-center mt-6 sm:mt-8">
+            <a href="{% url 'software_list' %}" class="inline-flex items-center px-5 py-2.5 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 shadow-sm transition-all duration-300 hover:shadow-md">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+              Voir tous les logiciels
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "{{ pdp.name }} - Plateforme de Dématérialisation Partenaire",
+  "description": "{{ pdp.excerpt|striptags }}",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "Plateforme de Dématérialisation Partenaire",
+  "operatingSystem": "Web",
+  "keywords": "PDP, Plateforme de Dématérialisation Partenaire, facturation électronique, {{ pdp.name }}, {{ pdp.editor }}{% if pdp.specialty %}, {{ pdp.specialty }}{% endif %}",
+  "url": "{{ request.build_absolute_uri }}",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "{% if pdp.company %}{{ pdp.company.name }}{% else %}{{ pdp.editor }}{% endif %}",
+    {% if pdp.site %}"url": "{{ pdp.site }}",{% endif %}
+    "description": "Éditeur de Plateforme de Dématérialisation Partenaire"
+  },
+  "image": "{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}"
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Intégrateurs ERP, Compta et Finance pour PME et Experts-Comptables | Cabinet Digital{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="Trouvez le meilleur intégrateur ERP pour votre entreprise. {{ paginator.count }} intégrateurs spécialisés en solutions comptables et financières pour PME et experts-comptables.">
+<meta name="keywords" content="intégrateur ERP, intégrateur comptabilité, implémentation ERP, consultant ERP, partenaire logiciel comptable">
+<meta property="og:title" content="Intégrateurs ERP et Comptabilité - Cabinet Digital">
+<meta property="og:description" content="Découvrez {{ paginator.count }} intégrateurs spécialisés pour l'implémentation de vos solutions ERP et comptables.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:image" content="{% static 'img/integrators-og.jpg' %}">
+{% endblock %}
+
+{% block extra_head %}
+<!-- Structured Data for Integrators Directory -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Intégrateurs ERP et Comptabilité",
+  "description": "Annuaire des intégrateurs spécialisés en solutions ERP, comptables et financières pour PME et experts-comptables",
+  "url": "{{ request.build_absolute_uri }}",
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": {{ paginator.count }},
+    "itemListElement": [
+      {% for integrator in page_obj %}
+      {
+        "@type": "Organization",
+        "name": "{{ integrator.name }}",
+        "description": "{{ integrator.excerpt|striptags|truncatechars:160 }}",
+        "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'integrator_detail' integrator.slug %}",
+        {% if integrator.logo %}"logo": "{{ request.scheme }}://{{ request.get_host }}{{ integrator.logo.url }}",{% endif %}
+        {% if integrator.published_reviews.exists %}"aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "{{ integrator.published_average_rating|floatformat:1 }}",
+          "reviewCount": "{{ integrator.published_reviews.count }}"
+        },{% endif %}
+        "serviceType": "Intégrateur ERP"
+      }{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ]
+  },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Accueil",
+        "item": "{{ request.scheme }}://{{ request.get_host }}/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Intégrateurs",
+        "item": "{{ request.build_absolute_uri }}"
+      }
+    ]
+  }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-white">
+  <div class="max-w-7xl mx-auto px-6 py-8">
+    {% include 'partials/breadcrumb.html' %}
+    
+    <div class="text-center mb-2">
+      <h1 class="text-3xl font-bold mb-4 text-center">
+        Trouvez votre
+        <span class="bg-black text-white px-3 py-1 rounded-lg inline-block">
+          Intégrateur ERP
+        </span>
+        spécialisé
+      </h1>
+      <p class="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+        Pour l'implémentation de vos solutions ERP, comptables et financières, nous vous proposons une liste sélectionnée de spécialistes. 
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Main Content -->
+<main class="bg-white" x-data="{
+    searchQuery: '{{ search_query }}',
+    isLoading: false,
+    showSoftwareList: false,
+    softwareFilter: '{{ selected_software|default:'' }}',
+    softwareSearchQuery: '',
+    open: false,
+    
+    submitForm() {
+        this.isLoading = true;
+        if (this.softwareFilter) {
+            window.location.href = `{% url 'integrator_list' %}?search=${this.searchQuery}&software=${this.softwareFilter}`;
+        } else {
+            window.location.href = `{% url 'integrator_list' %}?search=${this.searchQuery}`;
+        }
+    },
+    
+    selectSoftware(slug, name) {
+        this.softwareFilter = slug;
+        this.showSoftwareList = false;
+        this.submitForm();
+    }
+}">
+  <div class="max-w-7xl mx-auto px-6">
+    
+    <!-- Integrator Explanation Component -->
+    {% include 'integrators/integrator_explanation.html' %}
+
+    <!-- Search and Filter Section -->
+    <section class="mb-6">
+      <!-- Integrator count centered -->
+      <div class="text-center mb-4">
+        <div class="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-full border border-gray-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          </svg>
+          <span class="font-medium">{{ paginator.count }} intégrateur{% if paginator.count > 1 %}s{% endif %} référencé{% if paginator.count > 1 %}s{% endif %}</span>
+        </div>
+      </div>
+
+      <form method="get" class="max-w-5xl mx-auto space-y-4">
+        <!-- Filtres et actions -->
+        {% if all_softwares %}
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+          <div class="p-6">
+            <div class="flex flex-col lg:flex-row lg:items-center gap-3">
+              <!-- Filtres -->
+              <div class="flex flex-col sm:flex-row gap-1 flex-1">
+                <select name="software" class="pl-4 pr-8 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white shadow-sm min-w-[200px] transition-all duration-200">
+                  <option value="">Filtrer par logiciel</option>
+                  {% for software in all_softwares %}
+                    <option value="{{ software.slug }}" {% if selected_software == software.slug %}selected{% endif %} title="{{ software.name }}">
+                      {{ software.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Barre de recherche -->
+              <div class="relative flex-1">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                </div>
+                <input type="text" 
+                       name="search" 
+                       value="{{ search_query }}" 
+                       placeholder="Rechercher..."
+                       class="w-full pl-12 pr-4 py-3 border-2 border-gray-400 rounded-lg text-sm placeholder-gray-500 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+              </div>
+
+              <!-- Boutons -->
+              <div class="flex gap-3">
+                <a href="{% url 'integrator_list' %}" class="inline-flex items-center justify-center px-4 py-3 border-2 border-gray-400 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200">
+                  <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                  Réinitialiser
+                </a>
+                <button type="submit" class="inline-flex items-center justify-center px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 text-sm font-medium shadow-sm transition-all duration-200">
+                  <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                  Filtrer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </form>
+    </section>
+
+    <!-- Request Button Section -->
+    <section class="mb-8">
+      <div class="flex justify-center">
+        <div class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl px-3 py-2">
+          <div class="flex-shrink-0">
+            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+          </div>
+          <div class="text-left">
+            <p class="text-sm font-medium text-blue-900">Vous êtes intégrateur ?</p>
+          </div>
+          <a href="{% url 'contact_integrator' %}" 
+             class="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap">
+            Proposer votre service
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Integrators Grid -->
+    <section id="integrator-list-content" aria-label="Liste des intégrateurs">
+      {% if page_obj %}
+        <div id="integrator-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+          {% for integrator in page_obj %}
+            <div class="h-full">
+              {% include 'integrators/integrator_card.html' with integrator=integrator %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-16 bg-gray-50 rounded-xl border border-gray-200">
+          <div class="max-w-md mx-auto">
+            <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <h3 class="text-xl font-semibold text-black mb-3">Aucun intégrateur trouvé</h3>
+            <p class="text-gray-600 mb-6">Aucun intégrateur ne correspond à vos critères de recherche.</p>
+            <a href="{% url 'integrator_list' %}" 
+               class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              Réinitialiser les filtres
+            </a>
+          </div>
+        </div>
+      {% endif %}
+      
+      <!-- Pagination -->
+      {% if is_paginated %}
+        <nav aria-label="Navigation des pages" class="mt-8">
+          {% include "partials/pagination.html" with search_param="search" search_query=search_query filter_param="software" filter_value=selected_software %}
+        </nav>
+      {% endif %}
+    </section>
+
+    <!-- Additional SEO Content -->
+    <section class="mt-12 bg-gray-50 rounded-xl p-8 border border-gray-200">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-2xl font-bold text-black mb-6 text-center">
+          Pourquoi choisir un intégrateur ERP spécialisé ?
+        </h2>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+          <div>
+            <h3 class="text-lg font-semibold text-black mb-3 flex items-center">
+              <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              Expertise métier
+            </h3>
+            <p class="text-gray-600 leading-relaxed">
+              Les intégrateurs possèdent une connaissance approfondie des processus métier et des spécificités sectorielles, 
+              garantissant une implémentation adaptée à vos besoins réels.
+            </p>
+          </div>
+          
+          <div>
+            <h3 class="text-lg font-semibold text-black mb-3 flex items-center">
+              <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+              </div>
+              Gain de temps
+            </h3>
+            <p class="text-gray-600 leading-relaxed">
+              Évitez les erreurs coûteuses et accélérez votre déploiement grâce à l'expérience et aux méthodologies 
+              éprouvées des intégrateurs certifiés.
+            </p>
+          </div>
+          
+          <div>
+            <h3 class="text-lg font-semibold text-black mb-3 flex items-center">
+              <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C20.168 18.477 18.582 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+              </div>
+              Formation et support
+            </h3>
+            <p class="text-gray-600 leading-relaxed">
+              Bénéficiez d'une formation complète de vos équipes et d'un support technique continu pour maximiser 
+              l'adoption et l'efficacité de vos outils.
+            </p>
+          </div>
+          
+          <div>
+            <h3 class="text-lg font-semibold text-black mb-3 flex items-center">
+              <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+              </div>
+              ROI optimisé
+            </h3>
+            <p class="text-gray-600 leading-relaxed">
+              Une implémentation professionnelle garantit un retour sur investissement plus rapide et une meilleure 
+              performance de vos solutions logicielles.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock %} 

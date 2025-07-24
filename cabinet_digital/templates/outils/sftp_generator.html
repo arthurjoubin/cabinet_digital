@@ -1,0 +1,461 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Générer un script pour connexion SFTP - outil gratuit et moderne {% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="Générez des scripts Python pour automatiser vos transferts de fichiers via SFTP">
+<meta name="keywords" content="sftp, script, python, automatisation, transfert, fichiers">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-8xl mx-auto px-2 sm:px-6 lg:px-8 py-4">
+
+
+    <div class="text-center mb-6">
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 flex flex-col sm:block items-center justify-center gap-2">
+            Générateur de 
+            <span class="bg-amber-500 text-gray-900 px-3 py-1 rounded-lg border-2 border-gray-800/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] inline-block sm:inline">commandes SFTP</span>
+        </h1>
+        <p class="mt-2 text-lg text-gray-600">Générez vos commandes SFTP facilement</p>
+    </div>
+
+    <!-- Bandeau moderne -->
+    <div class="max-w-xl mx-auto bg-white/50 backdrop-blur-sm rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 p-4 mb-8">
+        <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <div class="bg-amber-100 rounded-lg p-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-amber-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z" />
+                        </svg>
+                    </div>
+                    <p class="text-xs">Besoin d'automatiser vos tâches ? Je peux vous aider à développer des scripts et process sur mesure.</p>
+                </div>
+                <a href="{% url 'contact' %}" class="flex items-center bg-black text-white px-3 py-1.5 rounded-lg hover:bg-amber-600 font-medium text-xs whitespace-nowrap border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
+                    Parlons-en
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 ml-1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </a>
+            </div>
+    </div>
+
+    <form id="sftpForm" class="space-y-6" x-data="{
+        authType: 'password',
+        action: 'download',
+        archiveAfter: false,
+        hasPassphrase: false,
+        scheduleType: 'none',
+        showScript: false,
+        scriptContent: '',
+        scheduleCommand: '',
+        error: ''
+    }">
+        <!-- Single white background container for the form -->
+        <div class="bg-white/50 backdrop-blur-sm rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Connection SFTP -->
+                <div class="space-y-4 border-r border-gray-200 pr-6">
+
+                    <h2 class="text-lg font-semibold flex items-center text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-amber-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+                        </svg>
+                        Connexion SFTP
+                    </h2>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Hôte SFTP</label>
+                            <input type="text" name="host" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Port</label>
+                            <input type="number" name="port" value="22" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nom d'utilisateur</label>
+                        <input type="text" name="username" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Type d'authentification</label>
+                        <select x-model="authType" name="auth_type" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                            <option value="password">Mot de passe</option>
+                            <option value="key">Clé SSH</option>
+                        </select>
+                    </div>
+
+                    <div x-show="authType === 'password'">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                        <input type="password" name="password" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                    </div>
+
+                    <div x-show="authType === 'key'" class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Chemin de la clé SSH</label>
+                            <input type="text" name="key_path" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                        </div>
+
+                        <label class="flex items-center">
+                            <input type="checkbox" x-model="hasPassphrase" name="has_passphrase" class="rounded border-gray-300 text-amber-600">
+                            <span class="ml-2 text-sm text-gray-700">Ma clé privée a une passphrase</span>
+                        </label>
+
+                        <div x-show="hasPassphrase">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Passphrase</label>
+                            <input type="password" name="key_passphrase" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuration -->
+                <div class="space-y-4 border-r border-gray-200 pr-6">
+                    <h2 class="text-lg font-semibold flex items-center text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-amber-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
+                        </svg>
+                        Configuration
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Action</label>
+                            <select x-model="action" name="action" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                                <option value="download">Télécharger depuis le serveur</option>
+                                <option value="upload">Envoyer vers le serveur</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Chemin local</label>
+                            <input type="text" name="local_path" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Chemin distant</label>
+                            <input type="text" name="remote_path" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm" required>
+                        </div>
+
+                        <div>
+                            <label class="flex items-center">
+                                <input type="checkbox" x-model="archiveAfter" name="archiveAfter" class="rounded border-gray-300 text-amber-600" x-init="archiveAfter = true">
+                                <span class="ml-2 text-sm text-gray-700">Archiver après transfert</span>
+                            </label>
+                        </div>
+
+                        <div x-show="archiveAfter">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                <span x-text="action === 'download' ? 'Chemin d\'archive SFTP' : 'Chemin d\'archive local'"></span>
+                            </label>
+                            <input type="text" name="archive_path" 
+                                   x-bind:placeholder="action === 'download' ? '/path/to/sftp/archive' : '/path/to/local/archive'"
+                                   class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Planification -->
+                <div class="space-y-4">
+                    <h2 class="text-lg font-semibold flex items-center text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-amber-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Planification
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Type de planification</label>
+                            <select x-model="scheduleType" name="schedule_type" class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                                <option value="none">Pas de planification</option>
+                                <option value="daily">Quotidien</option>
+                                <option value="weekly">Hebdomadaire</option>
+                            </select>
+                        </div>
+
+                        <div x-show="scheduleType !== 'none'">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Heure d'exécution</label>
+                            <input type="time" name="schedule_time" value="00:00" 
+                                   class="block w-full px-3 py-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generate button -->
+        <div class="flex justify-center">
+            <button type="submit" class="inline-flex items-center px-6 py-3 text-lg bg-black text-white rounded-lg border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:bg-amber-600 transition-all duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+                Générer le script
+            </button>
+        </div>
+
+        <!-- Results section -->
+        <div x-show="showScript" class="bg-amber-50 p-6 rounded-xl border-4 border-white shadow-sm">
+            <h2 class="text-xl font-bold text-center mb-4">Script généré</h2>
+            
+            <div x-show="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" x-text="error"></div>
+            
+            <div x-show="scriptContent" class="space-y-4">
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <h3 class="text-lg font-semibold mb-2 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+                        </svg>
+                        Script Python
+                    </h3>
+                    <pre class="bg-gray-100 p-3 rounded-md overflow-x-auto text-sm"><code x-text="scriptContent"></code></pre>
+                </div>
+
+                <div x-show="scheduleCommand" class="bg-white p-4 rounded-lg shadow-sm">
+                    <h3 class="text-lg font-semibold mb-2 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Commande de planification
+                    </h3>
+                    <pre class="bg-gray-100 p-3 rounded-md overflow-x-auto text-sm"><code x-text="scheduleCommand"></code></pre>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Message de sécurité -->
+    <div class="mt-8 max-w-2xl mx-auto">
+        <div class="bg-white p-4 rounded-xl border border-gray-200">
+            <h3 class="font-semibold flex items-center mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-green-600">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                </svg>
+                Sécurité et confidentialité
+            </h3>
+            <p class="text-sm text-gray-600">
+                Ce générateur est totalement sécurisé car il ne fait que générer un script qui sera exécuté sur votre propre serveur. Les clés privées restent sur vos machines et nous ne sauvegardons aucune des informations saisies dans ce formulaire.
+            </p>
+        </div>
+    </div>
+
+    <!-- Nouveau contenu SEO -->
+    <div class="mt-12 space-y-8">
+        <!-- Section Pourquoi automatiser -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <div class="flex items-center mb-4">
+                    <div class="bg-amber-100 p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    <h3 class="ml-3 font-semibold">Sécurité SSH</h3>
+                </div>
+                <p class="text-gray-600 text-sm">Transferts chiffrés via SSH pour protéger vos données sensibles en transit</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <div class="flex items-center mb-4">
+                    <div class="bg-amber-100 p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="ml-3 font-semibold">Gain de temps</h3>
+                </div>
+                <p class="text-gray-600 text-sm">Éliminez les manipulations manuelles grâce à l'automatisation</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <div class="flex items-center mb-4">
+                    <div class="bg-amber-100 p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="ml-3 font-semibold">Fiabilité</h3>
+                </div>
+                <p class="text-gray-600 text-sm">Évitez les erreurs humaines lors des transferts de données</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <div class="flex items-center mb-4">
+                    <div class="bg-amber-100 p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                    <h3 class="ml-3 font-semibold">Traçabilité</h3>
+                </div>
+                <p class="text-gray-600 text-sm">Suivez tous vos transferts de fichiers entre serveurs</p>
+            </div>
+        </div>
+
+        <!-- Section Comparaison SFTP vs FTP -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                <h2 class="text-xl font-bold">SFTP vs FTP : Pourquoi choisir SFTP ?</h2>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="font-semibold text-lg flex items-center text-green-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            SFTP
+                        </h3>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Chiffrement via SSH (Secure Shell)
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Port 22 (sécurisé)
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Adapté aux données sensibles
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="space-y-4">
+                        <h3 class="font-semibold text-lg flex items-center text-red-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            FTP
+                        </h3>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                Pas de chiffrement par défaut
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                Port 21 (vulnérabilités connues)
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                Moins adapté aux données sensibles
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Cas d'usage -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                <h2 class="text-xl font-bold">Cas d'usage fréquents</h2>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="space-y-2">
+                    <div class="bg-amber-100 w-12 h-12 rounded-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold">Mise en production</h3>
+                    <p class="text-sm text-gray-600">Automatisez le déploiement de vos fichiers critiques</p>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="bg-amber-100 w-12 h-12 rounded-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold">Synchronisation BDD</h3>
+                    <p class="text-sm text-gray-600">Synchronisez vos bases de données quotidiennement</p>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="bg-amber-100 w-12 h-12 rounded-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold">Sauvegarde</h3>
+                    <p class="text-sm text-gray-600">Sécurisez vos données sensibles</p>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="bg-amber-100 w-12 h-12 rounded-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1h3a1 1 0 001-1V4z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold">CI/CD</h3>
+                    <p class="text-sm text-gray-600">Intégrez dans vos pipelines GitLab/Jenkins</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('sftpForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+
+    try {
+        const response = await fetch('{% url "sftp_generator" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            form._x_dataStack[0].showScript = true;
+            form._x_dataStack[0].error = '';
+            form._x_dataStack[0].scriptContent = data.script;
+            form._x_dataStack[0].scheduleCommand = data.schedule_command;
+        } else {
+            form._x_dataStack[0].showScript = true;
+            form._x_dataStack[0].error = data.error || 'Une erreur est survenue';
+        }
+    } catch (error) {
+        form._x_dataStack[0].showScript = true;
+        form._x_dataStack[0].error = 'Erreur de connexion au serveur';
+    }
+});
+
+function downloadScript() {
+    const script = this.scriptContent;
+    const blob = new Blob([script], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sftp_transfer.py';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+PDP pour {{ specialty_name }} - Plateformes de Dématérialisation Partenaires | Cabinet Digital
+{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="Découvrez toutes les Plateformes de Dématérialisation Partenaires (PDP) spécialisées en {{ specialty_name }}. Solutions immatriculées pour la facturation électronique.">
+<meta property="og:title" content="PDP pour {{ specialty_name }} - Cabinet Digital">
+<meta property="og:description" content="Découvrez toutes les PDP spécialisées en {{ specialty_name }} pour la facturation électronique.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
+<link rel="canonical" href="{{ request.build_absolute_uri }}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    {% include 'partials/breadcrumb.html' %}
+    
+    <div class="text-center">
+      <h1 class="text-2xl sm:text-3xl font-bold mb-3">
+        PDP spécialisées en
+        <span class="bg-black text-white px-3 py-1 rounded-lg inline-block ml-2">
+          {{ specialty_name }}
+        </span>
+      </h1>
+      
+      <p class="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
+        Découvrez toutes les Plateformes de Dématérialisation Partenaires spécialisées en {{ specialty_name }} pour la facturation électronique.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- Main Content -->
+<main class="bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+
+    <!-- PDP Count -->
+    <section class="mb-6">
+      <div class="text-center">
+        <div class="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-full border border-gray-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span class="font-medium">
+            {% if pdps %}
+              {{ page_obj.paginator.count }} PDP{{ page_obj.paginator.count|pluralize }} trouvée{{ page_obj.paginator.count|pluralize }}
+            {% else %}
+              Aucune plateforme trouvée
+            {% endif %}
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PDP Grid -->
+    <section id="pdp-list-content" aria-label="Liste des PDP {{ specialty_name }}">
+      {% if pdps %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+          {% for pdp in pdps %}
+            <div class="h-full">
+              {% include 'pdp/pdp_card.html' with pdp=pdp %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-16 bg-gray-50 rounded-xl border border-gray-200">
+          <div class="max-w-md mx-auto">
+            <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <h3 class="text-xl font-semibold text-black mb-3">Aucune plateforme trouvée</h3>
+            <p class="text-gray-600 mb-6">Aucune plateforme spécialisée en {{ specialty_name }} n'est actuellement référencée.</p>
+            <a href="{% url 'pdp_list' %}" 
+               class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+              Voir toutes les PDP
+            </a>
+          </div>
+        </div>
+      {% endif %}
+      
+      <!-- Pagination -->
+      {% if is_paginated %}
+        <nav aria-label="Navigation des pages" class="mt-8">
+          {% include "partials/pagination.html" %}
+        </nav>
+      {% endif %}
+    </section>
+
+    <!-- Related Specialties -->
+    {% if related_specialties %}
+    <section class="mt-12">
+      <div class="bg-gray-50 rounded-xl border border-gray-200 p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Autres spécialités PDP</h2>
+        <div class="flex flex-wrap gap-2">
+          {% for specialty in related_specialties %}
+            <a href="{% url 'pdp_specialty_detail' specialty|slugify %}" 
+               class="inline-flex items-center px-3 py-1 bg-white text-gray-700 rounded-md text-sm font-medium hover:bg-sky-50 hover:text-sky-700 transition-colors border border-gray-200">
+              {{ specialty|capfirst }}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+    {% endif %}
+  </div>
+</main>
+{% endblock %} 

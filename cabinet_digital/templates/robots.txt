@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /account/
+Disallow: /static/
+Disallow: /*.json$
+Disallow: /*?page=
+Disallow: /*?search=
+Disallow: /*?filter=
+Disallow: /*?sort=
+
+Crawl-delay: 1
+
+Sitemap: https://www.cabinetdigital.fr/sitemap.xml
+

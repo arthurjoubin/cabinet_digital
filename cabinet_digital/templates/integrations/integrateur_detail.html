@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ integrateur.nom }} - Intégrateur spécialisé en passerelles logicielles{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="{{ integrateur.nom }} - Intégrateur expert en connexions logicielles. {{ integrateur.description|striptags|truncatechars:100 }}. Découvrez toutes les intégrations développées par {{ integrateur.nom }}.">
+<meta property="og:title" content="{{ integrateur.nom }} - Intégrateur Expert | Cabinet Digital">
+<meta property="og:description" content="Découvrez {{ integrateur.nom }}, intégrateur expert en passerelles logicielles. {{ integrateur.description|striptags|truncatechars:120 }}">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 mb-12">
+  <div class="p-4 sm:p-6 border-b border-gray-200">
+    <!-- Breadcrumb -->
+    <nav class="text-sm breadcrumbs mb-4">
+      <ol class="flex items-center space-x-2 text-gray-500">
+        <li><a href="/" class="hover:text-purple-600 transition-colors">Accueil</a></li>
+        <li><span class="mx-2 text-gray-300">/</span></li>
+        <li><a href="{% url 'integration_list' %}" class="hover:text-purple-600 transition-colors">Intégrations</a></li>
+        <li><span class="mx-2 text-gray-300">/</span></li>
+        <li class="text-gray-900 font-medium">{{ integrateur.nom }}</li>
+      </ol>
+    </nav>
+    
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <a href="{% url 'integration_list' %}" 
+         class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Retour aux intégrations
+      </a>
+      
+      {% if integrateur.site_web %}
+      <a href="{{ integrateur.site_web }}" 
+         target="_blank" 
+         rel="noopener noreferrer" 
+         class="inline-flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+        Visiter le site
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+        </svg>
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="p-4 sm:p-8 max-w-5xl mx-auto">
+    <div class="flex flex-col md:flex-row items-stretch justify-between gap-6 mb-8">
+      <div class="flex flex-col md:flex-row items-center md:items-start flex-grow border p-6 bg-gray-50 rounded-xl">
+        {% if integrateur.logo %}
+        <div class="w-24 h-24 mb-4 md:mb-0 md:mr-6 flex-shrink-0">
+          <img src="{{ integrateur.logo.url }}" alt="{{ integrateur.nom }}" class="w-full h-full object-contain">
+        </div>
+        {% else %}
+        <div class="w-24 h-24 mb-4 md:mb-0 md:mr-6 flex-shrink-0 flex items-center justify-center bg-gray-100 rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+        </div>
+        {% endif %}
+        <div class="flex-grow text-center md:text-left">
+          <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">{{ integrateur.nom }}</h1>
+          <p class="text-gray-700 text-base leading-relaxed mb-4">{{ integrateur.description }}</p>
+          
+          {% if integrateur.email_contact or integrateur.telephone %}
+          <div class="space-y-2">
+            {% if integrateur.email_contact %}
+            <div class="flex items-center justify-center md:justify-start">
+              <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              <span class="text-gray-700">{{ integrateur.email_contact }}</span>
+            </div>
+            {% endif %}
+            {% if integrateur.telephone %}
+            <div class="flex items-center justify-center md:justify-start">
+              <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+              </svg>
+              <span class="text-gray-700">{{ integrateur.telephone }}</span>
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-6 sm:my-8 border-t-2 border-gray-200">
+
+    <!-- Intégrations développées -->
+    <div class="mb-8">
+      <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6 text-center md:text-left">
+        Intégrations développées par <span class="bg-black text-white rounded px-2">{{ integrateur.nom }}</span>
+      </h2>
+      
+      {% if integrations %}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for integration in integrations %}
+        <a href="{{ integration.get_absolute_url }}" class="block">
+          <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-300 hover:border-sky-200">
+            <!-- Logos et flèche -->
+            <div class="flex items-center justify-center gap-3 mb-3">
+              <div class="flex items-center justify-center">
+                {% if integration.logiciel_source.logo %}
+                <div class="w-8 h-8 flex items-center justify-center">
+                  <img loading="lazy" src="{{ integration.logiciel_source.logo.url }}" alt="{{ integration.logiciel_source.name }}" class="max-w-full max-h-full object-contain">
+                </div>
+                {% else %}
+                <div class="w-8 h-8 bg-sky-100 rounded flex items-center justify-center">
+                  <span class="text-xs font-bold text-sky-600">{{ integration.logiciel_source.name|slice:":1" }}</span>
+                </div>
+                {% endif %}
+              </div>
+              
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+              
+              <div class="flex items-center justify-center">
+                {% if integration.logiciel_destination.logo %}
+                <div class="w-8 h-8 flex items-center justify-center">
+                  <img loading="lazy" src="{{ integration.logiciel_destination.logo.url }}" alt="{{ integration.logiciel_destination.name }}" class="max-w-full max-h-full object-contain">
+                </div>
+                {% else %}
+                <div class="w-8 h-8 bg-emerald-100 rounded flex items-center justify-center">
+                  <span class="text-xs font-bold text-emerald-600">{{ integration.logiciel_destination.name|slice:":1" }}</span>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            
+            <div class="text-center mb-3">
+              <h4 class="text-sm font-semibold text-gray-900">{{ integration.logiciel_source.name }} → {{ integration.logiciel_destination.name }}</h4>
+            </div>
+            
+            {% if integration.modules.exists %}
+            <div class="flex flex-wrap gap-1 mb-3">
+              {% for module in integration.modules.all|slice:":3" %}
+              <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-md">
+                {{ module.nom }}
+              </span>
+              {% endfor %}
+              {% if integration.modules.count > 3 %}
+              <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-md">
+                +{{ integration.modules.count|add:"-3" }}
+              </span>
+              {% endif %}
+            </div>
+            {% endif %}
+            
+            <p class="text-sm text-gray-600 mb-2 line-clamp-2">{{ integration.description|truncatechars:100 }}</p>
+            <p class="text-xs text-black font-medium">Voir les détails →</p>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-8 bg-gray-50 rounded-lg">
+        <p class="text-gray-600">Aucune intégration disponible pour cet intégrateur.</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="flex justify-center">
+      <a href="{% url 'integration_list' %}" class="inline-flex items-center px-5 py-2.5 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-800 shadow-sm transition-all duration-300 hover:shadow-md">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+        </svg>
+        Voir toutes les intégrations
+      </a>
+    </div>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "{{ integrateur.nom }}",
+  "description": "{{ integrateur.description|striptags }}",
+  "url": "{{ request.build_absolute_uri }}",
+  {% if integrateur.site_web %}"sameAs": "{{ integrateur.site_web }}",{% endif %}
+  {% if integrateur.email_contact %}"email": "{{ integrateur.email_contact }}",{% endif %}
+  {% if integrateur.telephone %}"telephone": "{{ integrateur.telephone }}",{% endif %}
+  {% if integrateur.logo %}"logo": "{{ request.scheme }}://{{ request.get_host }}{{ integrateur.logo.url }}",{% endif %}
+  "serviceType": "Software Integration Services",
+  "areaServed": "FR",
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Intégrations logicielles",
+    "itemListElement": [
+      {% for integration in integrations %}
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "SoftwareApplication",
+          "name": "Intégration {{ integration.logiciel_source.name }} → {{ integration.logiciel_destination.name }}",
+          "description": "{{ integration.description|striptags }}",
+          "url": "{{ request.scheme }}://{{ request.get_host }}{{ integration.get_absolute_url }}"
+        }
+      }{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ]
+  }
+}
+</script>
+{% endblock %} 

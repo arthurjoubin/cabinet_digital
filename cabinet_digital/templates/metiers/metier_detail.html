@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{% if metier.seo_title %}{{ metier.seo_title }}{% else %}{{ metier.name }} - Logiciels et outils pour {{ metier.name }} | Cabinet Digital{% endif %}
+{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="{% if metier.seo_description %}{{ metier.seo_description }}{% else %}Découvrez tous les logiciels et outils pour {{ metier.name }}. Une sélection des meilleures solutions adaptées aux besoins des {{ metier.name }}.{% endif %}">
+<meta property="og:title" content="{% if metier.seo_title %}{{ metier.seo_title }}{% else %}{{ metier.name }} - Logiciels et outils | Cabinet Digital{% endif %}">
+<meta property="og:description" content="{% if metier.seo_description %}{{ metier.seo_description }}{% else %}Découvrez tous les logiciels et outils pour {{ metier.name }}. Une sélection des meilleures solutions adaptées aux besoins des {{ metier.name }}.{% endif %}">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
+{% endblock %}
+
+{% block content %}
+<div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+    {% include 'partials/breadcrumb.html' %}
+    <div class="text-center mb-12">
+        <h1 class="text-3xl font-bold mb-4">
+            Logiciels pour
+            <span class="bg-black text-white px-3 py-1 rounded-lg inline-block">
+                {{ metier.name }}
+            </span>
+        </h1>
+    </div>
+
+    {% if metier_categories %}
+    <div class="space-y-8 mb-16">
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center">
+                <h2 class="px-4 text-2xl font-semibold bg-white">Catégories de logiciels</h2>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for category in metier_categories %}
+                <div class="group [&:hover_#numlogiciel]:bg-white">
+                    <a href="{% url 'category_detail' category.slug %}" class="block h-full">
+                        <div class="bg-white border border-gray-200 rounded-lg hover:bg-sky-50 p-4 transition-all duration-300 group-hover:border-sky-200 h-full flex flex-col justify-between relative">
+                            <h3 class="text-lg font-medium text-gray-800 group-hover:text-sky-600 mt-4">
+                                {% if category.icon %}
+                                    <img src="{{ category.icon.url }}" alt="{{ category.name }}" class="w-6 h-6 mr-2 inline-block">
+                                {% endif %}
+                                {{ category.name }}
+                            </h3>
+                            <span id="numlogiciel" class="absolute top-2 right-2 inline-block px-2 py-1 text-xs font-medium bg-sky-50 text-sky-700 rounded-full hover:bg-sky-100 hover:text-sky-800 transition-colors duration-300 shadow-sm hover:shadow-md">
+                                {{ category.software_count }} logiciel{% if category.software_count > 1 %}s{% endif %}
+                            </span>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if softwares %}
+    <div class="space-y-8">
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center">
+                <h2 class="px-4 text-2xl font-semibold bg-white">Tous les logiciels</h2>
+            </div>
+        </div>
+
+        <!-- Barre de recherche -->
+        <div class="max-w-2xl mx-auto" x-data="{
+            searchQuery: '{{ search_query }}',
+            isLoading: false,
+            
+            submitForm() {
+                this.isLoading = true;
+                
+                // Sauvegarder la position de scroll
+                const scrollPosition = window.pageYOffset;
+                sessionStorage.setItem('searchScrollPosition', scrollPosition);
+                
+                let url = new URL(window.location.href);
+                url.searchParams.delete('page');
+                
+                if (this.searchQuery && this.searchQuery.trim()) {
+                    url.searchParams.set('search', this.searchQuery.trim());
+                } else {
+                    url.searchParams.delete('search');
+                }
+                
+                window.location.href = url.toString();
+            }
+        }"
+        x-init="
+            // Restaurer la position de scroll après le chargement
+            const savedPosition = sessionStorage.getItem('searchScrollPosition');
+            if (savedPosition) {
+                setTimeout(() => {
+                    window.scrollTo(0, parseInt(savedPosition));
+                    sessionStorage.removeItem('searchScrollPosition');
+                }, 100);
+            }
+        ">
+            <form @submit.prevent="submitForm()" class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+                <div class="p-4">
+                    <div class="flex items-center gap-3">
+                        <div class="flex-1 relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </div>
+                            <input
+                                type="text"
+                                x-model="searchQuery"
+                                placeholder="Rechercher un logiciel..."
+                                class="block w-full pl-12 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-black focus:border-black transition-colors duration-200"
+                            >
+                        </div>
+                        <button
+                            type="submit"
+                            :disabled="isLoading"
+                            class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                        >
+                            <span x-show="!isLoading">Rechercher</span>
+                            <span x-show="isLoading" class="flex items-center">
+                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Recherche...
+                            </span>
+                        </button>
+                    </div>
+                    {% if search_query %}
+                    <div class="mt-3 flex items-center justify-between">
+                        <p class="text-sm text-gray-600">
+                            Résultats pour "<span class="font-medium">{{ search_query }}</span>"
+                        </p>
+                        <a href="?" class="text-sm text-black hover:text-gray-700 font-medium">
+                            Effacer la recherche
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-fr">
+            {% for software in softwares %}
+                <div class="h-full">
+                    {% include 'software/template_card_software.html' with software=software %}
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+        <div class="mt-8 flex justify-center">
+            <nav class="flex items-center space-x-2" aria-label="Pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                       class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        Précédent
+                    </a>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if num == page_obj.number %}
+                        <span class="px-3 py-2 text-sm font-medium text-white bg-sky-600 border border-sky-600 rounded-md">
+                            {{ num }}
+                        </span>
+                    {% elif num == 1 or num == page_obj.paginator.num_pages or num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                           class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            {{ num }}
+                        </a>
+                    {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
+                        <span class="px-2 text-gray-500">...</span>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                       class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        Suivant
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if not metier_categories and not softwares %}
+    <div class="text-center py-12">
+        <p class="text-gray-500 text-lg">
+            Aucun logiciel ou catégorie n'est disponible pour ce métier pour le moment.
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

@@ -1,0 +1,627 @@
+{% load static %}
+{% load compress %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>{% block title %}{% endblock %}</title>
+    {% if canonical_url %}
+    <link rel="canonical" href="{{ canonical_url }}" />
+    {% endif %}
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}" sizes="any">
+    <link rel="robots" href="/robots.txt">
+    
+    <!-- Resource Hints pour améliorer les performances -->
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    
+    <!-- GOOGLE ANALYTICS -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3G3P0RGL9X"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-3G3P0RGL9X', {
+            // Core Web Vitals tracking
+            custom_map: {
+                'custom_parameter_1': 'core_web_vitals'
+            }
+        });
+        
+        // Core Web Vitals monitoring
+        function sendCWVToGA(name, value, id) {
+            gtag('event', name, {
+                event_category: 'Web Vitals',
+                event_label: id,
+                value: Math.round(name === 'CLS' ? value * 1000 : value),
+                non_interaction: true,
+            });
+        }
+        
+        // Load Web Vitals library and track metrics
+        if ('IntersectionObserver' in window && 'requestIdleCallback' in window) {
+            import('https://unpkg.com/web-vitals@3/dist/web-vitals.js').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+                getCLS(sendCWVToGA);
+                getFID(sendCWVToGA);
+                getFCP(sendCWVToGA);
+                getLCP(sendCWVToGA);
+                getTTFB(sendCWVToGA);
+            });
+        }
+    </script>
+    <style>
+        /* Styles CSS critiques inlinés */
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f9ff; /* Tailwind sky-50 */
+        }
+        /* Ajoutez d'autres styles critiques si nécessaire */
+        [x-cloak] { display: none !important; }
+    </style>
+
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    {% endcompress %}
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+
+    {% block meta_description %}{% endblock %}
+    {% if not canonical_url %}
+    <link rel="canonical" href="{{ request.build_absolute_uri }}" />
+    {% endif %}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@cabinetdigital">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    {% block extra_head %}{% endblock %}
+    
+    <!-- Schema.org Organization Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Cabinet Digital",
+        "url": "{{ request.build_absolute_uri }}",
+        "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'cabinet_logos/logo_cabinetdigital.png' %}",
+        "description": "Plateforme de découverte et comparaison de logiciels pour experts-comptables et PME. Trouvez les meilleurs outils digitaux pour votre activité.",
+        "sameAs": [
+            "https://linkedin.com/company/cabinet-digital",
+            "https://twitter.com/cabinetdigital"
+        ],
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer service",
+            "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'contact' %}"
+        }
+    }
+    </script>
+</head>
+
+<body class="flex flex-col min-h-screen text-black bg-gray-100">
+    <header x-data="{ 
+        currentPath: window.location.pathname,
+        mobileMenuOpen: false
+    }" 
+    class="sticky z-50 py-2 lg:top-4 lg:mx-4 lg:rounded-2xl lg:bg-white/95 lg:backdrop-blur-sm lg:border lg:border-gray-300 top-0 bg-white border-b border-gray-200">        
+        <nav class="mx-auto flex max-w-7xl items-center justify-between py-2 px-2" aria-label="Global">
+            <div class="flex lg:flex-1 items-center">
+                <a href="{% url 'home' %}" class="flex items-center group">
+                    <img src="{% static 'cabinet_logos/logo_cabinetdigital.png' %}" alt="Cabinet Digital logo" class="h-7 lg:h-9 w-auto mr-2 lg:mr-3 transition-transform duration-200 group-hover:scale-105">
+                    <span class="text-lg lg:text-xl font-bold text-gray-900 group-hover:text-sky-600 transition-colors duration-200">Cabinet Digital</span>
+                </a>
+            </div>
+            <div class="flex lg:hidden">
+                <button type="button" 
+                        @click="mobileMenuOpen = !mobileMenuOpen" 
+                        class="inline-flex items-center justify-center rounded-lg p-2.5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-all duration-200" 
+                        :aria-expanded="mobileMenuOpen">
+                    <span class="sr-only">Ouvrir le menu principal</span>
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+            <div class="hidden lg:flex items-center justify-center absolute left-1/2 transform -translate-x-1/2">
+                <!-- Menu Logiciels -->
+                <div class="relative" x-data="{ 
+                    open: false,
+                    toggle() { this.open = !this.open },
+                    close() { this.open = false }
+                }">
+                    <button @click="toggle()" 
+                            @click.away="close()"
+                            type="button"
+                            class="text-base font-semibold text-gray-800 hover:bg-gray-50 hover:text-sky-600 transition-all duration-200 px-5 py-2.5 rounded-lg inline-flex items-center gap-1.5 mx-1"
+                            :class="{ 'bg-gray-50 text-sky-600': currentPath.startsWith('/metiers/') || currentPath.startsWith('/logiciels/') || open }">
+                        <span>Logiciels</span>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div x-show="open" 
+                         x-cloak 
+                         @keydown.escape.window="close()"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform scale-95"
+                         x-transition:enter-end="opacity-100 transform scale-100"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 transform scale-100"
+                         x-transition:leave-end="opacity-0 transform scale-95"
+                         class="absolute left-0 mt-3 w-80 rounded-xl shadow-xl bg-white ring-1 ring-gray-200 z-50 divide-y divide-gray-100">
+                        <div class="p-3 space-y-1">
+                            <a href="{% url 'software_list' %}" class="flex items-center gap-3 px-4 py-3 text-base font-semibold text-gray-700 hover:bg-gray-50 hover:text-sky-600 rounded-lg group transition-all duration-200">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                                <span>Tous les logiciels</span>
+                            </a>
+                            <div class="border-t border-gray-200 my-2"></div>
+                            <a href="{% url 'metier_detail' slug='experts_comptables' %}" class="flex items-center gap-3 px-4 py-3 text-base font-semibold text-gray-700 hover:bg-gray-50 hover:text-sky-600 rounded-lg group transition-all duration-200">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10H9m3-7v4m3-4v4m3-4v4M9 3h6m0 0h2a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h2" />
+                                </svg>
+                                <span>Logiciels experts comptables</span>
+                            </a>
+                            <a href="{% url 'metier_detail' slug='pme' %}" class="flex items-center gap-3 px-4 py-3 text-base font-semibold text-gray-700 hover:bg-gray-50 hover:text-sky-600 rounded-lg group transition-all duration-200">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                <span>Logiciels PME</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Menu Catégories -->
+                <div class="relative" x-data="{ 
+                    open: false,
+                    toggle() { this.open = !this.open },
+                    close() { this.open = false }
+                }">
+                    <button @click="toggle()" 
+                            @click.away="close()"
+                            type="button"
+                            class="text-base font-semibold text-gray-800 hover:bg-gray-50 hover:text-sky-600 transition-all duration-200 px-5 py-2.5 rounded-lg inline-flex items-center gap-1.5 mx-1"
+                            :class="{ 'bg-gray-50 text-sky-600': currentPath.startsWith('/categories/') || open }">
+                        <span>Catégories</span>
+                        <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div x-show="open" 
+                         x-cloak 
+                         @keydown.escape.window="close()"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform scale-95"
+                         x-transition:enter-end="opacity-100 transform scale-100"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 transform scale-100"
+                         x-transition:leave-end="opacity-0 transform scale-95"
+                         class="absolute left-1/2 transform -translate-x-1/2 mt-3 w-[800px] rounded-xl shadow-xl bg-white ring-1 ring-gray-200 z-50">
+                        <div class="p-4">
+                            <!-- Section Experts Comptables -->
+                            <div class="mb-4 bg-sky-50 rounded-lg p-4 border border-sky-100">
+                                <h3 class="text-base font-bold text-sky-700 mb-3 flex items-center border-b border-sky-200 pb-2">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10H9m3-7v4m3-4v4m3-4v4M9 3h6m0 0h2a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h2" />
+                                    </svg>
+                                    Experts Comptables
+                                </h3>
+                                <div class="grid grid-cols-3 gap-2">
+                                    {% for category in categories %}
+                                        {% if category.metier and category.metier.slug == 'experts_comptables' %}
+                                            <a href="{% url 'category_detail' category.slug %}" class="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-sky-100 hover:text-sky-600 rounded-lg group transition-all duration-200">
+                                                {% if category.icon %}
+                                                    <img src="{{ category.icon.url }}" alt="{{ category.name }}" class="w-4 h-4">
+                                                {% else %}
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                                    </svg>
+                                                {% endif %}
+                                                <span class="truncate">{{ category.name }}</span>
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Section PME -->
+                            <div class="bg-emerald-50 rounded-lg p-4 border border-emerald-100">
+                                <h3 class="text-base font-bold text-emerald-700 mb-3 flex items-center border-b border-emerald-200 pb-2">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                    PME
+                                </h3>
+                                <div class="grid grid-cols-3 gap-2">
+                                    {% for category in categories %}
+                                        {% if category.metier and category.metier.slug == 'pme' %}
+                                            <a href="{% url 'category_detail' category.slug %}" class="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-emerald-100 hover:text-emerald-600 rounded-lg group transition-all duration-200">
+                                                {% if category.icon %}
+                                                    <img src="{{ category.icon.url }}" alt="{{ category.name }}" class="w-4 h-4">
+                                                {% else %}
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                                    </svg>
+                                                {% endif %}
+                                                <span class="truncate">{{ category.name }}</span>
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    <!-- Pour les catégories sans métier spécifique -->
+                                    {% for category in categories %}
+                                        {% if not category.metier %}
+                                            <a href="{% url 'category_detail' category.slug %}" class="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-emerald-100 hover:text-emerald-600 rounded-lg group transition-all duration-200">
+                                                {% if category.icon %}
+                                                    <img src="{{ category.icon.url }}" alt="{{ category.name }}" class="w-4 h-4">
+                                                {% else %}
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                                    </svg>
+                                                {% endif %}
+                                                <span class="truncate">{{ category.name }}</span>
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- News logiciels -->
+                <a href="{% url 'actualites' %}" 
+                   class="text-base font-semibold text-gray-800 hover:bg-gray-50 hover:text-sky-600 transition-all duration-200 px-5 py-2.5 rounded-lg mx-1"
+                   :class="{ 'bg-gray-50 text-sky-600': currentPath.startsWith('/actualites/') }">
+                    <span>Actualités</span>
+                </a>
+
+                <!-- Intégrateurs ERP -->
+                <a href="{% url 'integrator_list' %}" 
+                   class="text-base font-semibold text-gray-800 hover:bg-gray-50 hover:text-sky-600 transition-all duration-200 px-5 py-2.5 rounded-lg mx-1"
+                   :class="{ 'bg-gray-50 text-sky-600': currentPath.startsWith('/integrateurs/') }">
+                    <span>Intégrateurs</span>
+                </a>
+
+
+                <!-- PDP -->
+                <a href="{% url 'pdp_list' %}" 
+                   class="text-base font-semibold text-gray-800 hover:bg-gray-50 hover:text-sky-600 transition-all duration-200 px-5 py-2.5 rounded-lg mx-1"
+                   :class="{ 'bg-gray-50 text-sky-600': currentPath.startsWith('/plateformes-dematerialisation/') }">
+                    <span>PDP</span>
+                </a>
+            </div>
+            <div class="hidden lg:flex lg:flex-1 justify-end items-center">
+                <a href="{% url 'contact' %}" class="inline-flex items-center px-5 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-black shadow-sm transition-all duration-200 ml-2">
+                    <span>Contact</span>
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </a>
+            </div>
+        </nav>
+        <!-- Menu mobile -->
+        <div x-show="mobileMenuOpen" 
+             x-cloak
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform translate-y-4"
+             x-transition:enter-end="opacity-100 transform translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 transform translate-y-0"
+             x-transition:leave-end="opacity-0 transform translate-y-4"
+             class="lg:hidden fixed inset-0 bg-white z-40 overflow-y-auto" 
+             id="mobile-menu">
+            <!-- Header mobile -->
+            <div class="sticky top-0 flex justify-between items-center p-4 border-b border-gray-100 bg-white/95 backdrop-blur-sm">
+                <div class="flex items-center">
+                    <img src="{% static 'cabinet_logos/logo_cabinetdigital.png' %}" alt="Cabinet Digital logo" class="h-7 w-auto mr-2.5">
+                    <span class="text-lg font-bold text-gray-900">Cabinet Digital</span>
+                </div>
+                <button @click="mobileMenuOpen = false" class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Navigation mobile -->
+            <div class="py-6 px-4 space-y-3">
+                <!-- Section Logiciels Mobile -->
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open"
+                            class="flex w-full items-center justify-between rounded-lg px-4 py-3.5 text-base font-semibold text-gray-900 hover:bg-gray-50 hover:text-sky-600 transition-all duration-200 border border-gray-100"
+                            :class="{ 'bg-sky-50 text-sky-600 border-sky-200': currentPath.startsWith('/metiers/') || currentPath.startsWith('/logiciels/') || open }">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            <span class="text-lg">Logiciels</span>
+                        </div>
+                        <svg class="w-5 h-5 transition-transform duration-200" 
+                             :class="{'rotate-180': open}"
+                             fill="none" 
+                             stroke="currentColor" 
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="open"
+                         x-cloak
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform -translate-y-2"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         class="mt-2 space-y-1 bg-gray-50 rounded-lg p-2 border border-gray-100">
+                        <a href="{% url 'software_list' %}" 
+                           class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-base font-medium text-gray-700 hover:bg-white hover:text-sky-600 transition-all duration-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                            </svg>
+                            Tous les logiciels
+                        </a>
+                        <a href="{% url 'metier_detail' slug='experts_comptables' %}" 
+                           class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-base font-medium text-gray-700 hover:bg-white hover:text-sky-600 transition-all duration-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10H9m3-7v4m3-4v4m3-4v4M9 3h6m0 0h2a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h2" />
+                            </svg>
+                            Experts comptables
+                        </a>
+                        <a href="{% url 'metier_detail' slug='pme' %}" 
+                           class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-base font-medium text-gray-700 hover:bg-white hover:text-sky-600 transition-all duration-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            PME
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Section Catégories Mobile -->
+                <div x-data="{ open: false, expertsOpen: false, pmeOpen: false }" class="relative">
+                    <button @click="open = !open"
+                            class="flex w-full items-center justify-between rounded-lg px-4 py-3.5 text-base font-semibold text-gray-900 hover:bg-gray-50 hover:text-sky-600 transition-all duration-200 border border-gray-100"
+                            :class="{ 'bg-sky-50 text-sky-600 border-sky-200': currentPath.startsWith('/categories/') || open }">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                            </svg>
+                            <span class="text-lg">Catégories</span>
+                        </div>
+                        <svg class="w-5 h-5 transition-transform duration-200" 
+                             :class="{'rotate-180': open}"
+                             fill="none" 
+                             stroke="currentColor" 
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div x-show="open"
+                         x-cloak
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform -translate-y-2"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         class="mt-2 space-y-3 bg-gray-50 rounded-lg p-3 border border-gray-100">
+                        <!-- Experts Comptables Section -->
+                        <div class="bg-sky-50 rounded-lg p-3 border border-sky-200">
+                            <button @click="expertsOpen = !expertsOpen"
+                                   class="w-full flex items-center justify-between text-left text-base font-semibold text-sky-700 pb-2 border-b border-sky-200">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10H9m3-7v4m3-4v4m3-4v4M9 3h6m0 0h2a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h2" />
+                                    </svg>
+                                    Experts Comptables
+                                </div>
+                                <svg class="w-4 h-4 transition-transform duration-200" 
+                                     :class="{'rotate-180': expertsOpen}"
+                                     fill="none" 
+                                     stroke="currentColor" 
+                                     viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div x-show="expertsOpen" 
+                                 x-cloak
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                                 class="mt-2 grid grid-cols-1 gap-1">
+                                {% for category in categories %}
+                                    {% if category.metier and category.metier.slug == 'experts_comptables' %}
+                                        <a href="{% url 'category_detail' category.slug %}" 
+                                           class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-sky-100 hover:text-sky-700 transition-all duration-200">
+                                            {% if category.icon %}
+                                                <img src="{{ category.icon.url }}" alt="{{ category.name }}" class="w-4 h-4">
+                                            {% else %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            {% endif %}
+                                            {{ category.name }}
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- PME Section -->
+                        <div class="bg-emerald-50 rounded-lg p-3 border border-emerald-200">
+                            <button @click="pmeOpen = !pmeOpen"
+                                   class="w-full flex items-center justify-between text-left text-base font-semibold text-emerald-700 pb-2 border-b border-emerald-200">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                    PME
+                                </div>
+                                <svg class="w-4 h-4 transition-transform duration-200" 
+                                     :class="{'rotate-180': pmeOpen}"
+                                     fill="none" 
+                                     stroke="currentColor" 
+                                     viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            <div x-show="pmeOpen" 
+                                 x-cloak
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                                 class="mt-2 grid grid-cols-1 gap-1">
+                                {% for category in categories %}
+                                    {% if category.metier and category.metier.slug == 'pme' %}
+                                        <a href="{% url 'category_detail' category.slug %}" 
+                                           class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-emerald-100 hover:text-emerald-700 transition-all duration-200">
+                                            {% if category.icon %}
+                                                <img src="{{ category.icon.url }}" alt="{{ category.name }}" class="w-4 h-4">
+                                            {% else %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            {% endif %}
+                                            {{ category.name }}
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                <!-- Pour les catégories sans métier spécifique -->
+                                {% for category in categories %}
+                                    {% if not category.metier %}
+                                        <a href="{% url 'category_detail' category.slug %}" 
+                                           class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-emerald-100 hover:text-emerald-700 transition-all duration-200">
+                                            {% if category.icon %}
+                                                <img src="{{ category.icon.url }}" alt="{{ category.name }}" class="w-4 h-4">
+                                            {% else %}
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            {% endif %}
+                                            {{ category.name }}
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section Actualités Mobile -->
+                <a href="{% url 'actualites' %}" 
+                   class="flex items-center gap-3 rounded-lg px-4 py-3.5 text-base font-semibold text-gray-900 hover:bg-gray-50 hover:text-sky-600 transition-all duration-200 border border-gray-100"
+                   :class="{ 'bg-sky-50 text-sky-600 border-sky-200': currentPath.startsWith('/actualites/') }">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    </svg>
+                    <span class="text-lg">Actualités</span>
+                </a>
+
+                <!-- Section Intégrateurs Mobile -->
+                <a href="{% url 'integrator_list' %}" 
+                   class="flex items-center gap-3 rounded-lg px-4 py-3.5 text-base font-semibold text-gray-900 hover:bg-gray-50 hover:text-sky-600 transition-all duration-200 border border-gray-100"
+                   :class="{ 'bg-sky-50 text-sky-600 border-sky-200': currentPath.startsWith('/integrateurs/') }">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span class="text-lg">Intégrateurs</span>
+                </a>
+
+
+                <!-- Section PDP Mobile -->
+                <a href="{% url 'pdp_list' %}" 
+                   class="flex items-center gap-3 rounded-lg px-4 py-3.5 text-base font-semibold text-gray-900 hover:bg-gray-50 hover:text-sky-600 transition-all duration-200 border border-gray-100"
+                   :class="{ 'bg-sky-50 text-sky-600 border-sky-200': currentPath.startsWith('/plateformes-dematerialisation/') }">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="text-lg">PDP</span>
+                </a>
+
+                <!-- Bouton Contact Mobile -->
+                <div class="pt-4 border-t border-gray-100 mt-6">
+                    <a href="{% url 'contact' %}" 
+                       class="flex items-center justify-center gap-3 w-full text-center text-white bg-gray-900 border border-gray-900 px-6 py-3.5 text-lg font-semibold hover:bg-gray-800 transition-all duration-200 rounded-lg shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        Contact
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="flex-grow container mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-8">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="bg-white border-t border-gray-200">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Logiciels</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="{% url 'software_list' %}" class="text-gray-600 hover:text-sky-600 transition-colors">Tous les logiciels</a></li>
+                        <li><a href="{% url 'category_list' %}" class="text-gray-600 hover:text-sky-600 transition-colors">Catégories</a></li>
+                        <li><a href="{% url 'actualites' %}" class="text-gray-600 hover:text-sky-600 transition-colors">Actualités</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Services</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="{% url 'integrator_list' %}" class="text-gray-600 hover:text-sky-600 transition-colors">Intégrateurs</a></li>
+                        <li><a href="{% url 'pdp_list' %}" class="text-gray-600 hover:text-sky-600 transition-colors">Plateformes de dématérialisation</a></li>
+                        <li><a href="{% url 'integration_list' %}" class="text-gray-600 hover:text-sky-600 transition-colors">Intégrations</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Outils Financiers</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="{% url 'roi_calculateur' %}" class="text-gray-600 hover:text-amber-600 transition-colors">ROI Logiciel</a></li>
+                        <li><a href="{% url 'amortissement_calculateur' %}" class="text-gray-600 hover:text-amber-600 transition-colors">Amortissement</a></li>
+                        <li><a href="{% url 'immobilier_calculateur' %}" class="text-gray-600 hover:text-amber-600 transition-colors">Simulateur Immobilier</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">Outils Techniques</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="{% url 'sftp_generator' %}" class="text-gray-600 hover:text-amber-600 transition-colors">Script SFTP</a></li>
+                        <li><a href="{% url 'outils' %}" class="text-gray-600 hover:text-amber-600 transition-colors">Tous les outils</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 tracking-wider uppercase">À propos</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="{% url 'about' %}" class="text-gray-600 hover:text-sky-600 transition-colors">À propos</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-gray-600 hover:text-sky-600 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-12 pt-8 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <img src="{% static 'cabinet_logos/logo_cabinetdigital.png' %}" alt="Cabinet Digital logo" class="h-8 w-auto">
+                        <p class="text-gray-500 text-sm">&copy; {% now "Y" %} Cabinet Digital. Tous droits réservés.</p>
+                    </div>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-gray-500">
+                            <span class="sr-only">LinkedIn</span>
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-gray-500">
+                            <span class="sr-only">Twitter</span>
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

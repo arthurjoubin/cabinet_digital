@@ -1,0 +1,24 @@
+<article class="bg-white rounded-md border border-gray-200 overflow-hidden hover:shadow-sm transition-all duration-200 h-full">
+  <a href="{% url detail_url_name article.slug %}" class="block p-3">
+    <div class="flex items-start justify-between gap-2 mb-1.5">
+      <time class="text-xs text-gray-500 whitespace-nowrap">{{ article.pub_date|date:"d/m/y" }}</time>
+      {% if article.tags.all %}
+      <span class="inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded-full"
+            style="background-color: {% if article.tags.first.color %}{{ article.tags.first.color }}20{% else %}#EBF5FF{% endif %};
+                   color: {% if article.tags.first.color %}{{ article.tags.first.color }}{% else %}#1e40af{% endif %};">
+        {{ article.tags.first.name }}
+      </span>
+      {% endif %}
+    </div>
+    
+    <h3 class="text-sm font-semibold text-gray-900 mb-1 line-clamp-2 hover:text-sky-600 transition-colors">
+      {{ article.title }}
+    </h3>
+    
+    {% if article.excerpt %}
+    <p class="text-xs text-gray-600 line-clamp-2">
+      {{ article.excerpt|striptags|truncatewords:15 }}
+    </p>
+    {% endif %}
+  </a>
+</article> 

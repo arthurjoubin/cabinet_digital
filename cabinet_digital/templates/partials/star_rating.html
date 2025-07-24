@@ -1,0 +1,49 @@
+{% with avg=rating %}
+{% with full_stars=rating|floatformat:"0"|add:"0" %}
+{% with decimal_part=rating|floatformat:"1"|slice:"-1:" %}
+    {% if decimal_part != "0" %}
+        {% with has_half=True %}
+            <div class="flex items-center">
+                {% for i in "12345" %}
+                    {% if forloop.counter <= full_stars %}
+                        <svg class="w-{{ size|default:5 }} h-{{ size|default:5 }}" viewBox="0 0 24 24">
+                            <path fill="{{ color|default:'#000000' }}" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                        </svg>
+                    {% elif forloop.counter == full_stars|add:"1" and has_half %}
+                        <svg class="w-{{ size|default:5 }} h-{{ size|default:5 }}" viewBox="0 0 24 24">
+                            <path fill="#E5E7EB" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                            <path fill="{{ color|default:'#000000' }}" d="M12 17.27L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"/>
+                        </svg>
+                    {% else %}
+                        <svg class="w-{{ size|default:5 }} h-{{ size|default:5 }}" viewBox="0 0 24 24">
+                            <path fill="#E5E7EB" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                        </svg>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endwith %}
+    {% else %}
+        {% with has_half=False %}
+            <div class="flex items-center">
+                {% for i in "12345" %}
+                    {% if forloop.counter <= full_stars %}
+                        <svg class="w-{{ size|default:5 }} h-{{ size|default:5 }}" viewBox="0 0 24 24">
+                            <path fill="{{ color|default:'#000000' }}" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                        </svg>
+                    {% elif forloop.counter == full_stars|add:"1" and has_half %}
+                        <svg class="w-{{ size|default:5 }} h-{{ size|default:5 }}" viewBox="0 0 24 24">
+                            <path fill="#E5E7EB" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                            <path fill="{{ color|default:'#000000' }}" d="M12 17.27L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"/>
+                        </svg>
+                    {% else %}
+                        <svg class="w-{{ size|default:5 }} h-{{ size|default:5 }}" viewBox="0 0 24 24">
+                            <path fill="#E5E7EB" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                        </svg>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endwith %}
+    {% endif %}
+{% endwith %}
+{% endwith %}
+{% endwith %}

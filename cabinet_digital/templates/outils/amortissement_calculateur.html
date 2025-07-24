@@ -1,0 +1,796 @@
+{% extends 'base.html' %}
+{% load l10n %}
+
+{% block extra_head %}
+<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "{{ config.title }}",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Web",
+  "description": "{{ config.meta_description }}",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "1250"
+  }
+}
+</script>
+
+
+{% endblock %}  
+
+{% block title %}
+{{ config.meta_title }} - Cabinet Digital
+{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="{{ config.meta_description }}">
+<meta name="keywords" content="{{ config.keywords }}">
+<link rel="canonical" href="{{ request.build_absolute_uri }}">
+<meta property="og:title" content="{{ config.meta_title }}">
+<meta property="og:description" content="{{ config.meta_description }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-8xl mx-auto px-2 sm:px-6 lg:px-8 py-4" x-data="{
+    formData: {
+        loan_amount: {{ config.default_amount|unlocalize }},
+        loan_duration: {{ config.default_duration|unlocalize }},
+        duration_type: 'years',
+        interest_rate: {{ config.default_rate|unlocalize }},
+        insurance: 25,
+        insurance_type: 'amount',
+        start_date: new Date().toISOString().split('T')[0]
+    },
+    results: null,
+    amortissementTable: [],
+    
+    init() {
+        const urlParams = new URLSearchParams(window.location.search);
+        for (const [key, value] of urlParams.entries()) {
+            if (this.formData.hasOwnProperty(key)) {
+                this.formData[key] = parseFloat(value);
+            }
+        }
+        this.calculateAmortissement();
+    },
+
+    formatNumber(number) {
+        return new Intl.NumberFormat('fr-FR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(number);
+    },
+
+    formatDate(date) {
+        return new Date(date).toLocaleDateString('fr-FR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        }).replace('/', '/');
+    },
+
+    handleInput(event, field) {
+        let value = event.target.value.replace(/\s/g, '').replace(',', '.');
+        value = Math.max(0, parseFloat(value) || 0);
+        this.formData[field] = value;
+        event.target.value = this.formatNumber(this.formData[field]);
+        this.calculateAmortissement();
+    },
+
+    calculateAmortissement() {
+        const P = Math.max(0, this.formData.loan_amount);
+        const n = this.formData.duration_type === 'years'
+            ? Math.max(0, this.formData.loan_duration) * 12
+            : Math.max(0, this.formData.loan_duration);
+        const r = Math.max(0, this.formData.interest_rate) / 100 / 12;
+
+        const monthlyInsurance = this.formData.insurance_type === 'amount'
+            ? Math.max(0, this.formData.insurance)
+            : (P * Math.max(0, this.formData.insurance / 100)) / 12;
+
+        const monthlyPayment = P * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+
+        let remainingCapital = P;
+        let startDate = new Date(this.formData.start_date);
+        this.amortissementTable = [];
+
+        let totalInterest = 0;
+        let totalInsurance = 0;
+
+        for (let i = 1; i <= n; i++) {
+            const interestAmount = remainingCapital * r;
+            const capitalAmount = monthlyPayment - interestAmount;
+            remainingCapital -= capitalAmount;
+
+            totalInterest += interestAmount;
+            totalInsurance += monthlyInsurance;
+
+            this.amortissementTable.push({
+                date: new Date(startDate.setMonth(startDate.getMonth() + 1)),
+                remainingCapital: remainingCapital,
+                monthlyPayment: monthlyPayment,
+                capitalAmount: capitalAmount,
+                interestAmount: interestAmount,
+                insurance: monthlyInsurance,
+                totalPayment: monthlyPayment + monthlyInsurance
+            });
+        }
+
+        const totalMonthlyPayment = monthlyPayment + monthlyInsurance;
+        const taeg = this.calculateTAEG(P, totalMonthlyPayment, n);
+
+        this.results = {
+            monthlyPayment: monthlyPayment,
+            totalPayment: monthlyPayment + monthlyInsurance,
+            totalInterest: totalInterest,
+            totalInsurance: totalInsurance,
+            totalCost: P + totalInterest + totalInsurance,
+            taeg: taeg
+        };
+    },
+    
+    calculateTAEG(loanAmount, monthlyPayment, numberOfMonths) {
+        let rate = 0.1;
+        let precision = 0.00001;
+        let maxIterations = 100;
+        
+        for (let i = 0; i < maxIterations; i++) {
+            let f = loanAmount;
+            let df = 0;
+            
+            for (let j = 1; j <= numberOfMonths; j++) {
+                f -= monthlyPayment / Math.pow(1 + rate/12, j);
+                df += j * monthlyPayment / (12 * Math.pow(1 + rate/12, j + 1));
+            }
+            
+            if (Math.abs(f) < precision) break;
+            rate = rate - f / df;
+        }
+        
+        return rate * 100;
+    },
+
+    shareCalculation() {
+        const params = new URLSearchParams();
+        for (const [key, value] of Object.entries(this.formData)) {
+            params.append(key, value);
+        }
+        const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            alert('URL de partage copiée dans le presse-papier !');
+        });
+    },
+
+    downloadCSV() {
+        const headers = ['Échéance', 'Date', 'Capital restant', 'Capital', 'Intérêts', 'Assurance', 'Total'];
+        const rows = this.amortissementTable.map((row, index) => [
+            index + 1,
+            this.formatDate(row.date),
+            row.remainingCapital,
+            row.capitalAmount,
+            row.interestAmount,
+            row.insurance,
+            row.totalPayment
+        ]);
+
+        const csvContent = [
+            headers.join(';'),
+            ...rows.map(row => row.map(cell => typeof cell === 'number' ? this.formatNumber(cell) : cell).join(';'))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'tableau_amortissement.csv';
+        link.click();
+    },
+
+    downloadXLSX() {
+        const XLSX = window.XLSX;
+        const headers = ['Échéance', 'Date', 'Capital restant', 'Capital', 'Intérêts', 'Assurance', 'Total'];
+        const rows = this.amortissementTable.map((row, index) => [
+            index + 1,
+            this.formatDate(row.date),
+            this.formatNumber(row.remainingCapital),
+            this.formatNumber(row.capitalAmount),
+            this.formatNumber(row.interestAmount),
+            this.formatNumber(row.insurance),
+            this.formatNumber(row.totalPayment)
+        ]);
+
+        const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Amortissement');
+        XLSX.writeFile(wb, 'tableau_amortissement.xlsx');
+    },
+
+    getYearlyGroups() {
+        const groups = {};
+        this.amortissementTable.forEach(row => {
+            const year = new Date(row.date).getFullYear();
+            if (!groups[year]) groups[year] = [];
+            groups[year].push(row);
+        });
+        return Object.entries(groups);
+    }
+}" x-init="init()">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-4" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+                <a href="/" class="text-gray-700 hover:text-amber-600">
+                    Accueil
+                </a>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                    <a href="/outils/" class="ml-1 text-gray-700 hover:text-amber-600">Outils</a>
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                    <span class="ml-1 text-gray-500">{{ config.title }}</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Loan Type Selector -->
+    <div class="flex justify-center mb-6">
+        <div class="inline-flex rounded-lg border border-gray-200 bg-white p-1">
+            {% for type in all_loan_types %}
+            <a href="{% if type.slug == 'immobilier' %}{% url 'amortissement_calculateur' %}{% else %}{% url 'amortissement_calculateur_type' loan_type=type.slug %}{% endif %}"
+               class="px-4 py-2 text-sm font-medium rounded-md transition-colors {% if loan_type == type.slug or loan_type == 'immobilier' and type.slug == 'immobilier' %}bg-amber-500 text-white{% else %}text-gray-700 hover:text-gray-900{% endif %}">
+                {{ type.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="text-center mb-6">
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 flex flex-col sm:block items-center justify-center gap-2">
+            {{ config.title }}
+        </h1>
+        <p class="mt-2 text-lg text-gray-600">{{ config.subtitle }}</p>
+        <div class="mt-4 flex justify-center gap-2 flex-wrap">
+            <button @click="shareCalculation()" 
+                    class="inline-flex items-center px-4 py-2 text-sm bg-black text-white rounded-lg border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:bg-amber-600 transition-all duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-5 h-5 mr-2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+                </svg>
+                Partager simulation
+            </button>
+            <button @click="downloadCSV()"
+                    class="inline-flex items-center px-4 py-2 text-sm bg-black text-white rounded-lg border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:bg-amber-600 transition-all duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-5 h-5 mr-2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+                CSV
+            </button>
+            <button @click="downloadXLSX()"
+                    class="inline-flex items-center px-4 py-2 text-sm bg-black text-white rounded-lg border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:bg-amber-600 transition-all duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-5 h-5 mr-2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+                Excel
+            </button>
+        </div>
+        
+        <!-- Quick Examples -->
+        <div class="mt-6">
+            <h3 class="text-center text-sm font-medium text-gray-700 mb-3">Exemples de simulations :</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-4xl mx-auto">
+                {% for example in config.examples %}
+                <button x-on:click="formData.loan_amount = {{ example.amount }}; formData.loan_duration = {{ example.duration }}; formData.interest_rate = {{ example.rate_str }}; calculateAmortissement()"
+                        class="p-3 bg-white text-left rounded-lg border border-gray-300 hover:border-amber-500 hover:shadow-md transition-all duration-200 group">
+                    <div class="font-medium text-gray-900 group-hover:text-amber-600">{{ example.label }}</div>
+                    <div class="text-xs text-gray-500 mt-1">{{ example.description }}</div>
+                    <div class="text-xs text-amber-600 mt-1 font-medium">
+                        {{ example.amount|floatformat:"0" }}€ • {{ example.duration }} ans • {{ example.rate }}%
+                    </div>
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Left column - Loan Form -->
+        <div class="lg:col-span-1 space-y-6">
+            <div class="bg-white/50 backdrop-blur-sm rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 p-6">
+                <h2 class="text-xl font-semibold mb-4 flex items-center text-gray-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-6 h-6 mr-2 text-amber-500">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+                    </svg>
+                    Paramètres du prêt
+                </h2>
+
+                <div class="space-y-4">
+                    <div class="relative">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Montant emprunté</label>
+                        <input type="text" x-on:input="handleInput($event, 'loan_amount')"
+                            :value="formatNumber(formData.loan_amount)"
+                            class="block w-full pl-4 pr-12 py-2 rounded-md border border-gray-300 bg-white shadow-sm transition duration-200 placeholder-gray-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                        <div class="absolute inset-y-0 right-0 top-2 pr-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-sm">€</span>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Durée du prêt</label>
+                        <div class="flex space-x-2">
+                            <input type="number" x-model="formData.loan_duration" @input="calculateAmortissement"
+                                min="0"
+                                class="block w-full pl-4 pr-4 py-2 rounded-md border border-gray-300 bg-white shadow-sm transition duration-200 placeholder-gray-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                            <select x-model="formData.duration_type" @change="calculateAmortissement"
+                                class="block w-24 pl-4 pr-2 py-2 rounded-md border border-gray-300 bg-white shadow-sm transition duration-200 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                                <option value="years">ans</option>
+                                <option value="months">mois</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Taux d'intérêt</label>
+                        <input type="number" x-model="formData.interest_rate" @input="calculateAmortissement" step="0.1"
+                            min="0"
+                            class="block w-full pl-4 pr-12 py-2 rounded-md border border-gray-300 bg-white shadow-sm transition duration-200 placeholder-gray-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                        <div class="absolute inset-y-0 right-0 top-2 pr-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-sm">%</span>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Assurance</label>
+                        <div class="flex space-x-2">
+                            <input type="number" x-model="formData.insurance" @input="calculateAmortissement" min="0"
+                                class="block w-full pl-4 pr-4 py-2 rounded-md border border-gray-300 bg-white shadow-sm transition duration-200 placeholder-gray-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                            <select x-model="formData.insurance_type" @change="calculateAmortissement"
+                                class="block w-28 pl-4 pr-2 py-2 rounded-md border border-gray-300 bg-white shadow-sm transition duration-200 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                                <option value="amount">€/mois</option>
+                                <option value="percent">% annuel</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date de début</label>
+                        <input type="date" x-model="formData.start_date" @input="calculateAmortissement"
+                            class="block w-full pl-4 pr-4 py-2 rounded-md border border-gray-300 bg-white shadow-sm transition duration-200 placeholder-gray-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500">
+                    </div>
+                </div>
+
+                <!-- Récapitulatif -->
+                <div class="mt-4 bg-white/80 backdrop-blur-sm p-4 rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200">
+                    <div class="flex items-center justify-center gap-2 mb-2">
+                        <div class="bg-amber-100 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                        </div>
+                        <h2 class="text-lg font-semibold text-gray-800">Récapitulatif</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-2 px-4 rounded-lg shadow-sm">
+                            <div class="flex justify-between items-baseline">
+
+                                <span class=" text-lg text-white font-semibold">Mensualités</span>
+                                <span class="text-2xl font-bold text-white"
+                                    x-text="results ? Number(Math.round(results.totalPayment)).toLocaleString('fr-FR', { maximumFractionDigits: 0, minimumFractionDigits: 0 }) + ' €' : '-'"></span>
+                            </div>
+                        </div>
+
+
+                        <div class="space-y-3">
+                            <div
+                                class="flex justify-between items-center p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+                                <span class=" text-lg text-gray-900 font-medium">Coût total du crédit</span>
+                                <span class="text-lg font-semibold text-gray-900"
+                                    x-text="results ? Number(Math.round(results.totalCost)).toLocaleString('fr-FR', { maximumFractionDigits: 0, minimumFractionDigits: 0 }) + ' €' : '-'"></span>
+                            </div>
+
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div
+                                    class="flex justify-between items-center p-2 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
+                                    <span class="text-gray-600 font-medium text-sm">Intérêts</span>
+                                    <span class="text-gray-900 font-medium text-sm"
+                                        x-text="results ? Number(Math.round(results.totalInterest)).toLocaleString('fr-FR', { maximumFractionDigits: 0, minimumFractionDigits: 0 }) + ' €' : '-'"></span>
+                                </div>
+                                <div
+
+                                    class="flex justify-between items-center p-2 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
+                                    <span class="text-gray-600 font-medium text-sm">Assurance</span>
+                                    <span class="text-gray-900 font-medium text-sm"
+                                        x-text="results ? Number(Math.round(results.totalInsurance)).toLocaleString('fr-FR', { maximumFractionDigits: 0, minimumFractionDigits: 0 }) + ' €' : '-'"></span>
+
+
+
+
+
+
+
+
+                                </div>
+                            </div>
+                            
+                            <!-- TAEG Display -->
+                            <div class="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <span class="text-gray-700 font-medium">TAEG</span>
+                                        <svg class="w-4 h-4 ml-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <title>Taux Annuel Effectif Global incluant tous les frais</title>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="text-gray-900 font-bold" x-text="results ? results.taeg.toFixed(2) + ' %' : '-'"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- Right column - Amortization Table -->
+        <div class="lg:col-span-2">
+            <div class="bg-white/50 backdrop-blur-sm rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 overflow-hidden" x-data="{ showAll: false }">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-amber-50">
+                            <tr>
+                                <th scope="col"
+                                    class="px-2 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                    N°</th>
+                                <th scope="col"
+                                    class="px-2 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
+
+
+
+
+                                    Date</th>
+                                <th scope="col"
+                                    class="px-2 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                    Capital restant</th>
+                                <th scope="col"
+                                    class="px-2 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
+
+
+
+                                    Capital</th>
+
+                                <th scope="col"
+                                    class="px-2 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
+
+
+
+                                    Intérêts</th>
+                                <th scope="col"
+
+
+                                    class="px-2 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                    Assurance</th>
+                                <th scope="col"
+
+
+
+                                    class="px-2 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                    Total</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <template
+                                x-for="(row, index) in showAll ? amortissementTable : amortissementTable.slice(0,20)"
+                                :key="index">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-900" x-text="index + 1">
+                                    </td>
+                                    <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-900"
+                                        x-text="formatDate(row.date)"></td>
+                                    <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right"
+                                        x-text="formatNumber(row.remainingCapital) + ' €'"></td>
+                                    <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right"
+                                        x-text="formatNumber(row.capitalAmount) + ' €'"></td>
+                                    <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-900 text-right"
+                                        x-text="formatNumber(row.interestAmount) + ' €'"></td>
+                                    <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-900 text-right"
+                                        x-text="formatNumber(row.insurance) + ' €'"></td>
+                                    <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900 text-right"
+                                        x-text="formatNumber(row.totalPayment) + ' €'"></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="p-4 text-center" x-show="amortissementTable.length > 20">
+                    <button @click="showAll = !showAll"
+                        class="inline-flex items-center font-semibold px-4 py-2 bg-black text-white rounded-md hover:bg-amber-500 hover:text-black transition-colors"
+                        x-text="showAll ? 'Voir moins' : 'Afficher toutes les échéances'"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-8xl mx-auto mt-12 px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Première section -->
+        <div class="bg-white/50 backdrop-blur-sm rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 p-6">
+            <h2 class="text-xl font-bold mb-4">Un simulateur complet pour votre {{ config.title|lower }}</h2>
+            <p class="text-gray-700 mb-4">Notre calculateur génère automatiquement votre tableau d'amortissement avec :
+            </p>
+            <ul class="space-y-2 text-gray-700">
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Le montant des mensualités
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    La répartition capital/intérêts
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Le capital restant dû
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    L'assurance emprunteur
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Le TAEG complet
+                </li>
+            </ul>
+        </div>
+
+        <!-- Deuxième section -->
+        <div class="bg-white/50 backdrop-blur-sm rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 p-6">
+            <h2 class="text-xl font-bold mb-4">
+                {% if loan_type == 'immobilier' %}Spécificités du crédit immobilier
+                {% elif loan_type == 'auto' %}Spécificités du crédit auto
+                {% elif loan_type == 'personnel' %}Spécificités du prêt personnel
+                {% else %}Spécificités du crédit professionnel{% endif %}
+            </h2>
+            <ul class="space-y-2 text-gray-700">
+                {% for specificity in config.specificities %}
+                <li class="flex items-start">
+                    <svg class="w-5 h-5 mr-2 mt-0.5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="text-sm">{{ specificity }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Troisième section -->
+        <div class="bg-white/50 backdrop-blur-sm rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 p-6">
+            <h2 class="text-xl font-bold mb-4">Exemple concret</h2>
+            <p class="text-gray-700 mb-4">
+                {% if loan_type == 'immobilier' %}
+                    Pour un prêt immobilier de {{ config.default_amount|floatformat:"0" }}€ sur {{ config.default_duration }} ans :
+                {% elif loan_type == 'auto' %}
+                    Pour un crédit auto de {{ config.default_amount|floatformat:"0" }}€ sur {{ config.default_duration }} ans :
+                {% elif loan_type == 'personnel' %}
+                    Pour un prêt personnel de {{ config.default_amount|floatformat:"0" }}€ sur {{ config.default_duration }} ans :
+                {% else %}
+                    Pour un prêt professionnel de {{ config.default_amount|floatformat:"0" }}€ sur {{ config.default_duration }} ans :
+                {% endif %}
+            </p>
+            <ul class="space-y-2 text-gray-700">
+                <li class="flex justify-between items-center">
+                    <span>Taux d'intérêt</span>
+                    <span class="font-semibold">{{ config.default_rate }}%</span>
+                </li>
+                <li class="flex justify-between items-center">
+                    <span>Mensualité estimée</span>
+                    <span class="font-semibold">
+                        {% if loan_type == 'immobilier' %}1 212€
+                        {% elif loan_type == 'auto' %}475€
+                        {% elif loan_type == 'personnel' %}460€
+                        {% else %}738€{% endif %}
+                    </span>
+                </li>
+                <li class="flex justify-between items-center">
+                    <span>
+                        {% if loan_type == 'immobilier' %}Coût total des intérêts
+                        {% else %}Coût du crédit{% endif %}
+                    </span>
+                    <span class="font-semibold">
+                        {% if loan_type == 'immobilier' %}90 880€
+                        {% elif loan_type == 'auto' %}3 500€
+                        {% elif loan_type == 'personnel' %}1 560€
+                        {% else %}12 264€{% endif %}
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mt-12 bg-white/50 backdrop-blur-sm rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-all duration-200 p-8">
+        <h2 class="text-xl font-bold mb-6">Comment utiliser le simulateur ?</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div class="flex items-center">
+                <span
+                class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold mr-3">1</span>
+                <span class="text-gray-700">Renseignez le montant de votre prêt</span>
+            </div>
+            <div class="flex items-center">
+
+
+
+                <span
+                class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold mr-3">2</span>
+                <span class="text-gray-700">Indiquez la durée souhaitée</span>
+            </div>
+            <div class="flex items-center">
+
+                <span
+                    class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold mr-3">3</span>
+                <span class="text-gray-700">Ajoutez le taux d'intérêt</span>
+            </div>
+
+            <div class="flex items-center">
+                <span
+                    class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold mr-3">4</span>
+                <span class="text-gray-700">Précisez l'assurance si nécessaire</span>
+            </div>
+            <div class="flex items-center">
+                <span
+
+                class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-bold mr-3">5</span>
+                <span class="text-gray-700">Obtenez instantanément votre simulation</span>
+            </div>
+
+
+        </div>
+    </div>
+    
+    <!-- FAQ Section -->
+    <div class="mt-12 bg-white/50 backdrop-blur-sm rounded-xl border-2 border-gray-800/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] p-8">
+        <h2 class="text-2xl font-bold mb-6">Questions fréquentes sur le tableau d'amortissement</h2>
+        
+        <div class="space-y-6" x-data="{ activeAccordion: null }">
+            <div class="border-b border-gray-200 pb-4">
+                <button @click="activeAccordion = activeAccordion === 1 ? null : 1" 
+                        class="flex justify-between items-center w-full text-left">
+                    <h3 class="text-lg font-semibold text-gray-800">Qu'est-ce que le TAEG et comment est-il calculé ?</h3>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform" 
+                         :class="{ 'rotate-180': activeAccordion === 1 }"
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div x-show="activeAccordion === 1" class="mt-3 text-gray-600">
+                    <p>Le TAEG (Taux Annuel Effectif Global) représente le coût total de votre crédit exprimé en pourcentage annuel. Il inclut non seulement le taux d'intérêt nominal, mais aussi tous les frais annexes : assurance emprunteur, frais de dossier, garanties, etc. Notre calculateur intègre automatiquement l'assurance dans le calcul du TAEG pour vous donner une vision complète du coût de votre prêt.</p>
+                </div>
+            </div>
+
+            <div class="border-b border-gray-200 pb-4">
+                <button @click="activeAccordion = activeAccordion === 2 ? null : 2" 
+                        class="flex justify-between items-center w-full text-left">
+                    <h3 class="text-lg font-semibold text-gray-800">Comment interpréter le tableau d'amortissement ?</h3>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform" 
+                         :class="{ 'rotate-180': activeAccordion === 2 }"
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div x-show="activeAccordion === 2"  class="mt-3 text-gray-600">
+                    <p>Le tableau d'amortissement détaille mois par mois la décomposition de vos mensualités entre capital et intérêts. Au début du prêt, la part des intérêts est plus importante, puis diminue progressivement. La colonne "Capital restant" indique ce qu'il vous reste à rembourser après chaque échéance, utile en cas de remboursement anticipé.</p>
+                </div>
+            </div>
+
+            <div class="border-b border-gray-200 pb-4">
+                <button @click="activeAccordion = activeAccordion === 3 ? null : 3" 
+                        class="flex justify-between items-center w-full text-left">
+                    <h3 class="text-lg font-semibold text-gray-800">Quelle est la différence entre taux fixe et taux variable ?</h3>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform" 
+                         :class="{ 'rotate-180': activeAccordion === 3 }"
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div x-show="activeAccordion === 3"  class="mt-3 text-gray-600">
+                    <p>Notre simulateur calcule avec un taux fixe, où le taux d'intérêt reste identique pendant toute la durée du prêt. Un taux variable peut évoluer selon les indices de référence, rendant le tableau d'amortissement prévisionnel. Pour un taux variable, utilisez notre outil comme base et anticipez des variations possibles.</p>
+                </div>
+            </div>
+
+            <div class="border-b border-gray-200 pb-4">
+                <button @click="activeAccordion = activeAccordion === 4 ? null : 4" 
+                        class="flex justify-between items-center w-full text-left">
+                    <h3 class="text-lg font-semibold text-gray-800">Comment optimiser le coût total de mon crédit ?</h3>
+                    <svg class="w-5 h-5 text-gray-500 transform transition-transform" 
+                         :class="{ 'rotate-180': activeAccordion === 4 }"
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div x-show="activeAccordion === 4"  class="mt-3 text-gray-600">
+                    <p>Pour réduire le coût total : 1) Augmentez votre apport personnel pour emprunter moins, 2) Réduisez la durée du prêt si vos mensualités le permettent, 3) Négociez le taux et l'assurance, 4) Envisagez des remboursements anticipés partiels. Utilisez notre mode comparaison pour tester différents scénarios.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FAQ Schema Markup -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Qu'est-ce que le TAEG et comment est-il calculé ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Le TAEG (Taux Annuel Effectif Global) représente le coût total de votre crédit exprimé en pourcentage annuel. Il inclut non seulement le taux d'intérêt nominal, mais aussi tous les frais annexes : assurance emprunteur, frais de dossier, garanties, etc."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Comment interpréter le tableau d'amortissement ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Le tableau d'amortissement détaille mois par mois la décomposition de vos mensualités entre capital et intérêts. Au début du prêt, la part des intérêts est plus importante, puis diminue progressivement."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quelle est la différence entre taux fixe et taux variable ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Notre simulateur calcule avec un taux fixe, où le taux d'intérêt reste identique pendant toute la durée du prêt. Un taux variable peut évoluer selon les indices de référence, rendant le tableau d'amortissement prévisionnel."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Comment optimiser le coût total de mon crédit ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pour réduire le coût total : augmentez votre apport personnel, réduisez la durée du prêt si possible, négociez le taux et l'assurance, et envisagez des remboursements anticipés partiels."
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}

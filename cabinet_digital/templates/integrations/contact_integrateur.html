@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Proposer une intégration - Cabinet Digital{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="Vous êtes intégrateur ou éditeur de logiciel ? Proposez votre intégration comptable pour rejoindre notre catalogue de solutions référencées.">
+<meta property="og:title" content="Proposer une intégration comptable | Cabinet Digital">
+<meta property="og:description" content="Intégrateurs et éditeurs : référencez votre solution d'intégration comptable dans notre catalogue expert.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <!-- Header -->
+  <div class="text-center mb-8">
+    <div class="w-14 h-14 bg-gray-900 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+      <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+      </svg>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Proposer une intégration</h1>
+    <p class="text-gray-600 leading-relaxed max-w-2xl mx-auto">
+      Vous êtes intégrateur ou éditeur de logiciel ? Rejoignez notre catalogue et faites connaître 
+      votre solution d'intégration comptable à nos utilisateurs.
+    </p>
+  </div>
+
+  <!-- Navigation entre les formulaires -->
+  <div class="mb-8">
+    <nav class="flex flex-wrap justify-center gap-2 p-1 bg-gray-100 rounded-lg" aria-label="Navigation formulaires">
+      <a href="{% url 'contact' %}" 
+         class="px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors">
+        Contact général
+      </a>
+      <a href="{% url 'contact_software' %}" 
+         class="px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors">
+        Proposer un logiciel
+      </a>
+      <a href="{% url 'contact_integrator' %}" 
+         class="px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors">
+        Proposer un intégrateur
+      </a>
+      <a href="{% url 'contact_integration' %}" 
+         class="px-4 py-2 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm border border-gray-200">
+        Proposer une intégration
+      </a>
+    </nav>
+  </div>
+
+  <!-- Messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="mb-6 p-4 rounded-lg {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200{% elif message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Formulaire -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="p-6">
+      <form method="post" class="space-y-6" 
+            hx-post="{% url 'contact_integration' %}"
+            hx-target="#popup-container"
+            hx-swap="innerHTML">
+        {% csrf_token %}
+        
+        <!-- Section informations de contact -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            Vos informations
+          </div>
+          
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label for="nom" class="form-label">Nom *</label>
+              <input type="text" id="nom" name="nom" required 
+                     placeholder="Votre nom"
+                     class="form-input-compact">
+            </div>
+            
+            <div class="form-group">
+              <label for="email" class="form-label">Email *</label>
+              <input type="email" id="email" name="email" required 
+                     placeholder="votre.email@exemple.com"
+                     class="form-input-compact">
+            </div>
+            
+            <div class="form-group">
+              <label for="entreprise" class="form-label">Entreprise *</label>
+              <input type="text" id="entreprise" name="entreprise" required 
+                     placeholder="Nom de votre entreprise"
+                     class="form-input-compact">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section informations sur l'intégration -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            Informations sur votre intégration
+          </div>
+          
+          <div class="space-y-5">
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label for="logiciel_source" class="form-label">Logiciel source *</label>
+                <input type="text" id="logiciel_source" name="logiciel_source" required 
+                       placeholder="Ex: Sage, Cegid, Pennylane..."
+                       class="form-input-compact">
+                <p class="text-xs text-gray-500 mt-1">Le logiciel d'origine des données</p>
+              </div>
+              
+              <div class="form-group">
+                <label for="logiciel_destination" class="form-label">Logiciel destination *</label>
+                <input type="text" id="logiciel_destination" name="logiciel_destination" required 
+                       placeholder="Ex: Sage, Cegid, Pennylane..."
+                       class="form-input-compact">
+                <p class="text-xs text-gray-500 mt-1">Le logiciel qui reçoit les données</p>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="modules_concernes" class="form-label">Modules concernés *</label>
+              <textarea id="modules_concernes" name="modules_concernes" required rows="3" 
+                        placeholder="Ex: Comptabilité générale, Gestion des immobilisations, Paie, TVA..."
+                        class="form-textarea-compact"></textarea>
+              <p class="text-xs text-gray-500 mt-1">Quels sont les modules synchronisés par votre intégration ?</p>
+            </div>
+            
+            <div class="form-group">
+              <label for="description" class="form-label">Description détaillée *</label>
+              <textarea id="description" name="description" required rows="6" 
+                        placeholder="Décrivez votre intégration : fonctionnalités, avantages, flux de données, prérequis techniques..."
+                        class="form-textarea-compact"></textarea>
+              <p class="text-xs text-gray-500 mt-1">Plus votre description sera précise, plus nous pourrons mettre en valeur votre solution</p>
+            </div>
+            
+            <div class="form-group">
+              <label for="url_documentation" class="form-label">URL de documentation (optionnel)</label>
+              <input type="url" id="url_documentation" name="url_documentation" 
+                     placeholder="https://votre-documentation.com"
+                     class="form-input-compact">
+              <p class="text-xs text-gray-500 mt-1">Lien vers votre documentation technique ou commerciale</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Boutons et confidentialité -->
+        <div class="space-y-4">
+          <div class="flex flex-col sm:flex-row gap-3">
+            <button type="submit" 
+                    class="form-button flex-1 sm:flex-none">
+              Envoyer ma demande
+            </button>
+            <a href="{% url 'integration_list' %}" 
+               class="form-button-secondary flex-1 sm:flex-none text-center">
+              Annuler
+            </a>
+          </div>
+          
+          <div class="text-center">
+            <div class="form-privacy-notice">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              Vos données sont protégées et ne seront pas partagées
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Informations complémentaires -->
+  <div class="mt-6 bg-blue-50 rounded-xl p-4 border border-blue-200">
+    <div class="flex items-start gap-3">
+      <div class="flex-shrink-0">
+        <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-blue-900 mb-1">Processus de validation</h3>
+        <p class="text-blue-800 text-sm leading-relaxed">
+          Après réception de votre demande, notre équipe l'étudiera dans les 48h. 
+          Nous vous recontacterons pour valider les informations et planifier l'intégration 
+          de votre solution dans notre catalogue. Le référencement est gratuit.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Container pour la popup HTMX -->
+<div id="popup-container"></div>
+
+{% endblock %}

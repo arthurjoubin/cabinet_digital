@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Proposer un intégrateur - Cabinet Digital{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="Proposez votre entreprise d'intégration pour être référencée sur Cabinet Digital. Nous aidons les intégrateurs à faire connaître leurs services.">
+<meta property="og:title" content="Proposer un intégrateur - Cabinet Digital">
+<meta property="og:description" content="Proposez votre entreprise d'intégration pour être référencée sur Cabinet Digital.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{% static 'cabinet_logos/OG_image_cabinetdigital.png' %}">
+<meta property="og:site_name" content="Cabinet Digital">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <!-- Header -->
+  <div class="text-center mb-8">
+    <div class="w-14 h-14 bg-gray-900 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+      <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Proposer votre intégrateur</h1>
+    <p class="text-gray-600 leading-relaxed max-w-2xl mx-auto">
+      Vous êtes intégrateur ou prestataire IT ? Faites-vous connaître auprès de notre communauté.
+    </p>
+  </div>
+
+  <!-- Navigation entre les formulaires -->
+  <div class="mb-8">
+    <nav class="flex flex-wrap justify-center gap-2 p-1 bg-gray-100 rounded-lg" aria-label="Navigation formulaires">
+      <a href="{% url 'contact' %}" 
+         class="px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors">
+        Contact général
+      </a>
+      <a href="{% url 'contact_software' %}" 
+         class="px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors">
+        Proposer un logiciel
+      </a>
+      <a href="{% url 'contact_integrator' %}" 
+         class="px-4 py-2 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm border border-gray-200">
+        Proposer un intégrateur
+      </a>
+      <a href="{% url 'contact_integration' %}" 
+         class="px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors">
+        Proposer une intégration
+      </a>
+    </nav>
+  </div>
+
+  <!-- Messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="mb-6 p-4 rounded-lg {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200{% elif message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Form -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="p-6">
+      <form method="post" 
+            hx-post="{% url 'contact_integrator' %}"
+            hx-trigger="submit"
+            hx-swap="outerHTML"
+            hx-target="#popup-container"
+            class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- Section informations de contact -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            Vos informations
+          </div>
+          
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label for="nom" class="form-label">Nom *</label>
+              <input type="text" id="nom" name="nom" required 
+                     placeholder="Votre nom"
+                     class="form-input-compact">
+            </div>
+            
+            <div class="form-group">
+              <label for="email" class="form-label">Email *</label>
+              <input type="email" id="email" name="email" required 
+                     placeholder="votre.email@exemple.com"
+                     class="form-input-compact">
+            </div>
+            
+            <div class="form-group">
+              <label for="entreprise" class="form-label">Entreprise *</label>
+              <input type="text" id="entreprise" name="entreprise" required 
+                     placeholder="Nom de votre entreprise"
+                     class="form-input-compact">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section entreprise -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            Votre entreprise
+          </div>
+          
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label for="site_web" class="form-label">Site web</label>
+              <input type="url" id="site_web" name="site_web" 
+                     placeholder="https://votre-site.com"
+                     class="form-input-compact">
+            </div>
+            
+            <div class="form-group">
+              <label for="zone_intervention" class="form-label">Zone d'intervention *</label>
+              <input type="text" id="zone_intervention" name="zone_intervention" required 
+                     placeholder="ex: Île-de-France, National, International..."
+                     class="form-input-compact">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section expertise -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            Votre expertise
+          </div>
+          
+          <div class="form-group">
+            <label for="description" class="form-label">Description de votre activité *</label>
+            <textarea id="description" name="description" required 
+                      rows="4" 
+                      placeholder="Décrivez votre activité, vos services, votre expertise..."
+                      class="form-textarea-compact"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="logiciels_expertise" class="form-label">Logiciels d'expertise *</label>
+            <textarea id="logiciels_expertise" name="logiciels_expertise" required 
+                      rows="3" 
+                      placeholder="Listez les logiciels que vous maîtrisez (ERP, comptabilité, etc.)"
+                      class="form-textarea-compact"></textarea>
+            <p class="form-help">Quels logiciels maîtrisez-vous ? (SAP, Sage, Cegid, etc.)</p>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" 
+                class="form-button w-full">
+          Proposer mon intégrateur
+        </button>
+        
+        <div class="text-center">
+          <div class="form-privacy-notice">
+            En soumettant ce formulaire, vous acceptez que vos données soient utilisées pour traiter votre demande.
+            <a href="#" class="text-blue-600 hover:text-blue-700">Politique de confidentialité</a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Popup Container -->
+<div id="popup-container"></div>
+{% endblock %}
