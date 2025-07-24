@@ -3,7 +3,7 @@
         <button 
             @click="show{{ filter_name|capfirst }}List = !show{{ filter_name|capfirst }}List" 
             type="button"
-            class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent hover:border-gray-300 text-left flex justify-between items-center text-sm">
+            class="w-full px-4 py-2.5 bg-white border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 hover:shadow-lg text-left flex justify-between items-center text-sm transition-all duration-200">
             <span x-text="{{ filter_name }}Filter ? 
                    (Array.from(document.querySelectorAll('#{{ filter_name }}-dropdown option')).find(opt => opt.value === {{ filter_name }}Filter)?.textContent || '{{ filter_title }}') : 
                    '{{ filter_title }}'" class="truncate"></span>
@@ -19,7 +19,7 @@
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0 transform scale-95"
          x-transition:enter-end="opacity-100 transform scale-100"
-         class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-80 rounded-md py-1 text-base overflow-auto focus:outline-none sm:text-sm border border-gray-200">
+         class="absolute z-10 mt-1 w-full bg-white shadow-xl max-h-80 rounded-md py-1 text-base overflow-auto focus:outline-none sm:text-sm border-2 border-black">
         
         {% if search_enabled %}
         <!-- Barre de recherche pour les éléments -->
@@ -28,7 +28,7 @@
                 type="text" 
                 x-model="{{ filter_name }}SearchQuery"
                 placeholder="Rechercher un {{ filter_label }}..." 
-                class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent">
+                class="w-full px-3 py-2 border-2 border-black rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 transition-all duration-200 hover:shadow-lg">
         </div>
         {% endif %}
         

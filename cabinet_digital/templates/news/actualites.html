@@ -52,11 +52,11 @@ Actualités des logiciels pour experts-comptables et PME - Cabinet Digital
       
       <!-- Tags Filter -->
       {% if tags %}
-      <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+      <div class="bg-white rounded-xl border-2 border-black p-4 shadow-lg hover:shadow-xl transition-all duration-200 hover:border-gray-800">
         <div class="flex flex-wrap gap-2 justify-center">
           <!-- All tag -->
           <a href="{% url 'actualites' %}" 
-             class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border {% if not selected_tag %}bg-black text-white border-black{% else %}bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:bg-gray-50{% endif %}">
+             class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border-2 {% if not selected_tag %}bg-black text-white border-black{% else %}bg-white text-gray-700 border-black hover:bg-gray-50 hover:shadow-lg{% endif %}">
             Tous
           </a>
           

@@ -84,12 +84,12 @@ Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital
       <form method="get" class="max-w-5xl mx-auto space-y-4">
         <!-- Filtres et actions -->
         {% if categories %}
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+        <div class="bg-white rounded-xl border-2 border-black shadow-lg hover:shadow-xl transition-all duration-200 hover:border-gray-800">
           <div class="p-6">
             <div class="flex flex-col lg:flex-row lg:items-center gap-3">
               <!-- Filtres -->
               <div class="flex flex-col sm:flex-row gap-1 flex-1">
-                <select name="category" class="pl-4 pr-8 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white shadow-sm min-w-[200px] transition-all duration-200">
+                <select name="category" class="pl-4 pr-8 py-3 border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 text-sm bg-white shadow-md min-w-[200px] transition-all duration-200 hover:shadow-lg">
                   <option value="">Filtrer par catégorie</option>
                   {% for category in categories %}
                     <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %} title="{{ category.name }}">
@@ -110,12 +110,12 @@ Les meilleurs logiciels pour experts-comptables et PME - Cabinet Digital
                        name="search" 
                        value="{{ search_query }}" 
                        placeholder="Rechercher..."
-                       class="w-full pl-12 pr-4 py-3 border-2 border-gray-400 rounded-lg text-sm placeholder-gray-500 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                       class="w-full pl-12 pr-4 py-3 border-2 border-black rounded-lg text-sm placeholder-gray-500 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 transition-all duration-200 hover:shadow-lg">
               </div>
 
               <!-- Boutons -->
               <div class="flex gap-3">
-                <a href="{% url 'software_list' %}" class="inline-flex items-center justify-center px-4 py-3 border-2 border-gray-400 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200">
+                <a href="{% url 'software_list' %}" class="inline-flex items-center justify-center px-4 py-3 border-2 border-black rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 transition-all duration-200 hover:shadow-lg">
                   <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                   </svg>
