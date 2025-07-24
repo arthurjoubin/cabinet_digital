@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-Les {{ softwares|length }} meilleures {{ category.excerpt }}
+Logiciels de {{ category.name }} : Comparatif 2025 des {{ softwares|length }} meilleures solutions
 {% endblock %}
 
 {% block meta_description %}
@@ -19,6 +19,39 @@ Les {{ softwares|length }} meilleures {{ category.excerpt }}
 {% endblock %}
 
 {% block content %}
+<!-- Schema.org ItemList -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "itemListElement": [
+    {% for software in softwares %}
+    {
+      "@type": "ListItem",
+      "position": {{ forloop.counter }},
+      "item": {
+        "@type": "SoftwareApplication",
+        "name": "{{ software.name }}",
+        "url": "{{ request.build_absolute_uri }}{{ software.get_absolute_url }}",
+        "applicationCategory": "{{ category.name }}",
+        {% if software.company %}"publisher": {
+          "@type": "Organization",
+          "name": "{{ software.company.name }}"
+        },{% endif %}
+        {% if software.short_description %}"description": "{{ software.short_description|truncatewords:30|escapejs }}",{% endif %}
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "EUR"
+        }
+      }
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+
+
+
 <div class="max-w-7xl mx-auto bg-white p-4 sm:p-6 rounded-lg shadow-sm border-2 border-gray-200">
     {% include 'partials/breadcrumb.html' %}
     <div class="relative mb-8 bg-sky-50 p-6 rounded-lg shadow-sm border border-gray-200">
@@ -38,7 +71,7 @@ Les {{ softwares|length }} meilleures {{ category.excerpt }}
                 {% endif %}
             </div>
             <h1 class="text-2xl sm:text-3xl font-bold text-black text-center">
-                Les <span class="underline">{{ count }}</span> meilleures {{ category.excerpt }}
+                Logiciels de {{ category.name }} : Comparatif des {{ count }} meilleures solutions
             </h1>
             
         </div>
@@ -96,10 +129,74 @@ Les {{ softwares|length }} meilleures {{ category.excerpt }}
                     <h2 class="text-xl sm:text-2xl font-semibold p-4 border-b border-gray-200 bg-sky-50">
                         L'intérêt des {{ category.excerpt }}
                     </h2>
-                    <div class="p-6 prose max-w-none text-gray-700 leading-relaxed">
+                    
+                    <!-- Table of Contents -->
+                    <div class="p-6 border-b border-gray-100" id="toc-container">
+                        <nav class="bg-gradient-to-r from-sky-50 to-blue-50 p-6 rounded-xl shadow-sm border border-sky-200">
+                            <div class="flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                                </svg>
+                                <h3 class="font-bold text-gray-800 text-lg">Sommaire</h3>
+                            </div>
+                            <ul class="space-y-3" id="toc-list">
+                                <!-- Généré dynamiquement par JavaScript -->
+                            </ul>
+                        </nav>
+                    </div>
+                    
+                    <div class="p-6 prose max-w-none text-gray-700 leading-relaxed" id="guide-content">
                         {{ category.description|safe }}
                     </div>
                 </div>
+                
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const content = document.getElementById('guide-content');
+                    const tocList = document.getElementById('toc-list');
+                    const tocContainer = document.getElementById('toc-container');
+                    
+                    if (content && tocList) {
+                        const headings = content.querySelectorAll('h2');
+                        
+                        if (headings.length > 0) {
+                            headings.forEach((heading, index) => {
+                                // Créer un ID unique pour le heading
+                                const id = 'section-' + (index + 1);
+                                heading.id = id;
+                                
+                                // Créer le lien dans le TOC
+                                const li = document.createElement('li');
+                                const a = document.createElement('a');
+                                a.href = '#' + id;
+                                
+                                // Ajouter l'icône chevron
+                                const chevron = document.createElement('span');
+                                chevron.innerHTML = '<svg class="w-4 h-4 text-sky-400 group-hover:text-sky-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
+                                
+                                const text = document.createElement('span');
+                                text.textContent = heading.textContent;
+                                
+                                a.appendChild(chevron);
+                                a.appendChild(text);
+                                a.className = 'text-sky-700 hover:text-sky-900 font-medium transition-all duration-200 flex items-center gap-2 group hover:translate-x-1';
+                                
+                                // Smooth scroll
+                                a.addEventListener('click', function(e) {
+                                    e.preventDefault();
+                                    heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                });
+                                
+                                li.appendChild(a);
+                                tocList.appendChild(li);
+                            });
+                        } else {
+                            // Cacher le TOC s'il n'y a pas de h2
+                            tocContainer.style.display = 'none';
+                        }
+                    }
+                });
+                </script>
             </div>
             {% endif %}
         </div>
